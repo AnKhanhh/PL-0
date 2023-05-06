@@ -51,11 +51,11 @@ void lexical_analysis(FILE *in, FILE *out) {
 	token_name t_name;
 	while ( c != EOF) {
 		token[0] = 0;
-		while ( isspace(c) ) c = fgetc(in);
+		while ( isspace(c)) c = (char) fgetc(in);
 		if ( isalpha(c)) {
 			int i;
 			charcpy(lexeme, c);
-			for ( i = 0; isalpha(lexeme[i]); lexeme[++i] = fgetc(in)) {} // parse word
+			for ( i = 0; isalpha(lexeme[i]); lexeme[++i] = (char) fgetc(in)) {} // parse word
 			c = lexeme[i];
 			lexeme[i] = 0;
 			if (( t_name = is_keyword(lexeme))) {
@@ -63,29 +63,27 @@ void lexical_analysis(FILE *in, FILE *out) {
 			} else {
 				fputs(generate_token(token, lexeme, IDENT), out);
 			}
-			continue;
 		} else if ( isdigit(c)) {
 			int i;
 			charcpy(lexeme, c);
-			for ( i = 0; isdigit(lexeme[i]); lexeme[++i] = fgetc(in)) {} // parse number
+			for ( i = 0; isdigit(lexeme[i]); lexeme[++i] = (char) fgetc(in)) {} // parse number
 			c = lexeme[i];
 			lexeme[i] = 0;
 			fputs(generate_token(token, lexeme, NUMBER), out);
-			continue;
 		} else {
 			lexeme[0] = c;
-			charcpy(lexeme + 1, fgetc(in));
+			charcpy(lexeme + 1, (char) fgetc(in));
 			if (( t_name = is_binary(lexeme))) {
 				fputs(generate_token(token, lexeme, t_name), out);
-				c= fgetc(in);
+				c = (char) fgetc(in);
 			} else if (( t_name = is_unary(c))) {
 				c = lexeme[1];
 				lexeme[1] = 0;
-				fputs(generate_token(token, lexeme,t_name),out);
+				fputs(generate_token(token, lexeme, t_name), out);
 			} else {
 				c = lexeme[1];
 				lexeme[1] = 0;
-				fputs(generate_token(token,lexeme,NONE), out);
+				fputs(generate_token(token, lexeme, NONE), out);
 			}
 		}
 	}
@@ -147,5 +145,5 @@ void charcpy(char *s, char c) {
 }
 
 void strupp(char *s) {
-	while (( *s = toupper(*s))) s++;
+	while (( *s = (char) toupper(*s))) s++;
 }
