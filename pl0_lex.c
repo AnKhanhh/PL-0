@@ -22,7 +22,7 @@ typedef enum {
 	BEGIN, CALL, CONST, DO, ELSE, END, FOR, IF, ODD, PROCEDURE, PROGRAM, THEN, TO, VAR, WHILE
 } token_name;
 
-void lexical_analysis(FILE *in, FILE *out);
+void get_token(FILE *in, FILE *out);
 char *generate_token(char *token, char *lexeme, token_name n); // create a token composed of token_name and lexeme
 token_name is_keyword(char *s); // check keyword, not case-sensitive, return corresponding token_name or 0
 token_name is_binary(char *s); // check binary token
@@ -32,6 +32,10 @@ void charcpy(char *s, char c); // copy char and append null
 
 int main(int argc, char *argv[]) {
 	// <input_file_path> <output_file_path>
+	if ( argc != 3 ) {
+		printf("wrong args count!");
+		exit(EXIT_FAILURE);
+	}
 	FILE *f_in, *f_out;
 	f_out = fopen(argv[2], "w");
 	if (( f_in = fopen(argv[1], "r")) == NULL) {
@@ -39,27 +43,23 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	lexical_analysis(f_in, f_out);
+	get_token(f_in, f_out);
 
 	fclose(f_in);
 	fclose(f_out);
 	return 0;
 }
 
-void lexical_analysis(FILE *in, FILE *out) {
+void get_token(FILE *in, FILE *out) {
 	char lexeme[LEXEME_LENGTH], token[TOKEN_LENGTH], c = ' ';
 	token_name t_name;
 	while ( c != EOF) {
 		token[0] = 0;
 		while ( isspace(c)) c = (char) fgetc(in);
 		if ( isalpha(c)) {
-			int i;
 			charcpy(lexeme, c);
-			for ( i = 0; isalpha(lexeme[i]) || isdigit(lexeme[i]) || lexeme[i] == '_'; lexeme[++i] = (char) fgetc(in)
-					) {}
-			//
-			// parse
-			// word
+			int i = 0;
+			for ( ; isalpha(lexeme[i]) || isdigit(lexeme[i]) || lexeme[i] == '_'; lexeme[++i] = (char) fgetc(in)) {}
 			c = lexeme[i];
 			lexeme[i] = 0;
 			if (( t_name = is_keyword(lexeme))) {
@@ -68,9 +68,9 @@ void lexical_analysis(FILE *in, FILE *out) {
 				fputs(generate_token(token, lexeme, IDENT), out);
 			}
 		} else if ( isdigit(c)) {
-			int i;
 			charcpy(lexeme, c);
-			for ( i = 0; isdigit(lexeme[i]); lexeme[++i] = (char) fgetc(in)) {} // parse number
+			int i = 0;
+			for ( ; isdigit(lexeme[i]); lexeme[++i] = (char) fgetc(in)) {} // parse number
 			c = lexeme[i];
 			lexeme[i] = 0;
 			fputs(generate_token(token, lexeme, NUMBER), out);
