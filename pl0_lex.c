@@ -55,7 +55,11 @@ void lexical_analysis(FILE *in, FILE *out) {
 		if ( isalpha(c)) {
 			int i;
 			charcpy(lexeme, c);
-			for ( i = 0; isalpha(lexeme[i]); lexeme[++i] = (char) fgetc(in)) {} // parse word
+			for ( i = 0; isalpha(lexeme[i]) || isdigit(lexeme[i]) || lexeme[i] == '_'; lexeme[++i] = (char) fgetc(in)
+					) {}
+			//
+			// parse
+			// word
 			c = lexeme[i];
 			lexeme[i] = 0;
 			if (( t_name = is_keyword(lexeme))) {
