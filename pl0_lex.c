@@ -23,12 +23,12 @@ typedef enum {
 } token_name;
 
 void get_token(FILE *in, FILE *out);
-char *generate_token(char *token, char *lexeme, token_name n); // create a token composed of token_name and lexeme
-token_name is_keyword(char *s); // check keyword, not case-sensitive, return corresponding token_name or 0
-token_name is_binary(char *s); // check binary token
-token_name is_unary(char c); // check unary token
+char *generate_token(char *token, char *lexeme, token_name n); // create a token (string) of token_name and lexeme
+token_name is_keyword(char *s); // check keyword, not case-sensitive, return corresponding token_name if true
+token_name is_binary(char *s); // check binary token, return token_name if true
+token_name is_unary(char c); // check unary token, return token_name if true
 void strupp(char *s);  // uppercase string
-void charcpy(char *s, char c); // copy char and append null
+void charcpy(char *s, char c); // copy a single char and append null
 
 int main(int argc, char *argv[]) {
 	// <input_file_path> <output_file_path>
@@ -56,6 +56,7 @@ void get_token(FILE *in, FILE *out) {
 	while ( c != EOF) {
 		token[0] = 0;
 		while ( isspace(c)) c = (char) fgetc(in);
+		if(c == EOF) break;
 		if ( isalpha(c)) {
 			charcpy(lexeme, c);
 			int i = 0;
