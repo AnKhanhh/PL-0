@@ -1,7 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <ctype.h>
+#include <string.h>
+#include <stdio.h>
+
+
+#ifndef COMP_LEXER_H
+#define COMP_LEXER_H
+#endif
 
 #define LEXEME_LENGTH 64
 #define TOKEN_LENGTH 128
@@ -22,77 +26,12 @@ typedef enum {
 	BEGIN, CALL, CONST, DO, ELSE, END, FOR, IF, ODD, PROCEDURE, PROGRAM, THEN, TO, VAR, WHILE
 } token_name;
 
-void get_token(FILE *in, FILE *out);
 char *generate_token(char *token, char *lexeme, token_name n); // create a token (string) of token_name and lexeme
 token_name is_keyword(char *s); // check keyword, not case-sensitive, return corresponding token_name if true
 token_name is_binary(char *s); // check binary token, return token_name if true
 token_name is_unary(char c); // check unary token, return token_name if true
 void strupp(char *s);  // uppercase string
 void charcpy(char *s, char c); // copy a single char and append null
-
-int main(int argc, char *argv[]) {
-	// <input_file_path> <output_file_path>
-	if ( argc != 3 ) {
-		printf("wrong args count!");
-		exit(EXIT_FAILURE);
-	}
-	FILE *f_in, *f_out;
-	f_out = fopen(argv[2], "w");
-	if (( f_in = fopen(argv[1], "r")) == NULL) {
-		perror("fopen() failed");
-		exit(EXIT_FAILURE);
-	}
-
-	get_token(f_in, f_out);
-
-	fclose(f_in);
-	fclose(f_out);
-	return 0;
-}
-
-void get_token(FILE *in, FILE *out) {
-	char lexeme[LEXEME_LENGTH], token[TOKEN_LENGTH], c = ' ';
-	token_name t_name;
-	while ( c != EOF) {
-		token[0] = 0;
-		while ( isspace(c)) c = (char) fgetc(in);
-		if(c == EOF) break;
-		if ( isalpha(c)) {
-			charcpy(lexeme, c);
-			int i = 0;
-			for ( ; isalpha(lexeme[i]) || isdigit(lexeme[i]) || lexeme[i] == '_'; lexeme[++i] = (char) fgetc(in)) {}
-			c = lexeme[i];
-			lexeme[i] = 0;
-			if (( t_name = is_keyword(lexeme))) {
-				fputs(generate_token(token, lexeme, t_name), out);
-			} else {
-				fputs(generate_token(token, lexeme, IDENT), out);
-			}
-		} else if ( isdigit(c)) {
-			charcpy(lexeme, c);
-			int i = 0;
-			for ( ; isdigit(lexeme[i]); lexeme[++i] = (char) fgetc(in)) {} // parse number
-			c = lexeme[i];
-			lexeme[i] = 0;
-			fputs(generate_token(token, lexeme, NUMBER), out);
-		} else {
-			lexeme[0] = c;
-			charcpy(lexeme + 1, (char) fgetc(in));
-			if (( t_name = is_binary(lexeme))) {
-				fputs(generate_token(token, lexeme, t_name), out);
-				c = (char) fgetc(in);
-			} else if (( t_name = is_unary(c))) {
-				c = lexeme[1];
-				lexeme[1] = 0;
-				fputs(generate_token(token, lexeme, t_name), out);
-			} else {
-				c = lexeme[1];
-				lexeme[1] = 0;
-				fputs(generate_token(token, lexeme, NONE), out);
-			}
-		}
-	}
-}
 
 char *generate_token(char *token, char *lexeme, token_name n) {
 	int keyword_offset = sizeof(other_token) / 8 - 1;
