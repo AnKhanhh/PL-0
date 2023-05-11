@@ -7,10 +7,8 @@ void get_token(FILE *in, FILE *out) {
 	while ( c != EOF) {
 		token[0] = 0;
 		if ( isspace(c)) {
-			c = (char) fgetc(in);
-			continue;
-		}
-		if ( isalpha(c)) {
+			while ( isspace(c)) c = (char) fgetc(in);
+		} else if ( isalpha(c)) {
 			charcpy(lexeme, c);
 			int i = 0;
 			for ( ; isalpha(lexeme[i]) || isdigit(lexeme[i]) || lexeme[i] == '_'; lexeme[++i] = (char) fgetc(in)) {}
