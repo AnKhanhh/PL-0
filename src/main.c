@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "lexer.c"
+#include "parser.c"
 
 int main(int argc, char *argv[]) {
 	// <input_file_path> <output_file_path>
@@ -12,7 +13,7 @@ int main(int argc, char *argv[]) {
 	FILE *f_in, *f_out;
 	f_out = fopen(argv[2], "w");
 	if (( f_in = fopen(argv[1], "r")) == NULL) {
-		perror("fopen() failed");
+		perror("fopen");
 		exit(EXIT_FAILURE);
 	}
 

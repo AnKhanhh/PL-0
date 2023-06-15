@@ -1,4 +1,4 @@
-IDENT int
+VAR var
 IDENT x_1
 COMMA ,
 IDENT x_2

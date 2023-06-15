@@ -1,4 +1,4 @@
-int x_1, x_2, y_;
+var x_1, x_2, y_;
 
 begin
   x_1 := 3;
