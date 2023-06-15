@@ -36,10 +36,10 @@ void charcpy(char *s, char c); // copy a single char and append null
 char *generate_token(char *token, char *lexeme, token_name n) {
 	int keyword_offset = sizeof(other_token) / 8 - 1;
 	if ( n <= keyword_offset ) {
-		snprintf(token, TOKEN_LENGTH, "%s( %s )\n", other_token[n], lexeme);
+		snprintf(token, TOKEN_LENGTH, "%s %s\n", other_token[n], lexeme);
 		return token;
 	} else {
-		snprintf(token, TOKEN_LENGTH, "%s( %s )\n", keyword_token[n - keyword_offset], lexeme);
+		snprintf(token, TOKEN_LENGTH, "%s %s\n", keyword_token[n - keyword_offset], lexeme);
 		return token;
 	}
 }
