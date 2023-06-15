@@ -78,7 +78,7 @@ token_name is_keyword(char *s) {
 	strcpy(ss, s);
 	strupp(ss);
 	for ( int i = 1; i < sizeof(keyword_token) / 8; ++i ) {
-		if ( !strcmp(ss, keyword_token[i])) return i + 21; // enum offset
+		if ( !strcmp(ss, keyword_token[i])) return i + BEGIN - 1; // enum offset
 	}
 	return 0;
 }
