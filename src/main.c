@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lexer.c"
+#include "parser.h"
 
 #define INPUT_FILE_PATH "C:/Users/admin/CLionProjects/comp/input/input2.txt"
 #define LEXER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/l_output2.txt"
