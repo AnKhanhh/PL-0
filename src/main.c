@@ -1,25 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "lexer.c"
-#include "parser.c"
+
+#define INPUT_FILE_PATH "C:/Users/admin/CLionProjects/comp/input/input2.txt"
+#define LEXER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/l_output2.txt"
 
 int main(int argc, char *argv[]) {
-	// <input_file_path> <output_file_path>
-	if ( argc != 3 ) {
-		printf("wrong args count!");
+	FILE *f_in, *f_lexer;
+	if (( f_in = fopen(INPUT_FILE_PATH, "r")) == NULL) {
+		perror("fopen");
 		exit(EXIT_FAILURE);
 	}
-	FILE *f_in, *f_out;
-	f_out = fopen(argv[2], "w");
-	if (( f_in = fopen(argv[1], "r")) == NULL) {
+	if ( (f_lexer = fopen(LEXER_FILE_PATH, "r+")) == NULL) {
 		perror("fopen");
 		exit(EXIT_FAILURE);
 	}
 
-	get_token(f_in, f_out);
+	get_token(f_in, f_lexer);
 
 	fclose(f_in);
-	fclose(f_out);
+	fclose(f_lexer);
 	return 0;
 }
