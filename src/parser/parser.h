@@ -1,20 +1,25 @@
-#include "../lexer/lexer.h"
-
-//
+//	EBNF production list
+//	----------------------------------------------------------------------------------------------
 //	program = 'PROGRAM' ident ';' block '.'
-//	statement = ident  [ '[' expression ']' ]  ':=' expression	|
-//				'CALL'  ident  [ '('  expression  { ',' expression }  ')' ]	|	-keyword missing
-//				'BEGIN'  statement  { ';' statement }  'END'	|	-keyword missing
-//				i
-//				i
-//	condition = 'ODD' expression	|	-keyword missing
-//				expression  ('='|'#'|'<'|'<='|'>'|'>=')  expression
-//	factor = ident  { '[' expression ']' }  |  number  |  '(' expression ')'
+//	block = [	'CONST' ident '=' number  {',' ident '=' number}  ';'	]
+//			[	'VAR' ident {',' ident} ';'	]
+//			[	'PROCEDURE' ident  [ '(' ['VAR'] ident {';' ['VAR'] ident} ')' ]  ';' block ';'	]
+//			'BEGIN' statement {';' statement} 'END'
+//	statement = [	ident  [ '[' expression ']' ]  ':=' expression	|
+//					'CALL'  ident  [ '(' expression  {',' expression} ')' ]	|
+//					'BEGIN'  statement  {';' statement}  'END'	|
+//					'IF' condition 'THEN' statement 'ELSE' statement	|
+//					'WHILE' condition 'DO' statement	|
+//					'FOR'  ident ':=' expression 'TO' expression 'DO'	]
+//	condition = 'ODD' expression	|
+//				expression	('='|'#'|'<'|'<='|'>'|'>=')	expression
+//	factor = ident	{ '[' expression ']' }	|  number  |  '(' expression ')'
 //	expression = ['+'|'-'] term  { ('+'|'-')  term }
 //	term = factor  { ('*'|'%'|'/')  factor }
-//
+//	----------------------------------------------------------------------------------------------
 
 
+#include "../lexer/lexer.h"
 
 #define S_LEN 1024
 
