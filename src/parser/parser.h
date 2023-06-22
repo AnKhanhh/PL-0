@@ -12,7 +12,7 @@
 //					'WHILE' condition 'DO' statement	|
 //					'FOR'  ident ':=' expression 'TO' expression 'DO'	]
 //	condition = 'ODD' expression	|
-//				expression	('='|'#'|'<'|'<='|'>'|'>=')	expression
+//				expression	('='|'<'|'<='|'>'|'>='|'<>')	expression
 //	factor = ident	{ '[' expression ']' }	|  number  |  '(' expression ')'
 //	expression = ['+'|'-'] term  { ('+'|'-')  term }
 //	term = factor  { ('*'|'%'|'/')  factor }
