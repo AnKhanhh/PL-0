@@ -2,7 +2,8 @@
 #include <string.h>
 #include <stdio.h>
 
-
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 #ifndef COMP_LEXER_H
 #define COMP_LEXER_H
 #endif
@@ -11,12 +12,11 @@
 #define TOKEN_LENGTH 128
 
 // NUMBER should only be integer
-char *other_token[] = {"NONE", "IDENT", "NUMBER", "PLUS", "MINUS", "TIMES", "SLASH", "EQU",
-					   "NEQ", "LSS", "LEQ", "GTR", "GEQ", "LPARENT", "RPARENT", "LBRACK",
-					   "RBRACK", "PERIOD", "COMMA", "SEMICOLON", "ASSIGN", "PERCENT"
-};
-char *keyword_token[] = {"NONE", "BEGIN", "CALL", "CONST", "DO", "ELSE", "END", "FOR", "IF", "ODD",
-						 "PROCEDURE", "PROGRAM", "THEN", "TO", "VAR", "WHILE"
+char *tokens[] = {"NONE", "IDENT", "NUMBER", "PLUS", "MINUS", "TIMES", "SLASH", "EQU",
+				  "NEQ", "LSS", "LEQ", "GTR", "GEQ", "LPARENT", "RPARENT", "LBRACK",
+				  "RBRACK", "PERIOD", "COMMA", "SEMICOLON", "ASSIGN", "PERCENT", "BEGIN", "CALL",
+				  "CONST", "DO", "ELSE", "END", "FOR", "IF", "ODD", "PROCEDURE",
+				  "PROGRAM", "THEN", "TO", "VAR", "WHILE"
 };
 
 typedef enum {
@@ -30,18 +30,12 @@ char *generate_token(char *token, char *lexeme, token_name n); // create a token
 token_name is_keyword(char *s); // check keyword, not case-sensitive, return corresponding token_name if true
 token_name is_binary(char *s); // check binary token, return token_name if true
 token_name is_unary(char c); // check unary token, return token_name if true
-void strupp(char *s);  // uppercase string
-void charcpy(char *s, char c); // copy a single char and append null
+void str_up(char *s);  // uppercase string
+void char_cpy(char *s, char c); // copy a single char and append null
 
 char *generate_token(char *token, char *lexeme, token_name n) {
-	int keyword_offset = sizeof(other_token) / 8 - 1;
-	if ( n <= keyword_offset ) {
-		snprintf(token, TOKEN_LENGTH, "%s %s\n", other_token[n], lexeme);
+		snprintf(token, TOKEN_LENGTH, "%s %s\n", tokens[n], lexeme);
 		return token;
-	} else {
-		snprintf(token, TOKEN_LENGTH, "%s %s\n", keyword_token[n - keyword_offset], lexeme);
-		return token;
-	}
 }
 
 token_name is_unary(char c) {
@@ -76,18 +70,20 @@ token_name is_binary(char *s) {
 token_name is_keyword(char *s) {
 	char ss[LEXEME_LENGTH];
 	strcpy(ss, s);
-	strupp(ss);
-	for ( int i = 1; i < sizeof(keyword_token) / 8; ++i ) {
-		if ( !strcmp(ss, keyword_token[i])) return i + BEGIN - 1; // enum offset
+	str_up(ss);
+	for ( int i = BEGIN; i < sizeof(tokens) / sizeof(tokens[0]); ++i ) {
+		if ( !strcmp(ss, tokens[i])) return i;
 	}
 	return 0;
 }
 
-void charcpy(char *s, char c) {
+void char_cpy(char *s, char c) {
 	s[0] = c;
 	s[1] = 0;
 }
 
-void strupp(char *s) {
+void str_up(char *s) {
 	while (( *s = (char) toupper(*s))) s++;
 }
+
+#pragma clang diagnostic pop

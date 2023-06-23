@@ -19,7 +19,7 @@ void get_token(FILE *in, FILE *out) {
 			while ( isspace(c)) c = (char) fgetc(in);
 
 		} else if ( isalpha(c)) {
-			charcpy(lexeme, c);
+			char_cpy(lexeme, c);
 			int i = 0;
 			for ( ; isalpha(lexeme[i]) || isdigit(lexeme[i]) || lexeme[i] == '_'; lexeme[++i] = (char) fgetc(in)) {}
 			c = lexeme[i];
@@ -32,7 +32,7 @@ void get_token(FILE *in, FILE *out) {
 			}
 
 		} else if ( isdigit(c)) {
-			charcpy(lexeme, c);
+			char_cpy(lexeme, c);
 			int i = 0;
 			for ( ; isdigit(lexeme[i]); lexeme[++i] = (char) fgetc(in)) {} // parse number
 			c = lexeme[i];
@@ -41,7 +41,7 @@ void get_token(FILE *in, FILE *out) {
 
 		} else {
 			lexeme[0] = c;
-			charcpy(lexeme + 1, (char) fgetc(in));
+			char_cpy(lexeme + 1, (char) fgetc(in));
 			if (( t_name = is_binary(lexeme))) {
 				fputs(generate_token(token, lexeme, t_name), out);
 				c = (char) fgetc(in);

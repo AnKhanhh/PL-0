@@ -3,8 +3,8 @@
 #include "lexer/lexer.c"
 #include "parser/parser.h"
 
-#define INPUT_FILE_PATH "C:/Users/admin/CLionProjects/comp/input/input2.txt"
-#define LEXER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/l_output2.txt"
+#define INPUT_FILE_PATH "C:/Users/admin/CLionProjects/comp/input/input1.txt"
+#define LEXER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/l_output1.txt"
 
 int main(int argc, char *argv[]) {
 	FILE *f_in, *f_lexer;
