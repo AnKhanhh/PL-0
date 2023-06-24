@@ -234,7 +234,7 @@ int block(FILE *in, Symbol *sb, int *tc) {
 		next_symbol(in, sb, tc);
 		if ( sy_cmp(sb, tokens[IDENT])) {
 			next_symbol(in, sb, tc);
-			if ( sy_cmp(sb, tokens[ASSIGN])) {
+			if ( sy_cmp(sb, tokens[EQU])) {
 				next_symbol(in, sb, tc);
 				if ( sy_cmp(sb, tokens[NUMBER])) {
 					next_symbol(in, sb, tc);
@@ -254,61 +254,43 @@ int block(FILE *in, Symbol *sb, int *tc) {
 						next_symbol(in, sb, tc);
 					} else { printf("missing semicolon at %d \n", *tc); }
 				} else { printf("missing CONST value at %d \n", *tc); }
-			} else { printf("missing assignment operator at %d \n", *tc); }
+			} else { printf("const not assigned a value at %d \n", *tc); }
 		} else { printf("missing CONST name at %d \n", *tc); }
 	}
 	if ( sy_cmp(sb, tokens[VAR])) {
+		do {
+			next_symbol(in, sb, tc);
+			if ( sy_cmp(sb, tokens[IDENT])) {
+				next_symbol(in, sb, tc);
+				if ( sy_cmp(sb, tokens[LBRACK])) {
+					next_symbol(in, sb, tc);
+					if ( sy_cmp(sb, tokens[NUMBER])) {
+						next_symbol(in, sb, tc);
+						if ( sy_cmp(sb, tokens[RBRACK])) {
+							next_symbol(in, sb, tc);
+						} else { printf("missing bracket at %d \n", *tc); }
+					} else { printf("missing array index at %d \n", *tc); }
+				}
+			} else { printf("missing variable name at %d \n", *tc); }
+		} while ( sy_cmp(sb, tokens[COMMA]));
+		if ( sy_cmp(sb, tokens[SEMICOLON])) {
+			next_symbol(in, sb, tc);
+		} else { printf("semicolon missing at %d \n", *tc); }
+	}
+	if ( sy_cmp(sb, tokens[PROCEDURE])) {
 		next_symbol(in, sb, tc);
 		if ( sy_cmp(sb, tokens[IDENT])) {
 			next_symbol(in, sb, tc);
-			if ( sy_cmp(sb, tokens[LBRACK])) {
-				next_symbol(in, sb, tc);
-				if ( sy_cmp(sb, tokens[NUMBER])) {
-					next_symbol(in, sb, tc);
-					if ( sy_cmp(sb, tokens[RBRACK])) {
-						next_symbol(in, sb, tc);
-						while ( sy_cmp(sb, tokens[COMMA])) {
-							next_symbol(in, sb, tc);
-							if ( sy_cmp(sb, tokens[IDENT])) {
-								next_symbol(in, sb, tc);
-								if ( sy_cmp(sb, tokens[LBRACK])) {
-									next_symbol(in, sb, tc);
-									if ( sy_cmp(sb, tokens[NUMBER])) {
-										next_symbol(in, sb, tc);
-										if ( sy_cmp(sb, tokens[RBRACK])) {
-											next_symbol(in, sb, tc);
-										} else { printf("missing bracket at %d \n", *tc); }
-									} else { printf("missing array index at %d \n", *tc); }
-								}
-							} else { printf("missing variable name at %d \n", *tc); }
-						}
-						if ( sy_cmp(sb, tokens[SEMICOLON])) {
-							next_symbol(in, sb, tc);
-						} else { printf("semicolon missing at %d \n", *tc); }
-					} else { printf("missing bracket at %d \n", *tc); }
-				} else { printf("missing array index at %d \n", *tc); }
-			}
-		} else { printf("missing variable name at %d \n", *tc); }
-	}
-	if ( sy_cmp(sb, tokens[PROCEDURE])) {
-		if ( sy_cmp(sb, tokens[IDENT])) {
-			next_symbol(in, sb, tc);
 			if ( sy_cmp(sb, tokens[LPARENT])) {
-				next_symbol(in, sb, tc);
-				if ( sy_cmp(sb, tokens[VAR])) {
+				do {
 					next_symbol(in, sb, tc);
-				}
-				if ( sy_cmp(sb, tokens[IDENT])) {
-					next_symbol(in, sb, tc);
-				} else { printf("variable name missing at %d \n", *tc); }
-				while ( sy_cmp(sb, tokens[SEMICOLON])) {
 					if ( sy_cmp(sb, tokens[VAR])) {
 						next_symbol(in, sb, tc);
 					}
 					if ( sy_cmp(sb, tokens[IDENT])) {
 						next_symbol(in, sb, tc);
 					} else { printf("variable name missing at %d \n", *tc); }
-				}
+				} while ( sy_cmp(sb, tokens[SEMICOLON]));
 				if ( sy_cmp(sb, tokens[RPARENT])) {
 					next_symbol(in, sb, tc);
 				} else { printf("parentheses missing at %d \n", *tc); }
@@ -331,7 +313,9 @@ int block(FILE *in, Symbol *sb, int *tc) {
 			next_symbol(in, sb, tc);
 			return 1;
 		} else { printf("keyword END missing at %d \n", *tc); }
+		return 1;
 	} else { printf("keyword BEGIN missing at %d \n", *tc); }
+	return 0;
 }
 
 int program(FILE *in, Symbol *sb, int *tc) {
@@ -341,7 +325,7 @@ int program(FILE *in, Symbol *sb, int *tc) {
 			next_symbol(in, sb, tc);
 			if ( sy_cmp(sb, tokens[SEMICOLON])) {
 				next_symbol(in, sb, tc);
-				block(in,sb,tc);
+				block(in, sb, tc);
 				if ( sy_cmp(sb, tokens[PERIOD])) {
 					next_symbol(in, sb, tc);
 					return 1;
@@ -349,6 +333,7 @@ int program(FILE *in, Symbol *sb, int *tc) {
 			} else { printf("semicolon missing at %d \n", *tc); }
 		} else { printf("program name missing at %d \n", *tc); }
 	} else { printf("keyword PROGRAM missing at %d \n", *tc); }
+	return 0;
 }
 
 int sy_cmp(Symbol *sb, char *s) {
@@ -359,13 +344,14 @@ int next_symbol(FILE *in, Symbol *sb, int *tc) {
 	char line[1024];
 	if ( fgets(line, sizeof line, in) == NULL) {
 		return 0;
-	} else {
-		strncpy(sb->name, strtok(line, " "), TOKEN_LENGTH);
-		( *tc )++;    //	increment the token counter while parsing through token list
-		if ( sy_cmp(sb, tokens[IDENT]) ||
-			 sy_cmp(sb, tokens[NUMBER])) {
-			strcpy(sb->ident, strtok(NULL, " "));
-		}
-		return 1;
 	}
+	memset(sb, 0, sizeof(*sb));
+	strncpy(sb->name, strtok(line, " "), TOKEN_LENGTH);
+	( *tc )++;    //	increment the token counter while parsing through token list
+	if ( sy_cmp(sb, tokens[IDENT]) || sy_cmp(sb, tokens[NUMBER])) {
+		strncpy(sb->ident, strtok(NULL, " "), LEXEME_LENGTH);
+		*strchr(sb->ident, '\n') = 0;    //	remove trailing newline from file
+	}
+	return 1;
+
 }

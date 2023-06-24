@@ -1,5 +1,5 @@
 PROGRAM program
-IDENT AnKhanh
+IDENT input_1
 SEMICOLON ;
 CONST const
 IDENT z
@@ -31,7 +31,6 @@ ASSIGN :=
 IDENT x
 PLUS +
 NUMBER 1
-SEMICOLON ;
 END end
 SEMICOLON ;
 BEGIN begin
@@ -74,7 +73,9 @@ NUMBER 8
 TIMES *
 NUMBER 2
 RPARENT )
-SEMICOLON ;
+END end
+PERIOD .
+LON ;
 END end
 PERIOD .
 NT out

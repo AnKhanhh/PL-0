@@ -1,12 +1,12 @@
 #include "parser.h"
 
 void syntax_analysis(FILE *in) {
+	fseek(in,0,SEEK_SET);
+
 	int token_counter = 0;
-	int *tc = &token_counter;
-
 	Symbol symbol = {};
-	Symbol *sb = &symbol;
 
-	program(in, sb, tc);
+	next_symbol(in,&symbol, &token_counter);
+	program(in, &symbol, &token_counter);
 	puts("parsing complete!");
 }
