@@ -1,29 +1,19 @@
-const z = 15;
-var x, y;
+program AnKhanh;
+    const z = 15;
+    var x, y;
 
-procedure test;
-  var x, y;
-  begin
-    x := z;
-    y := x + 1;
-    out y;
-  end;
+    procedure test(var x; var y);
+      begin
+        x := z;
+        y := x + 1;
+      end;
 
-begin
-  call test;
+    begin
+      x := 2 * 2;
+      y := x - 1;
 
-  x := 2 * 2;
-  out x;
+      call test(x,y);
 
-  y := x - 1;
-  out y;
-
-  x := x / 2;
-  out x;
-
-  y := (z + 1) / (8 * 2);
-  out y;
-
-  out x+y*x;
-
+      x := x / 2;
+      y := (z + 1) / (8 * 2);
 end.
