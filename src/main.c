@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lexer/lexer.c"
-#include "parser/parser.h"
+#include "parser/parser.c"
 
 #define INPUT_FILE_PATH "C:/Users/admin/CLionProjects/comp/input/input1.txt"
 #define LEXER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/l_output1.txt"
@@ -17,7 +17,8 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	get_token(f_in, f_lexer);
+	lexical_analysis(f_in, f_lexer);
+	syntax_analysis(f_lexer);
 
 	fclose(f_in);
 	fclose(f_lexer);

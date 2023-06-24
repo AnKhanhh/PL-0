@@ -10,7 +10,7 @@
 //									 \___ check unary symbol ___ is not? -> illegal (NONE)
 //
 
-void get_token(FILE *in, FILE *out) {
+void lexical_analysis(FILE *in, FILE *out) {
 	char lexeme[LEXEME_LENGTH], token[TOKEN_LENGTH], c = ' ';
 	token_name t_name;
 	while ( c != EOF) {

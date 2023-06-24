@@ -2,8 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+
 #ifndef COMP_LEXER_H
 #define COMP_LEXER_H
 #endif
@@ -85,5 +84,3 @@ void char_cpy(char *s, char c) {
 void str_up(char *s) {
 	while (( *s = (char) toupper(*s))) s++;
 }
-
-#pragma clang diagnostic pop
