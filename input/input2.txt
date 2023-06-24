@@ -1,14 +1,17 @@
-var x_1, x_2, y_;
+program input2;
+    var x_1, x_2, y_;
 
-begin
-  x_1 := 3;
-  x_2 := 10;
-  if x_1 <= x_2 then
-    y_ := x_1 + x_2;
-  while x_1 < x_2 do
     begin
-      x_1 := x_1 + 1;
-      y_ := y_ + 3;
-    end;
-  y_ := x_1;
-end.
+    x_1 := 3;
+    x_2 := 10;
+    if x_1 <= x_2 then
+        y_ := x_1 + x_2;
+    while x_1 < x_2 do
+        begin
+            x_1 := x_1 + 1;
+            y_ := y_ + 3
+        end
+    ;
+    y_ := x_1
+    end
+.

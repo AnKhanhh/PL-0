@@ -18,8 +18,6 @@
 //	term = factor  { ('*'|'%'|'/')  factor }
 //	----------------------------------------------------------------------------------------------
 
-//	TODO: refactor while loops into do-while
-
 
 #include "../lexer/lexer.c"
 
@@ -47,9 +45,7 @@ int program(FILE *in, Symbol *sb, int *tc);
 
 int term(FILE *in, Symbol *sb, int *tc) {
 	factor(in, sb, tc);
-	while ( sy_cmp(sb, tokens[TIMES]) ||
-			sy_cmp(sb, tokens[SLASH]) ||
-			sy_cmp(sb, tokens[PERCENT])) {
+	while ( sy_cmp(sb, tokens[TIMES]) || sy_cmp(sb, tokens[SLASH]) || sy_cmp(sb, tokens[PERCENT])) {
 		next_symbol(in, sb, tc);
 		factor(in, sb, tc);
 	}
@@ -88,13 +84,9 @@ int factor(FILE *in, Symbol *sb, int *tc) {
 }
 
 int expression(FILE *in, Symbol *sb, int *tc) {
-	if ( sy_cmp(sb, tokens[PLUS]) ||
-		 sy_cmp(sb, tokens[MINUS])) {
-		next_symbol(in, sb, tc);
-	}
+	if ( sy_cmp(sb, tokens[PLUS]) || sy_cmp(sb, tokens[MINUS])) { next_symbol(in, sb, tc); }
 	term(in, sb, tc);
-	while ( sy_cmp(sb, tokens[PLUS]) ||
-			sy_cmp(sb, tokens[MINUS])) {
+	while ( sy_cmp(sb, tokens[PLUS]) || sy_cmp(sb, tokens[MINUS])) {
 		next_symbol(in, sb, tc);
 		term(in, sb, tc);
 	}
@@ -144,12 +136,10 @@ int statement(FILE *in, Symbol *sb, int *tc) {
 		if ( sy_cmp(sb, tokens[IDENT])) {
 			next_symbol(in, sb, tc);
 			if ( sy_cmp(sb, tokens[LPARENT])) {
-				next_symbol(in, sb, tc);
-				expression(in, sb, tc);
-				while ( sy_cmp(sb, tokens[COMMA])) {
+				do {
 					next_symbol(in, sb, tc);
 					expression(in, sb, tc);
-				}
+				} while ( sy_cmp(sb, tokens[COMMA]));
 				if ( sy_cmp(sb, tokens[RPARENT])) {
 					next_symbol(in, sb, tc);
 				} else {
@@ -159,12 +149,10 @@ int statement(FILE *in, Symbol *sb, int *tc) {
 			}
 		}
 	} else if ( sy_cmp(sb, tokens[BEGIN])) {
-		next_symbol(in, sb, tc);
-		statement(in, sb, tc);
-		while ( sy_cmp(sb, tokens[SEMICOLON])) {
+		do {
 			next_symbol(in, sb, tc);
 			statement(in, sb, tc);
-		}
+		} while ( sy_cmp(sb, tokens[SEMICOLON]));
 		if ( sy_cmp(sb, tokens[END])) {
 			next_symbol(in, sb, tc);
 		} else {
@@ -231,31 +219,20 @@ int statement(FILE *in, Symbol *sb, int *tc) {
 
 int block(FILE *in, Symbol *sb, int *tc) {
 	if ( sy_cmp(sb, tokens[CONST])) {
-		next_symbol(in, sb, tc);
-		if ( sy_cmp(sb, tokens[IDENT])) {
+		do {
 			next_symbol(in, sb, tc);
-			if ( sy_cmp(sb, tokens[EQU])) {
+			if ( sy_cmp(sb, tokens[IDENT])) {
 				next_symbol(in, sb, tc);
-				if ( sy_cmp(sb, tokens[NUMBER])) {
+				if ( sy_cmp(sb, tokens[EQU])) {
 					next_symbol(in, sb, tc);
-					while ( sy_cmp(sb, tokens[COMMA])) {
-						next_symbol(in, sb, tc);
-						if ( sy_cmp(sb, tokens[IDENT])) {
-							next_symbol(in, sb, tc);
-							if ( sy_cmp(sb, tokens[ASSIGN])) {
-								next_symbol(in, sb, tc);
-								if ( sy_cmp(sb, tokens[NUMBER])) {
-									next_symbol(in, sb, tc);
-								} else { printf("missing CONST value at %d \n", *tc); }
-							} else { printf("missing assignment operator at %d \n", *tc); }
-						} else { printf("missing CONST name at %d \n", *tc); }
-					}
-					if ( sy_cmp(sb, tokens[SEMICOLON])) {
-						next_symbol(in, sb, tc);
-					} else { printf("missing semicolon at %d \n", *tc); }
-				} else { printf("missing CONST value at %d \n", *tc); }
-			} else { printf("const not assigned a value at %d \n", *tc); }
-		} else { printf("missing CONST name at %d \n", *tc); }
+					if ( sy_cmp(sb, tokens[NUMBER])) { next_symbol(in, sb, tc); }
+					else { printf("missing CONST value at %d \n", *tc); }
+				} else { printf("missing equal operator at %d \n", *tc); }
+			} else { printf("missing CONST name at %d \n", *tc); }
+		} while ( sy_cmp(sb, tokens[COMMA]));
+		if ( sy_cmp(sb, tokens[SEMICOLON])) {
+			next_symbol(in, sb, tc);
+		} else { printf("missing semicolon at %d \n", *tc); }
 	}
 	if ( sy_cmp(sb, tokens[VAR])) {
 		do {

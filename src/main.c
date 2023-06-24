@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	lexical_analysis(f_in, f_lexer);
-//	syntax_analysis(f_lexer);
+	syntax_analysis(f_lexer);
 
 	fclose(f_in);
 	fclose(f_lexer);
