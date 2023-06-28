@@ -319,16 +319,12 @@ int sy_cmp(Symbol *sb, char *s) {
 
 int next_symbol(FILE *in, Symbol *sb, int *tc) {
 	char line[1024];
-	if ( fgets(line, sizeof line, in) == NULL) {
-		return 0;
-	}
+	if ( fgets(line, sizeof line, in) == NULL) { return 0; }
 	memset(sb, 0, sizeof(*sb));
 	strncpy(sb->name, strtok(line, " "), TOKEN_LENGTH);
 	( *tc )++;    //	increment the token counter while parsing through token list
 	if ( sy_cmp(sb, tokens[IDENT]) || sy_cmp(sb, tokens[NUMBER])) {
-		strncpy(sb->ident, strtok(NULL, " "), LEXEME_LENGTH);
-		*strchr(sb->ident, '\n') = 0;    //	remove trailing newline from file
+		strncpy(sb->ident, strtok(NULL, " \n"), LEXEME_LENGTH);
 	}
 	return 1;
-
 }

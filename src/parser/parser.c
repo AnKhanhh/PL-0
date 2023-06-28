@@ -1,6 +1,6 @@
 #include "parser.h"
 
-void syntax_analysis(FILE *in) {
+void syntax_analysis(FILE *in, FILE *out) {
 	fseek(in,0,SEEK_SET);
 
 	int token_counter = 0;
