@@ -17,14 +17,17 @@
 //	expression = ['+'|'-'] term  { ('+'|'-')  term }
 //	term = factor  { ('*'|'%'|'/')  factor }
 //	----------------------------------------------------------------------------------------------
-
+//	TODO: return values of symbol functions are not consistent
+//	TODO: add a function to handles error, and another to accept terminal symbols
 
 #include "../lexer/lexer.c"
 
+#define SYMBOL_LENGTH 32
+
 typedef struct {
-	char name[TOKEN_LENGTH];
+	char name[SYMBOL_LENGTH];
 	char ident[LEXEME_LENGTH];
-} Symbol;    //	represents either a terminal or non-terminal symbol
+} Symbol;    //	terminal or non-terminal symbol
 
 //struct SymbolStack {
 //	Symbol symbols[TOKEN_LENGTH];
@@ -60,10 +63,7 @@ int factor(FILE *in, Symbol *sb, int *tc) {
 			expression(in, sb, tc);
 			if ( sy_cmp(sb, tokens[RBRACK])) {
 				next_symbol(in, sb, tc);
-			} else {
-				printf("right bracket missing at %d \n", *tc);
-				return 0;
-			}
+			} else {printf("right bracket missing at %d \n", *tc);}
 		}
 	} else if ( sy_cmp(sb, tokens[NUMBER])) {
 		next_symbol(in, sb, tc);
@@ -72,14 +72,8 @@ int factor(FILE *in, Symbol *sb, int *tc) {
 		expression(in, sb, tc);
 		if ( sy_cmp(sb, tokens[RPARENT])) {
 			next_symbol(in, sb, tc);
-		} else {
-			printf("right parentheses missing at %d \n", *tc);
-			return 0;
-		}
-	} else {
-		printf("<factor> - illegal production at %d \n", *tc);
-		return 0;
-	}
+		} else {printf("right parentheses missing at %d \n", *tc);}
+	} else {printf("<factor> - illegal production at %d \n", *tc);}
 	return 1;
 }
 
@@ -196,23 +190,10 @@ int statement(FILE *in, Symbol *sb, int *tc) {
 					if ( sy_cmp(sb, tokens[DO])) {
 						next_symbol(in, sb, tc);
 						statement(in, sb, tc);
-					} else {
-						printf("missing keyword TO at %d \n", *tc);
-						return 0;
-					}
-				} else {
-					printf("missing keyword TO at %d \n", *tc);
-					return 0;
-				}
-
-			} else {
-				printf("missing assignment operator at %d \n", *tc);
-				return 0;
-			}
-		} else {
-			printf("missing iterator at %d \n", *tc);
-			return 0;
-		}
+					} else { printf("missing keyword TO at %d \n", *tc); }
+				} else { printf("missing keyword TO at %d \n", *tc); }
+			} else { printf("missing assignment operator at %d \n", *tc); }
+		} else { printf("missing iterator at %d \n", *tc); }
 	}
 	return 1;
 }
@@ -314,6 +295,7 @@ int program(FILE *in, Symbol *sb, int *tc) {
 }
 
 int sy_cmp(Symbol *sb, char *s) {
+//	int result = !strcmp(sb->name, s);
 	return !strcmp(sb->name, s);
 }
 
