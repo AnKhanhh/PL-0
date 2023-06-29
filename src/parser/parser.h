@@ -20,23 +20,26 @@
 //	TODO: return values of symbol functions are not consistent
 //	TODO: add a function to handles error, and another to accept terminal symbols
 
+#include <stdlib.h>
 #include "../lexer/lexer.c"
 
 #define SYMBOL_LENGTH 32
 
+typedef union {
+	char ident[LEXEME_LENGTH];
+	long value;
+} sb_value;    //	for use in 
+
 typedef struct {
 	char name[SYMBOL_LENGTH];
-	char ident[LEXEME_LENGTH];
+	sb_value tag;
 } Symbol;    //	terminal or non-terminal symbol
 
-//struct SymbolStack {
-//	Symbol symbols[TOKEN_LENGTH];
-//	int depth;
-//};
-
-int next_symbol(FILE *in, Symbol *sb, int *tc); // generate a sb from formatted token list, returns 0 on failure
-// all parser function have to read next symbol everytime accepting a terminal symbol
+//	on recognizing a terminal symbol, returns 1 and call next_symbol()
+int accept_terminal(FILE *in, Symbol *sb, int *tc, char *s);
 int sy_cmp(Symbol *sb, char *s);    // strcmp wrapper
+//	reads a Symbol from the token list file, returns 0 on failure
+int next_symbol(FILE *in, Symbol *sb, int *tc);
 
 int term(FILE *in, Symbol *sb, int *tc);
 int factor(FILE *in, Symbol *sb, int *tc);
@@ -294,8 +297,12 @@ int program(FILE *in, Symbol *sb, int *tc) {
 	return 0;
 }
 
+int accept_terminal(FILE *in, Symbol *sb, int *tc, char *s) {
+	if ( sy_cmp(sb, s) && next_symbol(in, sb, tc)) { return 1; }
+	else { return 0; }
+}
+
 int sy_cmp(Symbol *sb, char *s) {
-//	int result = !strcmp(sb->name, s);
 	return !strcmp(sb->name, s);
 }
 
@@ -305,8 +312,10 @@ int next_symbol(FILE *in, Symbol *sb, int *tc) {
 	memset(sb, 0, sizeof(*sb));
 	strncpy(sb->name, strtok(line, " "), TOKEN_LENGTH);
 	( *tc )++;    //	increment the token counter while parsing through token list
-	if ( sy_cmp(sb, tokens[IDENT]) || sy_cmp(sb, tokens[NUMBER])) {
-		strncpy(sb->ident, strtok(NULL, " \n"), LEXEME_LENGTH);
+	if ( sy_cmp(sb, tokens[IDENT])) {
+		strncpy(sb->tag.ident, strtok(NULL, " \n"), LEXEME_LENGTH);
+	} else if ( sy_cmp(sb, tokens[NUMBER])) {
+		strtol(strtok(NULL, " \n"), NULL, 10);
 	}
 	return 1;
 }
