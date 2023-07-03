@@ -17,109 +17,105 @@
 //	expression = ['+'|'-'] term  { ('+'|'-')  term }
 //	term = factor  { ('*'|'%'|'/')  factor }
 //	----------------------------------------------------------------------------------------------
-//	TODO: return values of symbol functions are not consistent
-//	TODO: add a function to handles error, and another to accept terminal symbols
 
 #include <stdlib.h>
-#include "../lexer/lexer.c"
+#include "../semanlyzr/var_stack.h"
 
 #define SYMBOL_LENGTH 32
 
-typedef union {
-	char ident[LEXEME_LENGTH];
-	long value;
-} SymbolTag;
-
 typedef struct {
 	char name[SYMBOL_LENGTH];
-	SymbolTag tag;
-} Symbol;    //	terminal or non-terminal symbol
+	union {
+		char ident[LEXEME_LENGTH];
+		long long value;
+	} tag;
+} Symbol;    //	terminal or non-terminal
 
 //	on recognizing a terminal symbol, returns 1 and call next_symbol()
 int accept_terminal(FILE *in, Symbol *sb, int *tc, char *s);
 //	reads a Symbol from the token list file, returns 0 on failure
 int next_symbol(FILE *in, Symbol *sb, int *tc);
 
-void term(FILE *in, Symbol *sb, int *tc);
-void factor(FILE *in, Symbol *sb, int *tc);
-int expression(FILE *in, Symbol *sb, int *tc);
-int condition(FILE *in, Symbol *sb, int *tc);
-int statement(FILE *in, Symbol *sb, int *tc);
-int block(FILE *in, Symbol *sb, int *tc);
-int program(FILE *in, Symbol *sb, int *tc);
+void term(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset);
+void factor(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset);
+void expression(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset);
+void condition(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset);
+void statement(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset);
+void block(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset);
+void program(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset);
 
-void term(FILE *in, Symbol *sb, int *tc) {
-	factor(in, sb, tc);
+void term(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
+	int cur_offset = offset;
+	factor(in, sb, tc, pvs, cur_offset);
 	while ( accept_terminal(in, sb, tc, tokens[TIMES]) ||
 			accept_terminal(in, sb, tc, tokens[SLASH]) ||
 			accept_terminal(in, sb, tc, tokens[PERCENT])) {
-		factor(in, sb, tc);
+		factor(in, sb, tc, pvs, cur_offset);
 	}
 }
 
-void factor(FILE *in, Symbol *sb, int *tc) {
+void factor(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
+	int cur_offset = offset;
+	Symbol sb_holder = *sb;
 	if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
 		if ( accept_terminal(in, sb, tc, tokens[LBRACK])) {
-			expression(in, sb, tc);
+			semantic_evl(*tc - 2, pvs, cur_offset, sb_holder.tag.ident, true);
+			expression(in, sb, tc, pvs, cur_offset);
 			if ( accept_terminal(in, sb, tc, tokens[RBRACK])) {
 			} else { printf("right bracket missing at %d \n", *tc); }
-		}
+		} else { semantic_evl(*tc - 1, pvs, cur_offset, sb_holder.tag.ident, false); }
 	} else if ( accept_terminal(in, sb, tc, tokens[NUMBER])) {
 	} else if ( accept_terminal(in, sb, tc, tokens[LPARENT])) {
-		expression(in, sb, tc);
+		expression(in, sb, tc, pvs, cur_offset);
 		if ( accept_terminal(in, sb, tc, tokens[RPARENT])) {
 		} else { printf("right parentheses missing at %d \n", *tc); }
 	} else { printf("<factor> - illegal production at %d \n", *tc); }
-	return 1;
 }
 
-int expression(FILE *in, Symbol *sb, int *tc) {
+void expression(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
+	int cur_offset = offset;
 	if ( accept_terminal(in, sb, tc, tokens[PLUS]) || accept_terminal(in, sb, tc, tokens[MINUS])) {
 	}
-	term(in, sb, tc);
+	term(in, sb, tc, pvs, cur_offset);
 	while ( accept_terminal(in, sb, tc, tokens[PLUS]) || accept_terminal(in, sb, tc, tokens[MINUS])) {
-		term(in, sb, tc);
+		term(in, sb, tc, pvs, cur_offset);
 	}
-	return 1;
 }
 
-int condition(FILE *in, Symbol *sb, int *tc) {
+void condition(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
+	int cur_offset = offset;
 	if ( accept_terminal(in, sb, tc, tokens[ODD])) {
-		expression(in, sb, tc);
+		expression(in, sb, tc, pvs, cur_offset);
 	} else {
-		expression(in, sb, tc);
+		expression(in, sb, tc, pvs, cur_offset);
 		if ( accept_terminal(in, sb, tc, tokens[EQU]) || accept_terminal(in, sb, tc, tokens[GTR]) ||
 			 accept_terminal(in, sb, tc, tokens[GEQ]) || accept_terminal(in, sb, tc, tokens[NEQ]) ||
 			 accept_terminal(in, sb, tc, tokens[LSS]) || accept_terminal(in, sb, tc, tokens[LEQ])) {
-			expression(in, sb, tc);
-		} else {
-			printf("missing comparison operator at %d", *tc);
-			return 0;
-		}
+			expression(in, sb, tc, pvs, cur_offset);
+		} else { printf("missing comparison operator at %d", *tc); }
 	}
-	return 1;
 }
 
-int statement(FILE *in, Symbol *sb, int *tc) {
+void statement(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
+	int cur_offset = offset;
+	Symbol sb_holder = *sb;
 	if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
 		if ( accept_terminal(in, sb, tc, tokens[RBRACK])) {
-			expression(in, sb, tc);
+			semantic_evk(*tc - 2, pvs, offset, cur_offset, sb_holder.tag.ident, ARR);
+			expression(in, sb, tc, pvs, cur_offset);
 			if ( accept_terminal(in, sb, tc, tokens[LBRACK])) {
-			} else {
-				printf("missing bracket at %d \n", *tc);
-				return 0;
-			}
-		}
+			} else { printf("missing bracket at %d \n", *tc); }
+		} else { semantic_evk(*tc - 1, pvs, offset, cur_offset, sb_holder.tag.ident, MUTE); }
 		if ( accept_terminal(in, sb, tc, tokens[ASSIGN])) {
-			expression(in, sb, tc);
-		} else {
-			printf("missing assignment operator at %d", *tc);
-		}
+			expression(in, sb, tc, pvs, cur_offset);
+		} else { printf("missing assignment operator at %d", *tc); }
 	} else if ( accept_terminal(in, sb, tc, tokens[CALL])) {
+		sb_holder = *sb;
 		if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
+			semantic_evk(*tc - 1, pvs, offset, cur_offset, sb_holder.tag.ident, FUNC);
 			if ( accept_terminal(in, sb, tc, tokens[LPARENT])) {
 				do {
-					expression(in, sb, tc);
+					expression(in, sb, tc, pvs, cur_offset);
 				} while ( accept_terminal(in, sb, tc, tokens[COMMA]));
 				if ( accept_terminal(in, sb, tc, tokens[RPARENT])) {
 				} else { printf("missing parentheses at %d \n", *tc); }
@@ -127,49 +123,48 @@ int statement(FILE *in, Symbol *sb, int *tc) {
 		}
 	} else if ( accept_terminal(in, sb, tc, tokens[BEGIN])) {
 		do {
-			statement(in, sb, tc);
+			statement(in, sb, tc, pvs, cur_offset);
 		} while ( accept_terminal(in, sb, tc, tokens[SEMICOLON]));
 		if ( accept_terminal(in, sb, tc, tokens[END])) {
-		} else {
-			printf("missing keyword END at %d", *tc);
-			return 0;
-		}
+		} else { printf("missing keyword END at %d", *tc); }
 	} else if ( accept_terminal(in, sb, tc, tokens[IF])) {
-		condition(in, sb, tc);
+		condition(in, sb, tc, pvs, cur_offset);
 		if ( accept_terminal(in, sb, tc, tokens[THEN])) {
-			statement(in, sb, tc);
+			statement(in, sb, tc, pvs, cur_offset);
 		} else { printf("missing keyword THEN at %d \n", *tc); }
 		if ( accept_terminal(in, sb, tc, tokens[ELSE])) {
-			statement(in, sb, tc);
+			statement(in, sb, tc, pvs, cur_offset);
 		}
 	} else if ( accept_terminal(in, sb, tc, tokens[WHILE])) {
-		condition(in, sb, tc);
+		condition(in, sb, tc, pvs, cur_offset);
 		if ( accept_terminal(in, sb, tc, tokens[DO])) {
-			statement(in, sb, tc);
-		} else {
-			printf(" missing keyword DO at %d \n", *tc);
-			return 0;
-		}
+			statement(in, sb, tc, pvs, cur_offset);
+		} else { printf(" missing keyword DO at %d \n", *tc); }
 	} else if ( accept_terminal(in, sb, tc, tokens[FOR])) {
+		sb_holder = *sb;
 		if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
+			semantic_evk(*tc - 1, pvs, offset, cur_offset, sb_holder.tag.ident, MUTE);
 			if ( accept_terminal(in, sb, tc, tokens[ASSIGN])) {
-				expression(in, sb, tc);
+				expression(in, sb, tc, pvs, cur_offset);
 				if ( accept_terminal(in, sb, tc, tokens[TO])) {
-					expression(in, sb, tc);
+					expression(in, sb, tc, pvs, cur_offset);
 					if ( accept_terminal(in, sb, tc, tokens[DO])) {
-						statement(in, sb, tc);
+						statement(in, sb, tc, pvs, cur_offset);
 					} else { printf("missing keyword TO at %d \n", *tc); }
 				} else { printf("missing keyword TO at %d \n", *tc); }
 			} else { printf("missing assignment operator at %d \n", *tc); }
 		} else { printf("missing iterator at %d \n", *tc); }
 	}
-	return 1;
 }
 
-int block(FILE *in, Symbol *sb, int *tc) {
+void block(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
+	int cur_offset = offset;
+	Symbol sb_holder;
 	if ( accept_terminal(in, sb, tc, tokens[CONST])) {
 		do {
+			sb_holder = *sb;
 			if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
+				semantic_dcl(*tc - 1, pvs, offset, &cur_offset, sb_holder.tag.ident, IMM);
 				if ( accept_terminal(in, sb, tc, tokens[EQU])) {
 					if ( accept_terminal(in, sb, tc, tokens[NUMBER])) {}
 					else { printf("missing CONST value at %d \n", *tc); }
@@ -181,12 +176,16 @@ int block(FILE *in, Symbol *sb, int *tc) {
 	}
 	if ( accept_terminal(in, sb, tc, tokens[VAR])) {
 		do {
+			sb_holder = *sb;
 			if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
 				if ( accept_terminal(in, sb, tc, tokens[LBRACK])) {
+					semantic_dcl(*tc - 2, pvs, offset, &cur_offset, sb_holder.tag.ident, ARR);
 					if ( accept_terminal(in, sb, tc, tokens[NUMBER])) {
 						if ( accept_terminal(in, sb, tc, tokens[RBRACK])) {
 						} else { printf("missing bracket at %d \n", *tc); }
 					} else { printf("missing array index at %d \n", *tc); }
+				} else {
+					semantic_dcl(*tc - 1, pvs, offset, &cur_offset, sb_holder.tag.ident, MUTE);
 				}
 			} else { printf("missing variable name at %d \n", *tc); }
 		} while ( accept_terminal(in, sb, tc, tokens[COMMA]));
@@ -194,19 +193,22 @@ int block(FILE *in, Symbol *sb, int *tc) {
 		} else { printf("semicolon missing at %d \n", *tc); }
 	}
 	if ( accept_terminal(in, sb, tc, tokens[PROCEDURE])) {
+		sb_holder = *sb;
 		if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
+			semantic_dcl(*tc - 1, pvs, offset, &cur_offset, sb_holder.tag.ident, FUNC);
 			if ( accept_terminal(in, sb, tc, tokens[LPARENT])) {
 				do {
-					if ( accept_terminal(in, sb, tc, tokens[VAR])) {
-					}
+					if ( accept_terminal(in, sb, tc, tokens[VAR])) {}
+					sb_holder = *sb;
 					if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
+						semantic_dcl(*tc - 1, pvs, offset, &cur_offset, sb_holder.tag.ident, MUTE);
 					} else { printf("variable name missing at %d \n", *tc); }
 				} while ( accept_terminal(in, sb, tc, tokens[SEMICOLON]));
 				if ( accept_terminal(in, sb, tc, tokens[RPARENT])) {
 				} else { printf("parentheses missing at %d \n", *tc); }
 			}
 			if ( accept_terminal(in, sb, tc, tokens[SEMICOLON])) {
-				block(in, sb, tc);
+				block(in, sb, tc, pvs, cur_offset);
 				if ( accept_terminal(in, sb, tc, tokens[SEMICOLON])) {
 				} else { printf("semicolon missing at %d \n", *tc); }
 			} else { printf("semicolon missing at %d \n", *tc); }
@@ -214,28 +216,27 @@ int block(FILE *in, Symbol *sb, int *tc) {
 	}
 	if ( accept_terminal(in, sb, tc, tokens[BEGIN])) {
 		do {
-			statement(in, sb, tc);
+			statement(in, sb, tc, pvs, cur_offset);
 		} while ( accept_terminal(in, sb, tc, tokens[SEMICOLON]));
 		if ( accept_terminal(in, sb, tc, tokens[END])) {
-			return 1;
 		} else { printf("keyword END missing at %d \n", *tc); }
-		return 1;
 	} else { printf("keyword BEGIN missing at %d \n", *tc); }
-	return 0;
 }
 
-int program(FILE *in, Symbol *sb, int *tc) {
+void program(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
+	int cur_offset = offset;
+	Symbol sb_holder;
 	if ( accept_terminal(in, sb, tc, tokens[PROGRAM])) {
+		sb_holder = *sb;
 		if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
+			push_vs(pvs, &cur_offset, PRG, sb_holder.tag.ident);
 			if ( accept_terminal(in, sb, tc, tokens[SEMICOLON])) {
-				block(in, sb, tc);
+				block(in, sb, tc, pvs, cur_offset);
 				if ( accept_terminal(in, sb, tc, tokens[PERIOD])) {
-					return 1;
 				} else { printf("program terminating symbol missing at %d \n", *tc); }
 			} else { printf("semicolon missing at %d \n", *tc); }
 		} else { printf("program name missing at %d \n", *tc); }
 	} else { printf("keyword PROGRAM missing at %d \n", *tc); }
-	return 0;
 }
 
 int accept_terminal(FILE *in, Symbol *sb, int *tc, char *s) {
@@ -257,7 +258,7 @@ int next_symbol(FILE *in, Symbol *sb, int *tc) {
 	if ( !strcmp(sb->name, tokens[IDENT])) {
 		strncpy(sb->tag.ident, strtok(NULL, " \n"), LEXEME_LENGTH);
 	} else if ( !strcmp(sb->name, tokens[NUMBER])) {
-		strtol(strtok(NULL, " \n"), NULL, 10);
+		strtoll(strtok(NULL, " \n"), NULL, 10);
 	}
 	return 1;
 }

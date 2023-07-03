@@ -7,10 +7,9 @@
 #define COMP_LEXER_H
 #endif
 
-#define LEXEME_LENGTH 64
+#define LEXEME_LENGTH 32
 #define TOKEN_LENGTH 128
 
-// NUMBER should only be integer
 char *tokens[] = {"NONE", "IDENT", "NUMBER", "PLUS", "MINUS", "TIMES", "SLASH", "EQU",
 				  "NEQ", "LSS", "LEQ", "GTR", "GEQ", "LPARENT", "RPARENT", "LBRACK",
 				  "RBRACK", "PERIOD", "COMMA", "SEMICOLON", "ASSIGN", "PERCENT", "BEGIN", "CALL",
@@ -33,7 +32,7 @@ void str_up(char *s);  // uppercase string
 void char_cpy(char *s, char c); // copy a single char and append null
 
 char *generate_token(char *token, char *lexeme, token_name n) {
-		snprintf(token, TOKEN_LENGTH, "%s %s\n", tokens[n], lexeme);
+		snprintf(token, TOKEN_LENGTH, "%-16s %s\n", tokens[n], lexeme);
 		return token;
 }
 

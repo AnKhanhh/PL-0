@@ -21,7 +21,9 @@ void lexical_analysis(FILE *in, FILE *out) {
 		} else if ( isalpha(c)) {
 			char_cpy(lexeme, c);
 			int i = 0;
-			for ( ; isalpha(lexeme[i]) || isdigit(lexeme[i]) || lexeme[i] == '_'; lexeme[++i] = (char) fgetc(in)) {}
+			while (( isalpha(lexeme[i]) || isdigit(lexeme[i]) || lexeme[i] == '_' ) && i < sizeof lexeme) {
+				lexeme[++i] = (char) fgetc(in);
+			}
 			c = lexeme[i];
 			lexeme[i] = 0;
 
@@ -34,7 +36,9 @@ void lexical_analysis(FILE *in, FILE *out) {
 		} else if ( isdigit(c)) {
 			char_cpy(lexeme, c);
 			int i = 0;
-			for ( ; isdigit(lexeme[i]); lexeme[++i] = (char) fgetc(in)) {} // parse number
+			while ( isdigit(lexeme[i]) && i < sizeof lexeme ) {
+				lexeme[++i] = (char) fgetc(in);
+			}
 			c = lexeme[i];
 			lexeme[i] = 0;
 			fputs(generate_token(token, lexeme, NUMBER), out);
