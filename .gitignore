@@ -1,5 +1,6 @@
 # Project exclude paths
 /cmake-build-debug/
 /cmake-build-default/
+/cmake-build-debug-alt/
 CMakeLists.txt
 /.idea
