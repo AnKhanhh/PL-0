@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "parser_stack.h"
 
 void syntax_analysis(FILE *in, FILE *out) {
 	fseek(in,0,SEEK_SET);

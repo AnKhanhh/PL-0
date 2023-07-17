@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include "parser/parser.c"
+#include "parser/parser_stack.c"
 
-#define INPUT_FILE_PATH "C:/Users/admin/CLionProjects/comp/input/input1.txt"
-#define LEXER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/l_output1.txt"
-#define PARSER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/p_output1.txt"
+#define INPUT_FILE_PATH "C:/Users/admin/CLionProjects/comp/input/input2.txt"
+#define LEXER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/l_output2.txt"
+#define PARSER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/p_output2.txt"
 
 int main() {
 	FILE *f_in, *f_lexer, *f_parser;

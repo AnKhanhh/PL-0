@@ -19,7 +19,7 @@
 //	----------------------------------------------------------------------------------------------
 
 #include <stdlib.h>
-#include "../semanlyzr/var_stack.h"
+#include "../semanlyzr/symbol_stack.h"
 
 #define SYMBOL_LENGTH 32
 
@@ -45,77 +45,72 @@ void block(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset);
 void program(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset);
 
 void term(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
-	int cur_offset = offset;
-	factor(in, sb, tc, pvs, cur_offset);
+	factor(in, sb, tc, pvs, offset);
 	while ( accept_terminal(in, sb, tc, tokens[TIMES]) ||
 			accept_terminal(in, sb, tc, tokens[SLASH]) ||
 			accept_terminal(in, sb, tc, tokens[PERCENT])) {
-		factor(in, sb, tc, pvs, cur_offset);
+		factor(in, sb, tc, pvs, offset);
 	}
 }
 
 void factor(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
-	int cur_offset = offset;
 	Symbol sb_holder = *sb;
 	if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
 		if ( accept_terminal(in, sb, tc, tokens[LBRACK])) {
-			semantic_evl(*tc - 2, pvs, cur_offset, sb_holder.tag.ident, true);
-			expression(in, sb, tc, pvs, cur_offset);
+			semantic_evl(*tc - 2, pvs, offset, sb_holder.tag.ident, true);
+			expression(in, sb, tc, pvs, offset);
 			if ( accept_terminal(in, sb, tc, tokens[RBRACK])) {
 			} else { printf("right bracket missing at %d \n", *tc); }
-		} else { semantic_evl(*tc - 1, pvs, cur_offset, sb_holder.tag.ident, false); }
+		} else { semantic_evl(*tc - 1, pvs, offset, sb_holder.tag.ident, false); }
 	} else if ( accept_terminal(in, sb, tc, tokens[NUMBER])) {
 	} else if ( accept_terminal(in, sb, tc, tokens[LPARENT])) {
-		expression(in, sb, tc, pvs, cur_offset);
+		expression(in, sb, tc, pvs, offset);
 		if ( accept_terminal(in, sb, tc, tokens[RPARENT])) {
 		} else { printf("right parentheses missing at %d \n", *tc); }
 	} else { printf("<factor> - illegal production at %d \n", *tc); }
 }
 
 void expression(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
-	int cur_offset = offset;
 	if ( accept_terminal(in, sb, tc, tokens[PLUS]) || accept_terminal(in, sb, tc, tokens[MINUS])) {
 	}
-	term(in, sb, tc, pvs, cur_offset);
+	term(in, sb, tc, pvs, offset);
 	while ( accept_terminal(in, sb, tc, tokens[PLUS]) || accept_terminal(in, sb, tc, tokens[MINUS])) {
-		term(in, sb, tc, pvs, cur_offset);
+		term(in, sb, tc, pvs, offset);
 	}
 }
 
 void condition(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
-	int cur_offset = offset;
 	if ( accept_terminal(in, sb, tc, tokens[ODD])) {
-		expression(in, sb, tc, pvs, cur_offset);
+		expression(in, sb, tc, pvs, offset);
 	} else {
-		expression(in, sb, tc, pvs, cur_offset);
+		expression(in, sb, tc, pvs, offset);
 		if ( accept_terminal(in, sb, tc, tokens[EQU]) || accept_terminal(in, sb, tc, tokens[GTR]) ||
 			 accept_terminal(in, sb, tc, tokens[GEQ]) || accept_terminal(in, sb, tc, tokens[NEQ]) ||
 			 accept_terminal(in, sb, tc, tokens[LSS]) || accept_terminal(in, sb, tc, tokens[LEQ])) {
-			expression(in, sb, tc, pvs, cur_offset);
+			expression(in, sb, tc, pvs, offset);
 		} else { printf("missing comparison operator at %d", *tc); }
 	}
 }
 
 void statement(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
-	int cur_offset = offset;
 	Symbol sb_holder = *sb;
 	if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
 		if ( accept_terminal(in, sb, tc, tokens[RBRACK])) {
-			semantic_evk(*tc - 2, pvs, offset, cur_offset, sb_holder.tag.ident, ARR);
-			expression(in, sb, tc, pvs, cur_offset);
+			semantic_evk(*tc - 2, pvs, offset, offset, sb_holder.tag.ident, ARR);
+			expression(in, sb, tc, pvs, offset);
 			if ( accept_terminal(in, sb, tc, tokens[LBRACK])) {
 			} else { printf("missing bracket at %d \n", *tc); }
-		} else { semantic_evk(*tc - 1, pvs, offset, cur_offset, sb_holder.tag.ident, MUTE); }
+		} else { semantic_evk(*tc - 1, pvs, offset, offset, sb_holder.tag.ident, MUTE); }
 		if ( accept_terminal(in, sb, tc, tokens[ASSIGN])) {
-			expression(in, sb, tc, pvs, cur_offset);
+			expression(in, sb, tc, pvs, offset);
 		} else { printf("missing assignment operator at %d", *tc); }
 	} else if ( accept_terminal(in, sb, tc, tokens[CALL])) {
 		sb_holder = *sb;
 		if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
-			semantic_evk(*tc - 1, pvs, offset, cur_offset, sb_holder.tag.ident, FUNC);
+			semantic_evk(*tc - 1, pvs, offset, offset, sb_holder.tag.ident, FNC);
 			if ( accept_terminal(in, sb, tc, tokens[LPARENT])) {
 				do {
-					expression(in, sb, tc, pvs, cur_offset);
+					expression(in, sb, tc, pvs, offset);
 				} while ( accept_terminal(in, sb, tc, tokens[COMMA]));
 				if ( accept_terminal(in, sb, tc, tokens[RPARENT])) {
 				} else { printf("missing parentheses at %d \n", *tc); }
@@ -123,33 +118,33 @@ void statement(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
 		}
 	} else if ( accept_terminal(in, sb, tc, tokens[BEGIN])) {
 		do {
-			statement(in, sb, tc, pvs, cur_offset);
+			statement(in, sb, tc, pvs, offset);
 		} while ( accept_terminal(in, sb, tc, tokens[SEMICOLON]));
 		if ( accept_terminal(in, sb, tc, tokens[END])) {
 		} else { printf("missing keyword END at %d", *tc); }
 	} else if ( accept_terminal(in, sb, tc, tokens[IF])) {
-		condition(in, sb, tc, pvs, cur_offset);
+		condition(in, sb, tc, pvs, offset);
 		if ( accept_terminal(in, sb, tc, tokens[THEN])) {
-			statement(in, sb, tc, pvs, cur_offset);
+			statement(in, sb, tc, pvs, offset);
 		} else { printf("missing keyword THEN at %d \n", *tc); }
 		if ( accept_terminal(in, sb, tc, tokens[ELSE])) {
-			statement(in, sb, tc, pvs, cur_offset);
+			statement(in, sb, tc, pvs, offset);
 		}
 	} else if ( accept_terminal(in, sb, tc, tokens[WHILE])) {
-		condition(in, sb, tc, pvs, cur_offset);
+		condition(in, sb, tc, pvs, offset);
 		if ( accept_terminal(in, sb, tc, tokens[DO])) {
-			statement(in, sb, tc, pvs, cur_offset);
+			statement(in, sb, tc, pvs, offset);
 		} else { printf(" missing keyword DO at %d \n", *tc); }
 	} else if ( accept_terminal(in, sb, tc, tokens[FOR])) {
 		sb_holder = *sb;
 		if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
-			semantic_evk(*tc - 1, pvs, offset, cur_offset, sb_holder.tag.ident, MUTE);
+			semantic_evk(*tc - 1, pvs, offset, offset, sb_holder.tag.ident, MUTE);
 			if ( accept_terminal(in, sb, tc, tokens[ASSIGN])) {
-				expression(in, sb, tc, pvs, cur_offset);
+				expression(in, sb, tc, pvs, offset);
 				if ( accept_terminal(in, sb, tc, tokens[TO])) {
-					expression(in, sb, tc, pvs, cur_offset);
+					expression(in, sb, tc, pvs, offset);
 					if ( accept_terminal(in, sb, tc, tokens[DO])) {
-						statement(in, sb, tc, pvs, cur_offset);
+						statement(in, sb, tc, pvs, offset);
 					} else { printf("missing keyword TO at %d \n", *tc); }
 				} else { printf("missing keyword TO at %d \n", *tc); }
 			} else { printf("missing assignment operator at %d \n", *tc); }
@@ -195,7 +190,7 @@ void block(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
 	if ( accept_terminal(in, sb, tc, tokens[PROCEDURE])) {
 		sb_holder = *sb;
 		if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
-			semantic_dcl(*tc - 1, pvs, offset, &cur_offset, sb_holder.tag.ident, FUNC);
+			semantic_dcl(*tc - 1, pvs, offset, &cur_offset, sb_holder.tag.ident, FNC);
 			if ( accept_terminal(in, sb, tc, tokens[LPARENT])) {
 				do {
 					if ( accept_terminal(in, sb, tc, tokens[VAR])) {}
