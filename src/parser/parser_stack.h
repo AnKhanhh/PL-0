@@ -96,18 +96,18 @@ void statement(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
 	Symbol sb_holder = *sb;
 	if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
 		if ( accept_terminal(in, sb, tc, tokens[RBRACK])) {
-			semantic_evk(*tc - 2, pvs, offset, offset, sb_holder.tag.ident, ARR);
+			semantic_evk(*tc - 2, pvs, offset, sb_holder.tag.ident, ARR);
 			expression(in, sb, tc, pvs, offset);
 			if ( accept_terminal(in, sb, tc, tokens[LBRACK])) {
 			} else { printf("missing bracket at %d \n", *tc); }
-		} else { semantic_evk(*tc - 1, pvs, offset, offset, sb_holder.tag.ident, MUTE); }
+		} else { semantic_evk(*tc - 1, pvs, offset, sb_holder.tag.ident, MUTE); }
 		if ( accept_terminal(in, sb, tc, tokens[ASSIGN])) {
 			expression(in, sb, tc, pvs, offset);
 		} else { printf("missing assignment operator at %d", *tc); }
 	} else if ( accept_terminal(in, sb, tc, tokens[CALL])) {
 		sb_holder = *sb;
 		if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
-			semantic_evk(*tc - 1, pvs, offset, offset, sb_holder.tag.ident, FNC);
+			semantic_evk(*tc - 1, pvs, offset, sb_holder.tag.ident, FNC);
 			if ( accept_terminal(in, sb, tc, tokens[LPARENT])) {
 				do {
 					expression(in, sb, tc, pvs, offset);
@@ -138,7 +138,7 @@ void statement(FILE *in, Symbol *sb, int *tc, VarStack (*pvs), int offset) {
 	} else if ( accept_terminal(in, sb, tc, tokens[FOR])) {
 		sb_holder = *sb;
 		if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
-			semantic_evk(*tc - 1, pvs, offset, offset, sb_holder.tag.ident, MUTE);
+			semantic_evk(*tc - 1, pvs, offset, sb_holder.tag.ident, MUTE);
 			if ( accept_terminal(in, sb, tc, tokens[ASSIGN])) {
 				expression(in, sb, tc, pvs, offset);
 				if ( accept_terminal(in, sb, tc, tokens[TO])) {
