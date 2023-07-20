@@ -1,6 +1,5 @@
 //	TODO: make entries in SymbolTable dynamically allocated
 //	TODO: add argument number and type checks when procedure is called
-//	NOTE: procedure parameters belong to local scope or host block scope ???
 
 #ifndef COMP_SCOPE_TABLE_H
 #define COMP_SCOPE_TABLE_H

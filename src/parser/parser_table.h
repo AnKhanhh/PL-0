@@ -177,7 +177,7 @@ void block(FILE *in, Symbol *sb, int *tc, SymbolTable *root) {
 					if ( accept_terminal(in, sb, tc, tokens[VAR])) {}
 					holder = *sb;
 					if ( accept_terminal(in, sb, tc, tokens[IDENT])) {
-						if ( !semantic_dcl(root, holder.tag.ident, MUTE, NULL)) { semantic_err(*tc); }
+						if ( !semantic_dcl(sub_block, holder.tag.ident, MUTE, NULL)) { semantic_err(*tc); }
 					} else { printf("variable name missing at %d \n", *tc); }
 				} while ( accept_terminal(in, sb, tc, tokens[SEMICOLON]));
 				if ( accept_terminal(in, sb, tc, tokens[RPARENT])) {} else { printf("parentheses missing at %d \n", *tc); }
