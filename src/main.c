@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "parser/parser_stack.c"
+//#include "parser/parser_stack.c"
+#include "parser/parser_table.c"
 
 #define INPUT_FILE_PATH "C:/Users/admin/CLionProjects/comp/input/input1.txt"
 #define LEXER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/l_output1.txt"
@@ -16,6 +17,7 @@ int main() {
 
 		fclose(f_in);
 		fclose(f_lexer);
+		fclose(f_parser);
 		return 0;
 	}
 	return 1;
