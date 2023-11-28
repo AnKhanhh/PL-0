@@ -1,3 +1,23 @@
+//	production list in EBNF
+//	----------------------------------------------------------------------------------------------
+//	program = 'PROGRAM' ident ';' block '.'
+//	block = [	'CONST' ident '=' number  {',' ident '=' number}  ';'	]
+//			[	'VAR' ident {',' ident} ';'	]
+//			[	'PROCEDURE' ident  [ '(' ['VAR'] ident {';' ['VAR'] ident} ')' ]  ';' block ';'	]
+//			'BEGIN' statement {';' statement} 'END'
+//	statement = [	ident  [ '[' expression ']' ]  ':=' expression	|
+//					'CALL'  ident  [ '(' expression  {',' expression} ')' ]	|
+//					'BEGIN'  statement  {';' statement}  'END'	|
+//					'IF' condition 'THEN' statement 'ELSE' statement	|
+//					'WHILE' condition 'DO' statement	|
+//					'FOR'  ident ':=' expression 'TO' expression 'DO'	]
+//	condition = 'ODD' expression	|
+//				expression	('='|'<'|'<='|'>'|'>='|'<>')	expression
+//	factor = ident	{ '[' expression ']' }	|  number  |  '(' expression ')'
+//	expression = ['+'|'-'] term  { ('+'|'-')  term }
+//	term = factor  { ('*'|'%'|'/')  factor }
+//	----------------------------------------------------------------------------------------------
+
 #ifndef COMP_PARSER_TABLE_H
 #define COMP_PARSER_TABLE_H
 #endif //COMP_PARSER_TABLE_H

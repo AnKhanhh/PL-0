@@ -139,6 +139,7 @@ int semantic_evl(SymbolTable *root, char *id, Type var_type) {
 	if ( !result ) { printf("found no declaration of %s %s in block %s", TypeName[var_type], id, root->id); }
 	switch ( result ) {
 		case MUTE: if ( p_TE->init == false ) { printf("warning: %s %s in block %s is not initialized", TypeName[var_type], id, root->id); }
+			return 0;
 		case ARR:
 		case IMM:
 		case FNC:
@@ -154,7 +155,7 @@ int semantic_evl(SymbolTable *root, char *id, Type var_type) {
 
 void print_SymTab(SymbolTable *root, FILE *out) {
 	int buff_size = LEXEME_LENGTH * MAX_ENTRIES;    //	approximation of necessary buffer length
-	char horizontal[] = "____________________";	//	20 underscores
+	char horizontal[] = "____________________";    //	20 underscores
 	char buffer[buff_size];
 	snprintf(buffer, buff_size, "%s\n%s\n PARENT_ADDR: %llX \n SELF_ADDR: %llX \n ID: %s \n%s\n",
 			 horizontal, horizontal, (long long) root->parent_table, (long long) root, root->id, horizontal);
@@ -181,7 +182,7 @@ void print_SymTab(SymbolTable *root, FILE *out) {
 		fputs(buffer, out);
 	}
 	snprintf(buffer, buff_size, "%s\n%s\n\n", horizontal, horizontal);
-	fputs(buffer,out);
+	fputs(buffer, out);
 
 	for ( int i = 0; i < MAX_ENTRIES && root->entries[i].var_type != 0; ++i ) {
 		if ( root->entries[i].var_type == FNC ) { print_SymTab(root->entries[i].sub_table, out); }
