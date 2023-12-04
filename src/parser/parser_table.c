@@ -1,3 +1,5 @@
+// parser and semantic analyzer integrated into one
+
 #include "parser_table.h"
 
 void syntax_analysis(FILE *in, FILE* out){
