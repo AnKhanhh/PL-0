@@ -1,11 +1,9 @@
+#ifndef COMP_LEXER_H
+#define COMP_LEXER_H
+
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
-
-
-#ifndef COMP_LEXER_H
-#define COMP_LEXER_H
-#endif
 
 #define LEXEME_LENGTH 32
 #define TOKEN_LENGTH 128
@@ -83,3 +81,5 @@ void char_cpy(char *s, char c) {
 void str_up(char *s) {
 	while (( *s = (char) toupper(*s))) s++;
 }
+
+#endif

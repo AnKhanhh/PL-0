@@ -58,20 +58,19 @@
 //	57.              'number'
 //	58.              '(' <expression> ')'
 
-#include <stdbool.h>
-#include <malloc.h>
-#include "../lexer/lexer.c"
-
 #ifndef COMP_TREE_GEN_H
 #define COMP_TREE_GEN_H
-#endif //COMP_TREE_GEN_H
+
+#include <stdbool.h>
+#include <malloc.h>
+#include "../lexer/lexer.h"
 
 //	max name length for symbol
-#define SB_LENGTH              32
+#define SB_LENGTH                32
 //	size of production list increment by this amount every time it hits limit
 #define PROD_INITIAL_CAPACITY    8
 
-//	associated value for number and indent symbol
+//	associate value for number and indent symbol
 typedef union {
 	char ident[LEXEME_LENGTH];
 	long number;
@@ -80,7 +79,7 @@ typedef union {
 //	Symbol can be terminal or non-terminal
 typedef struct SyntaxNode {
 	token_name token;
-	Value *associate;
+	Value *associate_ptr;
 	//	struct SyntaxNode *parent;
 	struct SyntaxNode **productions;
 	int productions_size;
@@ -104,11 +103,11 @@ SyntaxNode *InsertNode( SyntaxNode *root, token_name token, void *value_ptr ) {
 	SyntaxNode *child_node = safe_calloc( 1, sizeof( SyntaxNode ));
 	child_node->token = token;
 	if ( token == IDENT ) {
-		child_node->associate = safe_calloc( 1, sizeof( Value ));
-		strncpy( child_node->associate->ident, value_ptr, LEXEME_LENGTH );
+		child_node->associate_ptr = safe_calloc( 1, sizeof( Value ));
+		strncpy( child_node->associate_ptr->ident, value_ptr, LEXEME_LENGTH );
 	} else if ( token == NUMBER ) {
-		child_node->associate = safe_calloc( 1, sizeof( Value ));
-		child_node->associate->number = *(long *) value_ptr;
+		child_node->associate_ptr = safe_calloc( 1, sizeof( Value ));
+		child_node->associate_ptr->number = *(long *) value_ptr;
 	}
 
 //	handle insertion
@@ -139,7 +138,7 @@ void FreeSyntaxTree( SyntaxNode *root ) {
 		if ( root->productions[i] == NULL) { break; }
 		FreeSyntaxTree( root->productions[i] );
 	}
-	free( root->associate );
+	free( root->associate_ptr );
 	free( root->productions );
 	free( root );
 }
@@ -147,11 +146,11 @@ void FreeSyntaxTree( SyntaxNode *root ) {
 void SubPrintTree( SyntaxNode *root, FILE *out, int depth ) {
 	for ( int i = 0; i < depth; ++i ) { fprintf( out, "\t" ); }
 	fprintf( out, "%s", TOKENS[root->token] );
-	if ( !root->associate ) {
+	if ( !root->associate_ptr ) {
 		if ( root->token == IDENT ) {
-			fprintf( out, ": %s\n", root->associate->ident );
+			fprintf( out, ": %s\n", root->associate_ptr->ident );
 		} else if ( root->token == NUMBER ) {
-			fprintf( out, ": %ld\n", root->associate->number );
+			fprintf( out, ": %ld\n", root->associate_ptr->number );
 		} else {
 			fprintf(stderr, "PARSER ERR: invalid associative value at token %s, depth %d",
 					TOKENS[root->token], depth );
@@ -169,3 +168,5 @@ void SubPrintTree( SyntaxNode *root, FILE *out, int depth ) {
 void PrintSyntaxTree( SyntaxNode *root, FILE *out ) {
 	SubPrintTree( root, out, 0 );
 }
+
+#endif //COMP_TREE_GEN_H
