@@ -65,7 +65,7 @@
 #include <malloc.h>
 #include "../lexer/lexer.h"
 
-//	max name length for symbol
+//	max length for symbol name
 #define SB_LENGTH                32
 //	size of production list increment by this amount every time it hits limit
 #define PROD_INITIAL_CAPACITY    8

@@ -1,14 +1,13 @@
 #include "lexer.h"
 
-// read input file and print token to output file
-//
 //									_____ skip space
 // flow: check EOF ___ is not? -> /______ check word _____ check keyword
 //							  	  \				 	 \____ is ident
 //								   \_____ check number ___ is not -> illegal (NONE)
 //									\____ check binary symbol
 //									 \___ check unary symbol ___ is not? -> illegal (NONE)
-//
+
+//	TODO: token stream represented by corresponding enum to improve compilation time
 
 void lexical_analysis( FILE *in, FILE *out ) {
 	char lexeme[LEXEME_LENGTH], token[TOKEN_LENGTH], c = ' ';

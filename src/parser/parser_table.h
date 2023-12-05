@@ -16,13 +16,13 @@ typedef struct {
 	SymbolTag tag;
 } Symbol;    //	terminal or non-terminal symbol
 
-//	on recognizing a terminal symbol, returns 1 and call next_symbol()
+//	on recognizing a terminal symbol, returns 1 and call NextSymbol()
 int accept_terminal(FILE *in, Symbol *sb, int *tc, char *s);
 //	reads a Symbol from the token list file, returns 0 on failure
 int next_symbol(FILE *in, Symbol *sb, int *tc);
 // issue error/ warning announcement at token in given position
 void semantic_err(int count);
-
+// recursive descent LL(1) parser functions
 void term(FILE *in, Symbol *sb, int *tc, SymbolTable *root);
 void factor(FILE *in, Symbol *sb, int *tc, SymbolTable *root);
 void expression(FILE *in, Symbol *sb, int *tc, SymbolTable *root);
@@ -30,6 +30,9 @@ void condition(FILE *in, Symbol *sb, int *tc, SymbolTable *root);
 void statement(FILE *in, Symbol *sb, int *tc, SymbolTable *root);
 void block(FILE *in, Symbol *sb, int *tc, SymbolTable *root);
 void program(FILE *in, Symbol *sb, int *tc, SymbolTable **p_root);
+
+
+
 
 void term(FILE *in, Symbol *sb, int *tc, SymbolTable *root) {
 	factor(in, sb, tc, root);
