@@ -7,7 +7,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
-#include "../lexer/lexer.c"
+#include "lexer.c"
 
 #define MAX_ENTRIES 16
 

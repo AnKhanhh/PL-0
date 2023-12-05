@@ -1,7 +1,8 @@
 #include <stdio.h>
-#include "parser/parser_table.c"
+#include "legacy/parser_table.c"
 
 //	TODO: write dedicated parser and semanlyzer, then migrate old component elsewhere
+//	TODO: make error-recovery parser
 
 #define INPUT_FILE_PATH "C:/Users/admin/CLionProjects/comp/input/input1.txt"
 #define LEXER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/l_output1.txt"

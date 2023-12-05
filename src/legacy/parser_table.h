@@ -2,7 +2,7 @@
 #define COMP_PARSER_TABLE_H
 #endif //COMP_PARSER_TABLE_H
 
-#include "../semanlyzr/symbol_table.h"
+#include "symbol_table.h"
 
 #define SB_LENGTH 32
 
@@ -22,7 +22,7 @@ int accept_terminal(FILE *in, Symbol *sb, int *tc, char *s);
 int next_symbol(FILE *in, Symbol *sb, int *tc);
 // issue error/ warning announcement at token in given position
 void semantic_err(int count);
-// recursive descent LL(1) parser functions
+
 void term(FILE *in, Symbol *sb, int *tc, SymbolTable *root);
 void factor(FILE *in, Symbol *sb, int *tc, SymbolTable *root);
 void expression(FILE *in, Symbol *sb, int *tc, SymbolTable *root);
