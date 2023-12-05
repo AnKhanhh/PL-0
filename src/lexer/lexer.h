@@ -10,7 +10,7 @@
 #define LEXEME_LENGTH 32
 #define TOKEN_LENGTH 128
 
-char *tokens[] = {"NONE", "IDENT", "NUMBER", "PLUS", "MINUS", "TIMES", "SLASH", "EQU",
+const char *TOKENS[] = {"NONE", "IDENT", "NUMBER", "PLUS", "MINUS", "TIMES", "SLASH", "EQU",
 				  "NEQ", "LSS", "LEQ", "GTR", "GEQ", "LPARENT", "RPARENT", "LBRACK",
 				  "RBRACK", "PERIOD", "COMMA", "SEMICOLON", "ASSIGN", "PERCENT", "BEGIN", "CALL",
 				  "CONST", "DO", "ELSE", "END", "FOR", "IF", "ODD", "PROCEDURE",
@@ -32,7 +32,7 @@ void str_up(char *s);  // uppercase string
 void char_cpy(char *s, char c); // copy a single char and append null
 
 char *generate_token(char *token, char *lexeme, token_name n) {
-		snprintf(token, TOKEN_LENGTH, "%-16s %s\n", tokens[n], lexeme);
+		snprintf( token, TOKEN_LENGTH, "%-16s %s\n", TOKENS[n], lexeme);
 		return token;
 }
 
@@ -69,8 +69,8 @@ token_name is_keyword(char *s) {
 	char ss[LEXEME_LENGTH];
 	strcpy(ss, s);
 	str_up(ss);
-	for ( int i = BEGIN; i < sizeof(tokens) / sizeof(tokens[0]); ++i ) {
-		if ( !strcmp(ss, tokens[i])) return i;
+	for ( int i = BEGIN; i < sizeof(TOKENS) / sizeof(TOKENS[0]); ++i ) {
+		if ( !strcmp( ss, TOKENS[i])) return i;
 	}
 	return 0;
 }
