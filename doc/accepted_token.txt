@@ -5,3 +5,4 @@ binary operator: '<>', '<=', '>=', ':='
 keyword: 'BEGIN', 'CALL', 'CONST', 'DO', 'ELSE', 'END', 'FOR', 'IF', 'ODD',
             'PROCEDURE', 'PROGRAM', 'THEN', 'TO', 'VAR', 'WHILE'
 
+support only integer and one-dimensional array

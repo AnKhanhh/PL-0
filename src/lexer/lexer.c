@@ -3,15 +3,15 @@
 //									_____ skip space
 // flow: check EOF ___ is not? -> /______ check word _____ check keyword
 //							  	  \				 	 \____ is ident
-//								   \_____ check number ___ is not -> illegal (NONE)
+//								   \_____ check number ___ is not -> illegal (INVALID_TK)
 //									\____ check binary symbol
-//									 \___ check unary symbol ___ is not? -> illegal (NONE)
+//									 \___ check unary symbol ___ is not? -> illegal (INVALID_TK)
 
 //	TODO: token stream represented by corresponding enum to improve compilation time
 
 void lexical_analysis( FILE *in, FILE *out ) {
 	char lexeme[LEXEME_LENGTH], token[TOKEN_LENGTH], c = ' ';
-	token_name t_name;
+	ETokenType t_name;
 	while ( c != EOF) {
 		token[0] = 0;
 		if ( isspace( c )) {
@@ -54,7 +54,7 @@ void lexical_analysis( FILE *in, FILE *out ) {
 			} else {
 				c = lexeme[1];
 				lexeme[1] = 0;
-				fputs( generate_token( token, lexeme, NONE ), out );
+				fputs( generate_token( token, lexeme, INVALID_TK ), out );
 			}
 		}
 	}
