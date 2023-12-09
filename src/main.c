@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "legacy/parser_table.c"
+#include "lexer.c"
 
 //	TODO: write dedicated parser and semanlyzer, then migrate old component elsewhere
 //	TODO: make error-recovery parser
@@ -14,8 +14,8 @@ int main() {
 	else if (( f_lexer = fopen(LEXER_FILE_PATH, "w+")) == NULL) { perror("lexer file"); }
 	else if (( f_parser = fopen(PARSER_FILE_PATH, "w+")) == NULL) { perror("parser file"); }
 	else {
-		lexical_analysis(f_in, f_lexer);
-		syntax_analysis(f_lexer,f_parser);
+		LexicalAnalysis( f_in, f_lexer );
+//		syntax_analysis(f_lexer,f_parser);
 
 		fclose(f_in);
 		fclose(f_lexer);

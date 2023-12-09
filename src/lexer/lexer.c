@@ -9,7 +9,7 @@
 
 //	TODO: token stream represented by corresponding enum to improve compilation time
 
-void lexical_analysis( FILE *in, FILE *out ) {
+void LexicalAnalysis( FILE *in, FILE *out ) {
 	char lexeme[LEXEME_LENGTH], token[TOKEN_LENGTH], c = ' ';
 	ETokenType t_name;
 	while ( c != EOF) {
@@ -25,10 +25,10 @@ void lexical_analysis( FILE *in, FILE *out ) {
 			c = lexeme[i];
 			lexeme[i] = 0;
 
-			if ((t_name = is_keyword( lexeme ))) {
-				fputs( generate_token( token, lexeme, t_name ), out );
+			if ((t_name = IsKeyword( lexeme ))) {
+				fputs( GenerateToken( token, lexeme, t_name ), out );
 			} else {
-				fputs( generate_token( token, lexeme, IDENT ), out );
+				fputs( GenerateToken( token, lexeme, IDENT ), out );
 			}
 
 		} else if ( isdigit( c )) {
@@ -39,22 +39,22 @@ void lexical_analysis( FILE *in, FILE *out ) {
 			}
 			c = lexeme[i];
 			lexeme[i] = 0;
-			fputs( generate_token( token, lexeme, NUMBER ), out );
+			fputs( GenerateToken( token, lexeme, NUMBER ), out );
 
 		} else {
 			lexeme[0] = c;
 			char_cpy( lexeme + 1, (char) fgetc( in ));
-			if ((t_name = is_binary( lexeme ))) {
-				fputs( generate_token( token, lexeme, t_name ), out );
+			if ((t_name = IsTwoOp( lexeme ))) {
+				fputs( GenerateToken( token, lexeme, t_name ), out );
 				c = (char) fgetc( in );
-			} else if ((t_name = is_unary( c ))) {
+			} else if ((t_name = IsOneOp( c ))) {
 				c = lexeme[1];
 				lexeme[1] = 0;
-				fputs( generate_token( token, lexeme, t_name ), out );
+				fputs( GenerateToken( token, lexeme, t_name ), out );
 			} else {
 				c = lexeme[1];
 				lexeme[1] = 0;
-				fputs( generate_token( token, lexeme, INVALID_TK ), out );
+				fputs( GenerateToken( token, lexeme, INVALID_TK ), out );
 			}
 		}
 	}

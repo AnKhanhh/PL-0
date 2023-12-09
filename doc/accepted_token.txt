@@ -1,7 +1,7 @@
 ident: ^[A-Za-z][A-Za-z0-9_]*$
 number: integer
-unary operator: '+', '-', '*', '/', '%', '=', '(', ')', '[', ']', '.', ',', ';', '<', '>'
-binary operator: '<>', '<=', '>=', ':='
+one-letter operator: '+', '-', '*', '/', '%', '=', '(', ')', '[', ']', '.', ',', ';', '<', '>'
+two-letter operator: '<>', '<=', '>=', ':='
 keyword: 'BEGIN', 'CALL', 'CONST', 'DO', 'ELSE', 'END', 'FOR', 'IF', 'ODD',
             'PROCEDURE', 'PROGRAM', 'THEN', 'TO', 'VAR', 'WHILE'
 
