@@ -70,8 +70,9 @@
 #define PROD_INITIAL_CAPACITY    2
 
 typedef enum {
-	INVALID_SB = 0, PRG_DCL, CST_BLK, VAR_BLK, ARR_DCL, PROC_DCL, MAIN,
-	NAME, LITERAL, UNARY, BINARY
+	INVALID_SB = 0, PRG_DCL, CST_DCL, VAR_DCL, ARR_DCL, PROC_DCL, CODE_BLK,
+	NAME, LITERAL, U_OP, BIN_OP, SUBSCRIPT, PROC_EVK, PROC_ARG, CONDITIONAL,
+	FOR_LOOP, WHILE_LOOP
 } ESymbolType;
 
 //	associate value for number and indent symbol
@@ -95,7 +96,7 @@ typedef struct NodeAST {
 	int productions_size;
 } NodeAST;
 
-//	insert new node to first empty spot on production list, return null on failure
+//	insert new node to production list, return pointer to topmost node
 NodeAST *InsertNode( NodeAST *root, NodeAST *child );
 // create a node, call safe_calloc()
 NodeAST *CreateTreeNode( ESymbolType sb_type, int ann_type, void *ann_ptr );
@@ -113,12 +114,13 @@ void PrintSyntaxTree( NodeAST *root, FILE *out );
 })
 
 NodeAST *InsertNode( NodeAST *root, NodeAST *child ) {
-	assert( root != NULL );
-	if ( root->productions_size == 0 ) {
+	assert( child != NULL );
+	if ( root == NULL) { return child; }
+	else if ( root->productions_size == 0 ) {
 		root->productions_size = PROD_INITIAL_CAPACITY;
 		root->productions = safe_calloc( PROD_INITIAL_CAPACITY, sizeof( NodeAST * ));
 		root->productions[0] = child;
-		return child;
+		return root;
 	} else {
 //		child_node->parent = root;
 		int end_index = root->productions_size - 1;
@@ -131,7 +133,7 @@ NodeAST *InsertNode( NodeAST *root, NodeAST *child ) {
 			root->productions = realloc( root->productions, root->productions_size * sizeof( NodeAST * ));
 			root->productions[end_index + 1] = child;
 			for ( int j = end_index + 2; j < root->productions_size; ++j ) { root->productions[j] = NULL; }
-			return child;
+			return root;
 		}
 	}
 	return NULL;

@@ -28,9 +28,9 @@ ETokenType IsTwoOp( char *s ); // check two-character operator, return ETokenTyp
 ETokenType IsOneOp( char c ); // check one-character operator, return ETokenType if true
 static void str_up( char *s );  // uppercase string
 // copy a single char and append null
-#define char_cpy(s,c) { \
-    (s)[0] = (c); \
-    (s)[1] = '\0'; \
+#define char_cpy(s,c) {		\
+    (s)[0] = (c);			\
+    (s)[1] = '\0';			\
 }
 
 char *GenerateToken( char *token, char *lexeme, ETokenType n ) {

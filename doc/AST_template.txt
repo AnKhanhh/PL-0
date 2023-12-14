@@ -1,0 +1,62 @@
+PRG_DCL : ident
+└── < block >
+
+< block >
+├── CST_DCL
+│   ├── BIN_OP : EQU
+│   │   ├── NAME : ident
+│   │   └── LITERAL : number
+│   └── BIN_OP : EQU
+│       └── ...
+├── VAR_DCL
+│   ├── NAME : ident
+│   ├── ARR_DCL
+│   │   ├── NAME : ident
+│   │   └── LITERAL : number		// array size
+│   └── ...
+├── PROC_DCL : ident
+│   ├── PROC_ARG
+│   │   ├── NAME : ident			// arguments
+│   │   ├── NAME : ident
+│   │   └── ...
+│   └── < block >
+└── CODE_BLK
+    ├── < statement >
+    ├── < statement >
+    └── ...
+
+< statement >
+└── BIN_OP : ASSIGN
+    ├── NAME : ident
+    └── < expression >				// assignment value
+
+< statement >
+└── BIN_OP : ASSIGN
+    ├── SUBSCRIPT
+    │   ├── NAME : ident
+    │   └── < expression >			// array index ( < array size )
+    └── < expression >				// assignment value
+
+< statement >
+└── PROC_EVK : ident
+    ├── < expression >				// parameters
+    ├── < expression >
+    └── ...
+
+< statement >
+└── CONDITIONAL
+    ├── < condition >				// if evaluate to true
+    ├── < statement >				// then perform operation
+    └── [ < statement > ]			// else perform operation ( optional )
+
+< statement >
+└── WHILE_LOOP
+    ├── < condition >				// while evaluate to true
+    └── < statement >				// perform operation
+
+< statement >
+└── FOR_LOOP
+    ├── NAME : ident				// for variable i
+    ├── < expression >				// from state
+    ├── < expression >				// to state
+    └── < statement >				// perform operation
