@@ -11,7 +11,7 @@
 const char *TOKENS[] = {"INVALID_TK", "IDENT", "NUMBER", "PLUS", "MINUS", "TIMES", "SLASH", "EQU",
 						"NEQ", "LSS", "LEQ", "GTR", "GEQ", "LPARENT", "RPARENT", "LBRACK",
 						"RBRACK", "PERIOD", "COMMA", "SEMICOLON", "ASSIGN", "PERCENT", "BEGIN", "CALL",
-						"CONST", "DO", "ELSE", "END", "FOR", "IF", "ODD", "PROCEDURE",
+						"CONST", "DO", "ELSE", "END", "FOR", "IF", "PROCEDURE",
 						"PROGRAM", "THEN", "TO", "VAR", "WHILE"
 };
 
@@ -19,18 +19,18 @@ typedef enum {
 	INVALID_TK = 0, IDENT, NUMBER,
 	PLUS, MINUS, TIMES, SLASH, EQU, NEQ, LSS, LEQ, GTR, GEQ, LPARENT, RPARENT, LBRACK, RBRACK, PERIOD, COMMA,
 	SEMICOLON, ASSIGN, PERCENT,
-	BEGIN, CALL, CONST, DO, ELSE, END, FOR, IF, ODD, PROCEDURE, PROGRAM, THEN, TO, VAR, WHILE
+	BEGIN, CALL, CONST, DO, ELSE, END, FOR, IF, PROCEDURE, PROGRAM, THEN, TO, VAR, WHILE
 } ETokenType;
 
 char *GenerateToken( char *token, char *lexeme, ETokenType n ); // generate a token to write into output stream
-ETokenType IsKeyword( char *s ); // check keyword, not case-sensitive, return corresponding ETokenType if true
-ETokenType IsTwoOp( char *s ); // check two-character operator, return ETokenType if true
-ETokenType IsOneOp( char c ); // check one-character operator, return ETokenType if true
+ ETokenType IsKeyword( char *s ); // check keyword, not case-sensitive, return corresponding ETokenType if true
+ ETokenType IsTwoOp( char *s ); // check two-character operator, return ETokenType if true
+ ETokenType IsOneOp( char c ); // check one-character operator, return ETokenType if true
 static void str_up( char *s );  // uppercase string
 // copy a single char and append null
-#define char_cpy(s,c) {		\
-    (s)[0] = (c);			\
-    (s)[1] = '\0';			\
+#define char_cpy( s, c ) {        \
+    (s)[0] = (c);            \
+    (s)[1] = '\0';            \
 }
 
 char *GenerateToken( char *token, char *lexeme, ETokenType n ) {
@@ -38,7 +38,7 @@ char *GenerateToken( char *token, char *lexeme, ETokenType n ) {
 	return token;
 }
 
-ETokenType IsOneOp( char c ) {
+ ETokenType IsOneOp( char c ) {
 	switch ( c ) {
 		case '+':
 			return PLUS;
@@ -75,7 +75,7 @@ ETokenType IsOneOp( char c ) {
 	}
 }
 
-ETokenType IsTwoOp( char *s ) {
+ ETokenType IsTwoOp( char *s ) {
 	if ( !strcmp( s, "<>" )) { return NEQ; }
 	if ( !strcmp( s, "<=" )) { return LEQ; }
 	if ( !strcmp( s, ">=" )) { return GEQ; }
@@ -83,7 +83,7 @@ ETokenType IsTwoOp( char *s ) {
 	return 0;
 }
 
-ETokenType IsKeyword( char *s ) {
+ ETokenType IsKeyword( char *s ) {
 	char ss[LEXEME_LENGTH];
 	strcpy( ss, s );
 	str_up( ss );

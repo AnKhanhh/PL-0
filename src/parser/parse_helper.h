@@ -13,12 +13,12 @@ typedef struct {
 #define accept_tk( sb, tk_cmp ) ((sb)->token == (tk_cmp))
 
 // throw syntax error with token location
-void ParserThrow( const char *s, int count ) {
+ void ParserThrow( const char *s, int count ) {
 	fprintf(stderr, "SYNTAX ERR: %s at token %d\n", s, count );
 }
 
 //	reads next token from stream into sb, return 0 on EOF or failure
-int NextSymbol( FILE *in, Symbol *sb, int *tc ) {
+ int NextSymbol( FILE *in, Symbol *sb, int *tc ) {
 	char line[1024];
 	if ( fgets( line, sizeof line, in ) == NULL) {
 		puts( "end of token list reached!" );

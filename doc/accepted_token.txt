@@ -2,7 +2,7 @@ ident: ^[A-Za-z][A-Za-z0-9_]*$
 number: integer
 one-letter operator: '+', '-', '*', '/', '%', '=', '(', ')', '[', ']', '.', ',', ';', '<', '>'
 two-letter operator: '<>', '<=', '>=', ':='
-keyword: 'BEGIN', 'CALL', 'CONST', 'DO', 'ELSE', 'END', 'FOR', 'IF', 'ODD',
+keyword: 'BEGIN', 'CALL', 'CONST', 'DO', 'ELSE', 'END', 'FOR', 'IF',
             'PROCEDURE', 'PROGRAM', 'THEN', 'TO', 'VAR', 'WHILE'
 
 support only integer and one-dimensional array

@@ -71,12 +71,17 @@
 
 typedef enum {
 	INVALID_SB = 0, PRG_DCL, CST_DCL, VAR_DCL, ARR_DCL, PROC_DCL, CODE_BLK,
-	NAME, LITERAL, U_OP, BIN_OP, SUBSCRIPT, PROC_EVK, PROC_ARG, CONDITIONAL,
+	NAME, LITERAL, U_OP, BIN_OP,  SUBSCRIPT, PROC_EVK, PROC_ARG, CONDITIONAL,
 	FOR_LOOP, WHILE_LOOP
 } ESymbolType;
 
+const char *SYMBOL[] = {
+		"INVALID_SB", "PRG_DCL", "CST_DCL", "VAR_DCL", "ARR_DCL", "PROC_DCL", "CODE_BLK",
+		"NAME", "LITERAL", "U_OP", "BIN_OP",  "SUBSCRIPT", "PROC_EVK", "PROC_ARG", "CONDITIONAL",
+		"FOR_LOOP", "WHILE_LOOP"
+};
 //	associate value for number and indent symbol
-typedef struct {
+typedef struct Annotation {
 	union {
 		char ident[LEXEME_LENGTH];
 		long number;
@@ -98,41 +103,35 @@ typedef struct NodeAST {
 
 //	insert new node to production list, return pointer to topmost node
 NodeAST *InsertNode( NodeAST *root, NodeAST *child );
-// create a node, call safe_calloc()
+// create a node
 NodeAST *CreateTreeNode( ESymbolType sb_type, int ann_type, void *ann_ptr );
 // recursive post-order traversal free()
 void FreeSyntaxTree( NodeAST *root );
 // print AST to file
 void PrintSyntaxTree( NodeAST *root, FILE *out );
-// calloc() with error message
-#define safe_calloc( num, size ) ({                                                        \
-    void *p = calloc((num), (size));                                                       \
-    if (p == NULL) {                                                                       \
-        fprintf(stderr, "PARSER ERR: calloc() failure for %zu bytes\n", (num) * (size));   \
-    }                                                                                      \
-    p;                                                                                     \
-})
 
 NodeAST *InsertNode( NodeAST *root, NodeAST *child ) {
 	assert( child != NULL );
-	if ( root == NULL) { return child; }
-	else if ( root->productions_size == 0 ) {
+	if( root == NULL) { return child; }
+	else if( root->productions_size == 0 ) {
 		root->productions_size = PROD_INITIAL_CAPACITY;
-		root->productions = safe_calloc( PROD_INITIAL_CAPACITY, sizeof( NodeAST * ));
+		if(( root->productions = calloc( PROD_INITIAL_CAPACITY, sizeof( NodeAST * ))) == NULL) {
+			fprintf(stderr, "PARSER ERR: calloc() failure for %zu bytes\n", PROD_INITIAL_CAPACITY * sizeof( NodeAST * ));
+		}
 		root->productions[0] = child;
 		return root;
 	} else {
 //		child_node->parent = root;
 		int end_index = root->productions_size - 1;
 		int i;
-		for ( i = end_index; i >= 0; --i ) { if ( root->productions[i] != NULL) { break; }}
-		if ( i < end_index ) {
+		for( i = end_index; i >= 0; --i ) { if( root->productions[i] != NULL) { break; }}
+		if( i < end_index ) {
 			root->productions[i + 1] = child;
 		} else {
 			root->productions_size += PROD_INITIAL_CAPACITY;
 			root->productions = realloc( root->productions, root->productions_size * sizeof( NodeAST * ));
 			root->productions[end_index + 1] = child;
-			for ( int j = end_index + 2; j < root->productions_size; ++j ) { root->productions[j] = NULL; }
+			for( int j = end_index + 2; j < root->productions_size; ++j ) { root->productions[j] = NULL; }
 			return root;
 		}
 	}
@@ -141,16 +140,17 @@ NodeAST *InsertNode( NodeAST *root, NodeAST *child ) {
 
 NodeAST *CreateTreeNode( ESymbolType sb_type, int ann_type, void *ann_ptr ) {
 	NodeAST *new_node = calloc( 1, sizeof( NodeAST ));
-	if ( !ann_type ) {
+	new_node->symbol = sb_type;
+	if( !ann_type ) {
 		assert( ann_ptr == NULL );
 		return new_node;
 	}
 	new_node->annotation = calloc( 1, sizeof( Annotation ));
-	if ( ann_type == ANN_IDENT ) {
+	if( ann_type == ANN_IDENT ) {
 		strncpy( new_node->annotation->value.ident, ann_ptr, LEXEME_LENGTH );
-	} else if ( ann_type == ANN_NUM ) {
+	} else if( ann_type == ANN_NUM ) {
 		new_node->annotation->value.number = *(long *) ann_ptr;
-	} else if ( ann_type == ANN_TOKEN ) {
+	} else if( ann_type == ANN_TOKEN ) {
 		new_node->annotation->value.token = *(ETokenType *) ann_ptr;
 	}
 	new_node->annotation->type = ann_type;
@@ -158,8 +158,8 @@ NodeAST *CreateTreeNode( ESymbolType sb_type, int ann_type, void *ann_ptr ) {
 }
 
 void FreeSyntaxTree( NodeAST *root ) {
-	for ( int i = 0; i < root->productions_size; ++i ) {
-		if ( root->productions[i] == NULL) { break; }
+	for( int i = 0; i < root->productions_size; ++i ) {
+		if( root->productions[i] == NULL) { break; }
 		FreeSyntaxTree( root->productions[i] );
 	}
 	free( root->annotation );
@@ -168,25 +168,35 @@ void FreeSyntaxTree( NodeAST *root ) {
 }
 
 static void SubPrintTree( NodeAST *root, FILE *out, int depth ) {
-//	for ( int i = 0; i < depth; ++i ) { fprintf( out, "\t" ); }
-//	fprintf( out, "%s", TOKENS[root->token] );
-//	if ( !root->value ) {
-//		if ( root->token == IDENT ) {
-//			fprintf( out, ": %s\n", root->value->ident );
-//		} else if ( root->token == NUMBER ) {
-//			fprintf( out, ": %ld\n", root->value->number );
-//		} else {
-//			fprintf(stderr, "PARSER ERR: invalid associative value at token %s, depth %d",
-//					TOKENS[root->token], depth );
-//		}
-//	}
-//	fputs( "\n", out );
-////	productions_size = 0 means productions = NULL
-//	for ( int i = 0; i < root->productions_size; ++i ) {
-//		NodeAST *product_ptr = root->productions[i];
-//		if ( product_ptr == NULL) { break; }
-//		SubPrintTree( product_ptr, out, depth + 1 );
-//	}
+	for( int i = 0; i < depth; ++i ) { fputs( "\t", out ); }
+	fprintf( out, "%s", SYMBOL[root->symbol] );
+	if( root->annotation != NULL) {
+		int type = root->annotation->type;
+		if( type == ANN_IDENT ) {
+			fprintf( out, " : %s", root->annotation->value.ident );
+		} else if( type == ANN_NUM ) {
+			fprintf( out, " : %ld", root->annotation->value.number );
+		} else if( type == ANN_TOKEN ) {
+			fprintf( out, " : %s", TOKENS[root->annotation->value.token] );
+		} else {
+			fprintf(stderr, "PARSER ERR: invalid node annotation in symbol %s, depth %d \n",
+					SYMBOL[root->symbol], depth );
+		}
+	}
+	if( root->productions_size == 0 ) {
+		assert( root->productions == NULL );
+		fputs( "\n", out );
+	} else {
+		assert( root->productions != NULL );
+		fputs( " {\n", out );
+		for( int i = 0; i < root->productions_size; ++i ) {
+			NodeAST *product_ptr = root->productions[i];
+			if( product_ptr == NULL) { break; }
+			SubPrintTree( product_ptr, out, depth + 1 );
+		}
+		for( int i = 0; i < depth; ++i ) { fputs( "\t", out ); }
+		fputs( "}\n", out );
+	}
 }
 
 void PrintSyntaxTree( NodeAST *root, FILE *out ) {

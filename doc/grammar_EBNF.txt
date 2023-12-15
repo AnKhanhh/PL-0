@@ -9,8 +9,7 @@ statement = [	ident  [ '[' expression ']' ]  ':=' expression	|
                 'IF' condition 'THEN' statement 'ELSE' statement	|
                 'WHILE' condition 'DO' statement	|
                 'FOR'  ident ':=' expression 'TO' expression 'DO'	]
-condition = 'ODD' expression	|
-            expression	('='|'<'|'<='|'>'|'>='|'<>')	expression
+condition = expression [ ('='|'<'|'<='|'>'|'>='|'<>')	expression ]
 factor = ident	{ '[' expression ']' }	|  number  |  '(' expression ')'
-expression = ['+'|'-'] term  { ('+'|'-')  term }
+expression = [ '+' | '-' ] term  { ('+'|'-')  term }
 term = factor  { ('*'|'%'|'/')  factor }

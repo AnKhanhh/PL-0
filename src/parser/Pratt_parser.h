@@ -14,12 +14,16 @@ typedef enum {
 
 // return a node represent variable
 static NodeAST *parse_name( FILE *in, Symbol *sb, int *tc );
-// build a recursive call stack of itself, since all prefix is right-associated
+// build a recursive call stack of prefix that end when encounter a variable
 static NodeAST *parse_prefix( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence prev_precedence );
 // main expression parser
 static NodeAST *parse_expression( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence prev_precedence );
 // get precedence of current operator token, throw
 static EOperatorPrecedence this_precedence( ETokenType token, int *tc );
+// expression parser to be called by main parser
+NodeAST *expression( FILE *in, Symbol *sb, int *tc ) {
+	return parse_expression( in, sb, tc, PR_DEFAULT );
+}
 
 static NodeAST *parse_expression( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence prev_precedence ) {
 	NodeAST *left_expression = NULL;
@@ -28,7 +32,7 @@ static NodeAST *parse_expression( FILE *in, Symbol *sb, int *tc, EOperatorPreced
 		left_expression = parse_prefix( in, sb, tc, PR_DEFAULT );
 	} else if ( accept_tk( sb, IDENT )) {
 		left_expression = parse_name( in, sb, tc );
-	} else { ParserThrow( "variable expected", *tc ); }
+	} else { ParserThrow( "WARNING: expression not started with a variable", *tc ); }
 
 	NodeAST *operator = NULL;
 	while ( prev_precedence < this_precedence( sb->token, tc )) {
@@ -50,7 +54,7 @@ NodeAST *parse_name( FILE *in, Symbol *sb, int *tc ) {
 static NodeAST *parse_prefix( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence prev_precedence ) {
 	NodeAST *prefix = CreateTreeNode( U_OP, ANN_TOKEN, &(sb->tag.number));
 	NextSymbol( in, sb, tc );
-	NodeAST *right_expression = parse_expression( in, sb, tc, PR_PREFIX );
+	NodeAST *right_expression = parse_expression( in, sb, tc, prev_precedence );
 	InsertNode( prefix, right_expression );
 	return prefix;
 }
@@ -68,6 +72,7 @@ static EOperatorPrecedence this_precedence( ETokenType token, int *tc ) {
 		case PERCENT:
 			return PR_MOD;
 		default:
+			ParserThrow("WARNING: evoking precedence for non-operator", *tc);
 			return PR_DEFAULT;
 	}
 }

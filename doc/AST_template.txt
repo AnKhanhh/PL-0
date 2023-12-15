@@ -2,19 +2,19 @@ PRG_DCL : ident
 └── < block >
 
 < block >
-├── CST_DCL
+├── [ CST_DCL ]
 │   ├── BIN_OP : EQU
 │   │   ├── NAME : ident
 │   │   └── LITERAL : number
 │   └── BIN_OP : EQU
 │       └── ...
-├── VAR_DCL
+├── [ VAR_DCL ]
 │   ├── NAME : ident
 │   ├── ARR_DCL
 │   │   ├── NAME : ident
 │   │   └── LITERAL : number		// array size
 │   └── ...
-├── PROC_DCL : ident
+├── [ PROC_DCL : ident ]
 │   ├── PROC_ARG
 │   │   ├── NAME : ident			// arguments
 │   │   ├── NAME : ident
@@ -60,3 +60,11 @@ PRG_DCL : ident
     ├── < expression >				// from state
     ├── < expression >				// to state
     └── < statement >				// perform operation
+
+< condition >
+└── < expression >
+
+< condition >
+└── BIN_OP: < comparison operator >
+    ├── < expression >
+    └── < expression >
