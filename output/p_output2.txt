@@ -1,0 +1,56 @@
+PRG_DCL : input2 {
+	VAR_DCL {
+		NAME : x_1
+		NAME : x_2
+		NAME : y_
+	}
+	CODE_BLK {
+		BIN_OP : ASSIGN {
+			NAME : x_1
+			LITERAL : 3
+		}
+		BIN_OP : ASSIGN {
+			NAME : x_2
+			LITERAL : 10
+		}
+		CONDITIONAL {
+			BIN_OP : LEQ {
+				NAME : x_1
+				NAME : x_2
+			}
+			BIN_OP : ASSIGN {
+				NAME : y_
+				BIN_OP : PLUS {
+					NAME : x_1
+					NAME : x_2
+				}
+			}
+		}
+		WHILE_LOOP {
+			BIN_OP : LSS {
+				NAME : x_1
+				NAME : x_2
+			}
+			CODE_BLK {
+				BIN_OP : ASSIGN {
+					NAME : x_1
+					BIN_OP : PLUS {
+						NAME : x_1
+						LITERAL : 1
+					}
+				}
+				BIN_OP : ASSIGN {
+					NAME : y_
+					BIN_OP : PLUS {
+						NAME : y_
+						LITERAL : 3
+					}
+				}
+			}
+		}
+		BIN_OP : ASSIGN {
+			NAME : y_
+			NAME : x_1
+		}
+	}
+}
