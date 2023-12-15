@@ -12,55 +12,90 @@ typedef enum {
 	PR_EXP = 5, PR_PREFIX = 6, PR_POSTFIX = 7
 } EOperatorPrecedence;
 
-// return a node represent variable
-static NodeAST *parse_name( FILE *in, Symbol *sb, int *tc );
-// build a recursive call stack of prefix that end when encounter a variable
-static NodeAST *parse_prefix( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence prev_precedence );
 // main expression parser
-static NodeAST *parse_expression( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence prev_precedence );
-// get precedence of current operator token, throw
-static EOperatorPrecedence this_precedence( ETokenType token, int *tc );
+static NodeAST *parse_main( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence prev_precedence );
+// build a recursive call stack of prefix that end when encounter a variable
+static NodeAST *parse_sign( FILE *in, Symbol *sb, int *tc );
+// parse a single token into a symbol
+static NodeAST *parse_var( FILE *in, Symbol *sb, int *tc );
+static NodeAST *parse_num( FILE *in, Symbol *sb, int *tc );
+// parse grouping parentheses
+static NodeAST *parse_grouping( FILE *in, Symbol *sb, int *tc );
+// get precedence of an infix operator
+// prefix and grouping precedence is handled implicitly
+static EOperatorPrecedence get_precedence( ETokenType token, const int *tc );
 // expression parser to be called by main parser
 NodeAST *expression( FILE *in, Symbol *sb, int *tc ) {
-	return parse_expression( in, sb, tc, PR_DEFAULT );
+	return parse_main( in, sb, tc, PR_DEFAULT );
 }
 
-static NodeAST *parse_expression( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence prev_precedence ) {
+static NodeAST *parse_main( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence prev_precedence ) {
 	NodeAST *left_expression = NULL;
-//	check for prefix
-	if ( accept_tk( sb, PLUS ) || accept_tk( sb, MINUS )) {
-		left_expression = parse_prefix( in, sb, tc, PR_DEFAULT );
-	} else if ( accept_tk( sb, IDENT )) {
-		left_expression = parse_name( in, sb, tc );
-	} else { ParserThrow( "WARNING: expression not started with a variable", *tc ); }
-
-	NodeAST *operator = NULL;
-	while ( prev_precedence < this_precedence( sb->token, tc )) {
-		operator = CreateTreeNode( BIN_OP, ANN_TOKEN, &(sb->token));
-		InsertNode( operator, left_expression );
-		NodeAST *right_expression = parse_expression( in, sb, tc, this_precedence( sb->token, tc ));
-		InsertNode( operator, right_expression );
-		NextSymbol( in, sb, tc );
+//	all parse implicitly call NextSymbol()
+	switch( sb->token ) {
+		case PLUS:
+		case MINUS:
+			left_expression = parse_sign( in, sb, tc );
+			break;
+		case IDENT:
+			left_expression = parse_var( in, sb, tc );
+			break;
+		case NUMBER:
+			left_expression = parse_num( in, sb, tc );
+			break;
+		case LPARENT:
+			left_expression = parse_grouping( in, sb, tc );
+			break;
+		default:
+			printf( "Pratt parser debug: expression not started with a variable at token %d\n", *tc );
 	}
-	return operator;
+
+	while( prev_precedence < get_precedence( sb->token, tc )) {
+		NodeAST *operator = CreateTreeNode( BIN_OP, ANN_TOKEN, &( sb->token ));
+		NextSymbol( in, sb, tc );
+		InsertNode( operator, left_expression );
+
+		EOperatorPrecedence this_precedence = get_precedence( sb->token, tc );
+		InsertNode( operator, parse_main( in, sb, tc, this_precedence ));
+		left_expression = operator;
+	}
+	return left_expression;
 }
 
-NodeAST *parse_name( FILE *in, Symbol *sb, int *tc ) {
-	NodeAST *name = CreateTreeNode( NAME, ANN_IDENT, sb->tag.ident );
+static NodeAST *parse_sign( FILE *in, Symbol *sb, int *tc ) {
+	NodeAST *prefix = CreateTreeNode( U_OP, ANN_TOKEN, &( sb->tag.number ));
 	NextSymbol( in, sb, tc );
-	return name;
-}
-
-static NodeAST *parse_prefix( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence prev_precedence ) {
-	NodeAST *prefix = CreateTreeNode( U_OP, ANN_TOKEN, &(sb->tag.number));
-	NextSymbol( in, sb, tc );
-	NodeAST *right_expression = parse_expression( in, sb, tc, prev_precedence );
+	NodeAST *right_expression = parse_main( in, sb, tc, PR_PREFIX );
 	InsertNode( prefix, right_expression );
 	return prefix;
 }
 
-static EOperatorPrecedence this_precedence( ETokenType token, int *tc ) {
-	switch ( token ) {
+NodeAST *parse_var( FILE *in, Symbol *sb, int *tc ) {
+	NodeAST *var = CreateTreeNode( NAME, ANN_IDENT, sb->tag.ident );
+	NextSymbol( in, sb, tc );
+	return var;
+}
+
+NodeAST *parse_num( FILE *in, Symbol *sb, int *tc ) {
+	NodeAST *num = CreateTreeNode( LITERAL, ANN_NUM, &( sb->tag.number ));
+	NextSymbol( in, sb, tc );
+	return num;
+}
+
+static NodeAST *parse_grouping( FILE *in, Symbol *sb, int *tc ) {
+	NextSymbol( in, sb, tc );
+	NodeAST *group = parse_main( in, sb, tc, PR_DEFAULT );
+	if( accept_tk( sb, RPARENT )) {
+		NextSymbol( in, sb, tc );
+		return group;
+	} else {
+		ParserThrow( "expression grouping expected to end here", *tc );
+		return NULL;
+	}
+}
+
+static EOperatorPrecedence get_precedence( ETokenType token, const int *tc ) {
+	switch( token ) {
 		case PLUS:
 			return PR_ADD;
 		case MINUS:
@@ -72,7 +107,7 @@ static EOperatorPrecedence this_precedence( ETokenType token, int *tc ) {
 		case PERCENT:
 			return PR_MOD;
 		default:
-			ParserThrow("WARNING: evoking precedence for non-operator", *tc);
+			printf( "Pratt parser debug: an expression ended at token %d\n", *tc );
 			return PR_DEFAULT;
 	}
 }

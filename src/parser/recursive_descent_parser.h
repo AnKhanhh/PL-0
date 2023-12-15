@@ -23,8 +23,7 @@ void program( FILE *in, Symbol *sb, int *tc, NodeAST **root_ptr ) {
 			if( accept_tk( sb, SEMICOLON )) {
 				NextSymbol( in, sb, tc );
 				block( in, sb, tc, *root_ptr );
-				if( accept_tk( sb, PERIOD )) {
-				} else { ParserThrow( "PROGRAM terminating symbol", *tc ); }
+				if( accept_tk( sb, PERIOD )) {} else { ParserThrow( "PROGRAM terminating token expected", *tc ); }
 			} else { ParserThrow( "PROGRAM semicolon expected", *tc ); }
 		} else { ParserThrow( "program name expected", *tc ); }
 	} else { ParserThrow( "keyword PROGRAM expected", *tc ); }
@@ -40,8 +39,7 @@ void block( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 				NodeAST *const_name = CreateTreeNode( NAME, ANN_IDENT, sb->tag.ident );
 				NextSymbol( in, sb, tc );
 				if( accept_tk( sb, EQU )) {
-					ETokenType tk_type = EQU;
-					NodeAST *equals = CreateTreeNode( BIN_OP, ANN_TOKEN, &tk_type );
+					NodeAST *equals = CreateTreeNode( BIN_OP, ANN_TOKEN, &(sb->token) );
 					InsertNode( const_block, equals );
 					NextSymbol( in, sb, tc );
 					if( accept_tk( sb, NUMBER )) {
@@ -52,7 +50,9 @@ void block( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 				} else { ParserThrow( "equal operator expected", *tc ); }
 			} else { ParserThrow( "CONST name expected", *tc ); }
 		} while(accept_tk( sb, COMMA ));
-		if( accept_tk( sb, SEMICOLON )) {} else { ParserThrow( "missing CONST block semicolon", *tc ); }
+		if( accept_tk( sb, SEMICOLON )) {
+			NextSymbol( in, sb, tc );
+		} else { ParserThrow( "missing CONST block semicolon", *tc ); }
 	}
 	if( accept_tk( sb, VAR )) {
 		NodeAST *var_blk = CreateTreeNode( VAR_DCL, ANN_NULL, NULL);
@@ -79,7 +79,9 @@ void block( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 				}
 			} else { ParserThrow( "invalid name", *tc ); }
 		} while(accept_tk( sb, COMMA ));
-		if( accept_tk( sb, SEMICOLON )) {} else { printf( "semicolon missing at %d \n", *tc ); }
+		if( accept_tk( sb, SEMICOLON )) {
+			NextSymbol( in, sb, tc );
+		} else { printf( "semicolon missing at %d \n", *tc ); }
 	}
 	if( accept_tk( sb, PROCEDURE )) {
 		NextSymbol( in, sb, tc );
@@ -139,8 +141,8 @@ void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 			} else { ParserThrow( "right bracket expected", *tc ); }
 		} else { left_side = name; }
 		if( accept_tk( sb, ASSIGN )) {
-			ETokenType asn_tk = ASSIGN;
-			NodeAST *assignment = CreateTreeNode( BIN_OP, ANN_TOKEN, &asn_tk );
+			NodeAST *assignment = CreateTreeNode( BIN_OP, ANN_TOKEN, &(sb->token) );
+			NextSymbol( in, sb, tc );
 			InsertNode( root, assignment );
 			InsertNode( assignment, left_side );
 			InsertNode( assignment, expression( in, sb, tc ));
@@ -230,7 +232,4 @@ void condition( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 	} else { InsertNode( root, left_exp ); }
 }
 
-
 #endif //COMP_RECURSIVE_DESCENT_PARSER_H
-
-

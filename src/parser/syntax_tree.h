@@ -69,15 +69,15 @@
 //	size of production list increment by this amount every time it hits limit
 #define PROD_INITIAL_CAPACITY    2
 
-typedef enum {
+typedef enum ESymbolType {
 	INVALID_SB = 0, PRG_DCL, CST_DCL, VAR_DCL, ARR_DCL, PROC_DCL, CODE_BLK,
-	NAME, LITERAL, U_OP, BIN_OP,  SUBSCRIPT, PROC_EVK, PROC_ARG, CONDITIONAL,
+	NAME, LITERAL, U_OP, BIN_OP, SUBSCRIPT, PROC_EVK, PROC_ARG, CONDITIONAL,
 	FOR_LOOP, WHILE_LOOP
 } ESymbolType;
 
 const char *SYMBOL[] = {
 		"INVALID_SB", "PRG_DCL", "CST_DCL", "VAR_DCL", "ARR_DCL", "PROC_DCL", "CODE_BLK",
-		"NAME", "LITERAL", "U_OP", "BIN_OP",  "SUBSCRIPT", "PROC_EVK", "PROC_ARG", "CONDITIONAL",
+		"NAME", "LITERAL", "U_OP", "BIN_OP", "SUBSCRIPT", "PROC_EVK", "PROC_ARG", "CONDITIONAL",
 		"FOR_LOOP", "WHILE_LOOP"
 };
 //	associate value for number and indent symbol
@@ -111,8 +111,7 @@ void FreeSyntaxTree( NodeAST *root );
 void PrintSyntaxTree( NodeAST *root, FILE *out );
 
 NodeAST *InsertNode( NodeAST *root, NodeAST *child ) {
-	assert( child != NULL );
-	if( root == NULL) { return child; }
+	if( root == NULL || child == NULL) { return child; }
 	else if( root->productions_size == 0 ) {
 		root->productions_size = PROD_INITIAL_CAPACITY;
 		if(( root->productions = calloc( PROD_INITIAL_CAPACITY, sizeof( NodeAST * ))) == NULL) {
