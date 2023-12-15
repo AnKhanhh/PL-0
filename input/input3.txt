@@ -1,0 +1,14 @@
+program Pratt_test;
+
+	var a, b, c, result1, result2, result3;
+
+	begin
+		a := 10;
+		b := -5;
+		c := 3;
+
+		result1 := ((a + b) * -c / -2 % -4) + ---a;
+		result2 := a + (-b * c / -2 - -3) * (-a + (b - c));
+		result3 := -(-a + b * (-c / -2) % -(-4)) * (-a + -(-b) - c / -(-2));
+	end
+.

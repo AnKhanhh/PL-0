@@ -63,7 +63,7 @@ static NodeAST *parse_main( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence p
 }
 
 static NodeAST *parse_sign( FILE *in, Symbol *sb, int *tc ) {
-	NodeAST *prefix = CreateTreeNode( U_OP, ANN_TOKEN, &( sb->tag.number ));
+	NodeAST *prefix = CreateTreeNode( U_OP, ANN_TOKEN, &( sb->token ));
 	NextSymbol( in, sb, tc );
 	NodeAST *right_expression = parse_main( in, sb, tc, PR_PREFIX );
 	InsertNode( prefix, right_expression );

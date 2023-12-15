@@ -15,7 +15,7 @@ PRG_DCL : ident
 │   │   └── LITERAL : number		// array size
 │   └── ...
 ├── [ PROC_DCL : ident ]
-│   ├── PROC_ARG
+│   ├── [ PROC_ARG ]
 │   │   ├── NAME : ident			// arguments
 │   │   ├── NAME : ident
 │   │   └── ...
