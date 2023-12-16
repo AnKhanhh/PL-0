@@ -5,9 +5,9 @@
 //	TODO: write dedicated semanlyzer
 //	TODO: make error-recovery parser
 
-#define INPUT_FILE_PATH "C:/Users/admin/CLionProjects/comp/input/input3.txt"
-#define LEXER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/l_output3.txt"
-#define PARSER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/p_output3.txt"
+#define INPUT_FILE_PATH "C:/Users/admin/CLionProjects/comp/input/input2.txt"
+#define LEXER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/l_output2.txt"
+#define PARSER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/p_output2.txt"
 
 int main( void ) {
 	FILE *f_in, *f_lexer, *f_parser;

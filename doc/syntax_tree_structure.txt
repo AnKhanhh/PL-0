@@ -21,15 +21,14 @@ PRG_DCL : ident
 │   │   └── ...
 │   └── < block >
 └── CODE_BLK
-    ├── < statement >
-    ├── < statement >
-    └── ...
+    ├── < statement > ;
+    ├── ... ;
+    └── < statement >
 
 < statement >
 └── BIN_OP : ASSIGN
     ├── NAME : ident
     └── < expression >				// assignment value
-
 < statement >
 └── BIN_OP : ASSIGN
     ├── SUBSCRIPT
@@ -42,6 +41,12 @@ PRG_DCL : ident
     ├── < expression >				// parameters
     ├── < expression >
     └── ...
+
+< statement >
+└── CODE_BLK
+    ├── < statement > ;				// parameters
+    ├── ... ;
+    └── < statement >
 
 < statement >
 └── CONDITIONAL

@@ -4,18 +4,18 @@ program input_1;
 
     procedure test(var x; var y);
         begin
-            x := z;
-            y := x + 1
+		x := z;
+		y := x + 1
         end
     ;
 
     begin
-        x := 2 * 2;
-        y := x - 1;
+	x := 2 * 2;
+	y := x - 1;
 
-        call test(x,y);
+	call test(x,y);
 
-        x := x / 2;
-        y := (z + 1) / (8 * 2)
+	x := x / 2;
+	y := (z + 1) / (8 * 2)
     end
 .

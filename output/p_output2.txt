@@ -1,8 +1,8 @@
-PRG_DCL : input2 {
+PRG_DCL : control_flow_test {
 	VAR_DCL {
 		NAME : x_1
 		NAME : x_2
-		NAME : y_
+		NAME : x_3
 	}
 	CODE_BLK {
 		BIN_OP : ASSIGN {
@@ -11,7 +11,26 @@ PRG_DCL : input2 {
 		}
 		BIN_OP : ASSIGN {
 			NAME : x_2
-			LITERAL : 10
+			U_OP : MINUS {
+				LITERAL : 10
+			}
+		}
+		FOR_LOOP {
+			NAME : x_3
+			BIN_OP : EQU {
+				NAME : x_1
+				LITERAL : 3
+			}
+			U_OP : MINUS {
+				NAME : x_2
+			}
+			BIN_OP : ASSIGN {
+				NAME : x_3
+				BIN_OP : PLUS {
+					NAME : x_3
+					LITERAL : 1
+				}
+			}
 		}
 		CONDITIONAL {
 			BIN_OP : LEQ {
