@@ -11,7 +11,6 @@
 void program( FILE *in, Symbol *sb, int *tc, NodeAST **root_ptr );
 void block( FILE *in, Symbol *sb, int *tc, NodeAST *root );
 void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root );
-void condition( FILE *in, Symbol *sb, int *tc, NodeAST *root );
 
 void program( FILE *in, Symbol *sb, int *tc, NodeAST **root_ptr ) {
 	NextSymbol( in, sb, tc );
@@ -39,7 +38,7 @@ void block( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 				NodeAST *const_name = CreateTreeNode( NAME, ANN_IDENT, sb->tag.ident );
 				NextSymbol( in, sb, tc );
 				if( accept_tk( sb, EQU )) {
-					NodeAST *equals = CreateTreeNode( BIN_OP, ANN_TOKEN, &(sb->token) );
+					NodeAST *equals = CreateTreeNode( BIN_OP, ANN_TOKEN, &( sb->token ));
 					InsertNode( const_block, equals );
 					NextSymbol( in, sb, tc );
 					if( accept_tk( sb, NUMBER )) {
@@ -141,7 +140,7 @@ void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 			} else { ParserThrow( "right bracket expected", *tc ); }
 		} else { left_side = name; }
 		if( accept_tk( sb, ASSIGN )) {
-			NodeAST *assignment = CreateTreeNode( BIN_OP, ANN_TOKEN, &(sb->token) );
+			NodeAST *assignment = CreateTreeNode( BIN_OP, ANN_TOKEN, &( sb->token ));
 			NextSymbol( in, sb, tc );
 			InsertNode( root, assignment );
 			InsertNode( assignment, left_side );
@@ -177,7 +176,8 @@ void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 		NextSymbol( in, sb, tc );
 		NodeAST *conditional = CreateTreeNode( CONDITIONAL, ANN_NULL, NULL);
 		InsertNode( root, conditional );
-		condition( in, sb, tc, conditional );
+		NodeAST *cond_exp = expression( in, sb, tc );
+		InsertNode( conditional, cond_exp );
 		if( accept_tk( sb, THEN )) {
 			NextSymbol( in, sb, tc );
 			statement( in, sb, tc, conditional );
@@ -190,7 +190,7 @@ void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 		NextSymbol( in, sb, tc );
 		NodeAST *while_loop = CreateTreeNode( WHILE_LOOP, ANN_NULL, NULL);
 		InsertNode( root, while_loop );
-		condition( in, sb, tc, while_loop );
+		InsertNode( while_loop, expression( in, sb, tc ));
 		if( accept_tk( sb, DO )) {
 			NextSymbol( in, sb, tc );
 			statement( in, sb, tc, while_loop );
@@ -216,20 +216,6 @@ void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 			} else { ParserThrow( "assignment operator expected in FOR loop", *tc ); }
 		} else { ParserThrow( "invalid iterator name", *tc ); }
 	}
-}
-
-void condition( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
-	NodeAST *left_exp = expression( in, sb, tc );
-	if( accept_tk( sb, EQU ) || accept_tk( sb, GTR ) ||
-		accept_tk( sb, GEQ ) || accept_tk( sb, NEQ ) ||
-		accept_tk( sb, LSS ) || accept_tk( sb, LEQ )) {
-		NodeAST *comparator = CreateTreeNode( BIN_OP, ANN_TOKEN, &( sb->token ));
-		NextSymbol( in, sb, tc );
-		NodeAST *right_exp = expression( in, sb, tc );
-		InsertNode( root, comparator );
-		InsertNode( comparator, left_exp );
-		InsertNode( comparator, right_exp );
-	} else { InsertNode( root, left_exp ); }
 }
 
 #endif //COMP_RECURSIVE_DESCENT_PARSER_H

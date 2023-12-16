@@ -5,5 +5,5 @@ two-letter operator: '<>', '<=', '>=', ':='
 keyword: 'BEGIN', 'CALL', 'CONST', 'DO', 'ELSE', 'END', 'FOR', 'IF',
             'PROCEDURE', 'PROGRAM', 'THEN', 'TO', 'VAR', 'WHILE'
 
-mathematical expression support: binary operator +-*/%, signed prefix +-, grouping ()
-support only integer and one-dimensional array
+operator: binary operator +-*/%, signed prefix +-, grouping ()
+data type: integer and one-dimensional array

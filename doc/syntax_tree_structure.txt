@@ -45,13 +45,13 @@ PRG_DCL : ident
 
 < statement >
 └── CONDITIONAL
-    ├── < condition >				// if evaluate to true
+    ├── < expression >				// if evaluate to non-zero
     ├── < statement >				// then perform operation
     └── [ < statement > ]			// else perform operation ( optional )
 
 < statement >
 └── WHILE_LOOP
-    ├── < condition >				// while evaluate to true
+    ├── < expression >				// while evaluate to non-zero
     └── < statement >				// perform operation
 
 < statement >
@@ -61,10 +61,3 @@ PRG_DCL : ident
     ├── < expression >				// to state
     └── < statement >				// perform operation
 
-< condition >
-└── < expression >
-
-< condition >
-└── BIN_OP: < comparison operator >
-    ├── < expression >
-    └── < expression >

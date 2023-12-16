@@ -1,6 +1,5 @@
 // pratt parser for arithmetic expression only
 // PL0 don't have return type so inline function call no supported
-// TODO: implement exponent and increment/decrement token, support postfix operator
 
 #ifndef COMP_PRATT_PARSER_H
 #define COMP_PRATT_PARSER_H
@@ -8,8 +7,7 @@
 #include "parse_helper.h"
 
 typedef enum {
-	PR_DEFAULT = 0, PR_ASSIGN = 1, PR_ADD = 3, PR_SUB = 3, PR_MULTI = 4, PR_DIV = 4, PR_MOD = 4,
-	PR_EXP = 5, PR_PREFIX = 6, PR_POSTFIX = 7
+	PR_DEFAULT = 0, PR_RELATIONAL = 1, PR_EQUALITY = 2, PR_ADDITIVE = 3, PR_MULTIPLICATIVE = 4, PR_PREFIX = 6, PR_POSTFIX = 7
 } EOperatorPrecedence;
 
 // main expression parser
@@ -23,7 +21,7 @@ static NodeAST *parse_num( FILE *in, Symbol *sb, int *tc );
 static NodeAST *parse_grouping( FILE *in, Symbol *sb, int *tc );
 // get precedence of an infix operator
 // prefix and grouping precedence is handled implicitly
-static EOperatorPrecedence get_precedence( ETokenType token, const int *tc );
+static EOperatorPrecedence get_precedence( ETokenType token );
 // expression parser to be called by main parser
 NodeAST *expression( FILE *in, Symbol *sb, int *tc ) {
 	return parse_main( in, sb, tc, PR_DEFAULT );
@@ -50,12 +48,12 @@ static NodeAST *parse_main( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence p
 			printf( "Pratt parser debug: expression not started with a variable at token %d\n", *tc );
 	}
 
-	while( prev_precedence < get_precedence( sb->token, tc )) {
+	while( prev_precedence < get_precedence( sb->token )) {
 		NodeAST *operator = CreateTreeNode( BIN_OP, ANN_TOKEN, &( sb->token ));
 		NextSymbol( in, sb, tc );
 		InsertNode( operator, left_expression );
 
-		EOperatorPrecedence this_precedence = get_precedence( sb->token, tc );
+		EOperatorPrecedence this_precedence = get_precedence( sb->token );
 		InsertNode( operator, parse_main( in, sb, tc, this_precedence ));
 		left_expression = operator;
 	}
@@ -94,20 +92,25 @@ static NodeAST *parse_grouping( FILE *in, Symbol *sb, int *tc ) {
 	}
 }
 
-static EOperatorPrecedence get_precedence( ETokenType token, const int *tc ) {
+static EOperatorPrecedence get_precedence( ETokenType token ) {
 	switch( token ) {
+		case EQU:
+		case NEQ:
+			return PR_EQUALITY;
+		case LSS:
+		case GTR:
+		case LEQ:
+		case GEQ:
+			return PR_RELATIONAL;
 		case PLUS:
-			return PR_ADD;
 		case MINUS:
-			return PR_SUB;
+			return PR_ADDITIVE;
 		case TIMES:
-			return PR_MULTI;
 		case SLASH:
-			return PR_DIV;
 		case PERCENT:
-			return PR_MOD;
+			return PR_MULTIPLICATIVE;
+		case RPARENT:
 		default:
-			printf( "Pratt parser debug: an expression ended at token %d\n", *tc );
 			return PR_DEFAULT;
 	}
 }

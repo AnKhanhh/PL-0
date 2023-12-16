@@ -6,10 +6,6 @@ block = [	'CONST' ident '=' number  {',' ident '=' number}  ';'	]
 statement = [	ident  [ '[' expression ']' ]  ':=' expression	|
                 'CALL'  ident  [ '(' expression  {',' expression} ')' ]	|
                 'BEGIN'  statement  {';' statement}  'END'	|
-                'IF' condition 'THEN' statement 'ELSE' statement	|
-                'WHILE' condition 'DO' statement	|
+                'IF' expression 'THEN' statement 'ELSE' statement	|
+                'WHILE' expression 'DO' statement	|
                 'FOR'  ident ':=' expression 'TO' expression 'DO'	]
-condition = expression [ ('='|'<'|'<='|'>'|'>='|'<>')	expression ]
-factor = ident	{ '[' expression ']' }	|  number  |  '(' expression ')'
-expression = [ '+' | '-' ] term  { ('+'|'-')  term }
-term = factor  { ('*'|'%'|'/')  factor }
