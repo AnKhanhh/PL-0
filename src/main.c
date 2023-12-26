@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "lexer/lexer.c"
 #include "parser/parser.c"
+#include "semanlyzr/semanlyzer.c"
 
 //	TODO: write dedicated semanlyzer
 //	TODO: make error-recovery parser

@@ -1,3 +1,6 @@
+// recursive descent parser for program structure
+// pratt (TDOP) parser for arithmetic expression
+
 #include "recursive_descent_parser.h"
 
 void SyntaxAnalysis( FILE *in, FILE *out, NodeAST **root_ptr ) {

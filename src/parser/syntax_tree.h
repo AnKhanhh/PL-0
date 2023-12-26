@@ -1,3 +1,5 @@
+//  TODO: InsertNode pass child by value
+
 #ifndef COMP_TREE_GEN_H
 #define COMP_TREE_GEN_H
 
@@ -41,7 +43,7 @@ typedef struct NodeAST {
 	int productions_size;
 } NodeAST;
 
-//	insert new node to production list, return pointer to topmost node
+//	insert new node to production list, return pointer to topmost node or null if insertion failed
 NodeAST *InsertNode( NodeAST *root, NodeAST *child );
 // create a node
 NodeAST *CreateTreeNode( ESymbolType sb_type, int ann_type, void *ann_ptr );

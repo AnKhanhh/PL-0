@@ -1,5 +1,4 @@
-// pratt parser for arithmetic expression only
-// PL0 don't have return type so inline function call no supported
+// PL0 functions don't have return type so inline function call is not supported
 
 #ifndef COMP_PRATT_PARSER_H
 #define COMP_PRATT_PARSER_H
