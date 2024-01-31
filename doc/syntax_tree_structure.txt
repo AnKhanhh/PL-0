@@ -4,19 +4,19 @@ PRG_DCL : ident
 < block >
 ├── [ CST_DCL ]
 │   ├── BIN_OP : EQU
-│   │   ├── NAME : ident
-│   │   └── LITERAL : number
+│   │   ├── NAME : ident            // constant name
+│   │   └── LITERAL : number        // constant value
 │   └── BIN_OP : EQU
 │       └── ...
 ├── [ VAR_DCL ]
-│   ├── NAME : ident
+│   ├── NAME : ident                // variable name
 │   ├── ARR_DCL
-│   │   ├── NAME : ident
+│   │   ├── NAME : ident            // array name
 │   │   └── LITERAL : number		// array size
 │   └── ...
-├── [ PROC_DCL : ident ]
+├── [ PROC_DCL : ident ]			// function name
 │   ├── [ PROC_ARG ]
-│   │   ├── NAME : ident			// arguments
+│   │   ├── NAME : ident			// parameter name
 │   │   ├── NAME : ident
 │   │   └── ...
 │   └── < block >
@@ -27,24 +27,24 @@ PRG_DCL : ident
 
 < statement >
 └── BIN_OP : ASSIGN
-    ├── NAME : ident
+    ├── NAME : ident				// variable name
     └── < expression >				// assignment value
 < statement >
 └── BIN_OP : ASSIGN
     ├── SUBSCRIPT
-    │   ├── NAME : ident
+    │   ├── NAME : ident			// array name
     │   └── < expression >			// array index ( < array size )
     └── < expression >				// assignment value
 
 < statement >
 └── PROC_EVK : ident
-    ├── < expression >				// parameters
+    ├── < expression >				// function parameters
     ├── < expression >
     └── ...
 
 < statement >
 └── CODE_BLK
-    ├── < statement > ;				// parameters
+    ├── < statement > ;
     ├── ... ;
     └── < statement >
 
@@ -61,8 +61,8 @@ PRG_DCL : ident
 
 < statement >
 └── FOR_LOOP
-    ├── NAME : ident				// for variable i
-    ├── < expression >				// from state
-    ├── < expression >				// to state
+    ├── NAME : ident				// for variable i, implicitly incremented by 1 each loop
+    ├── < expression >				// from value
+    ├── < expression >				// to value
     └── < statement >				// perform operation
 
