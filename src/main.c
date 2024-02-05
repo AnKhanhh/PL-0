@@ -3,8 +3,7 @@
 #include "parser/parser.c"
 #include "semanlyzr/semanlyzer.c"
 
-//	TODO: write dedicated semanlyzer
-//	TODO: make error-recovery parser
+//	TODO: make an error-recovery parser
 
 #define INPUT_FILE_PATH "C:/Users/admin/CLionProjects/comp/input/input2.txt"
 #define LEXER_FILE_PATH "C:/Users/admin/CLionProjects/comp/output/l_output2.txt"

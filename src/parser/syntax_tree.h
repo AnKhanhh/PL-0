@@ -39,8 +39,8 @@ typedef struct NodeAST {
 	ESymbolType symbol;
 	Annotation *annotation;
 	//	struct NodeAST *parent;
-	struct NodeAST **productions;
-	int productions_size;
+	struct NodeAST **children;
+	int child_count;
 } NodeAST;
 
 //	insert new node to production list, return pointer to topmost node or null if insertion failed
@@ -54,25 +54,25 @@ void PrintSyntaxTree( NodeAST *root, FILE *out );
 
 NodeAST *InsertNode( NodeAST *root, NodeAST *child ) {
 	if( root == NULL || child == NULL) { return child; }
-	else if( root->productions_size == 0 ) {
-		root->productions_size = PROD_INITIAL_CAPACITY;
-		if(( root->productions = calloc( PROD_INITIAL_CAPACITY, sizeof( NodeAST * ))) == NULL) {
+	else if(root->child_count == 0 ) {
+		root->child_count = PROD_INITIAL_CAPACITY;
+		if(( root->children = calloc(PROD_INITIAL_CAPACITY, sizeof( NodeAST * ))) == NULL) {
 			fprintf(stderr, "PARSER ERR: calloc() failure for %zu bytes\n", PROD_INITIAL_CAPACITY * sizeof( NodeAST * ));
 		}
-		root->productions[0] = child;
+		root->children[0] = child;
 		return root;
 	} else {
 //		child_node->parent = root;
-		int end_index = root->productions_size - 1;
+		int end_index = root->child_count - 1;
 		int i;
-		for( i = end_index; i >= 0; --i ) { if( root->productions[i] != NULL) { break; }}
+		for( i = end_index; i >= 0; --i ) { if(root->children[i] != NULL) { break; }}
 		if( i < end_index ) {
-			root->productions[i + 1] = child;
+			root->children[i + 1] = child;
 		} else {
-			root->productions_size += PROD_INITIAL_CAPACITY;
-			root->productions = realloc( root->productions, root->productions_size * sizeof( NodeAST * ));
-			root->productions[end_index + 1] = child;
-			for( int j = end_index + 2; j < root->productions_size; ++j ) { root->productions[j] = NULL; }
+			root->child_count += PROD_INITIAL_CAPACITY;
+			root->children = realloc(root->children, root->child_count * sizeof( NodeAST * ));
+			root->children[end_index + 1] = child;
+			for(int j = end_index + 2; j < root->child_count; ++j ) { root->children[j] = NULL; }
 			return root;
 		}
 	}
@@ -99,12 +99,12 @@ NodeAST *CreateTreeNode( ESymbolType sb_type, int ann_type, void *ann_ptr ) {
 }
 
 void FreeSyntaxTree( NodeAST *root ) {
-	for( int i = 0; i < root->productions_size; ++i ) {
-		if( root->productions[i] == NULL) { break; }
-		FreeSyntaxTree( root->productions[i] );
+	for(int i = 0; i < root->child_count; ++i ) {
+		if(root->children[i] == NULL) { break; }
+		FreeSyntaxTree( root->children[i] );
 	}
 	free( root->annotation );
-	free( root->productions );
+	free( root->children );
 	free( root );
 }
 
@@ -124,14 +124,14 @@ static void SubPrintTree( NodeAST *root, FILE *out, int depth ) {
 					SYMBOL[root->symbol], depth );
 		}
 	}
-	if( root->productions_size == 0 ) {
-		assert( root->productions == NULL );
+	if(root->child_count == 0 ) {
+		assert(root->children == NULL );
 		fputs( "\n", out );
 	} else {
-		assert( root->productions != NULL );
+		assert(root->children != NULL );
 		fputs( " {\n", out );
-		for( int i = 0; i < root->productions_size; ++i ) {
-			NodeAST *product_ptr = root->productions[i];
+		for(int i = 0; i < root->child_count; ++i ) {
+			NodeAST *product_ptr = root->children[i];
 			if( product_ptr == NULL) { break; }
 			SubPrintTree( product_ptr, out, depth + 1 );
 		}
