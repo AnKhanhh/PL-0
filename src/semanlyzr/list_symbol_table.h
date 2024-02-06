@@ -1,6 +1,10 @@
 #ifndef COMP_LIST_SYMBOL_TABLE_H
 #define COMP_LIST_SYMBOL_TABLE_H
 
+const char *IDENTTYPE[] = {
+		"SB_INT", "SB_CONST_INT", "SB_FUNCTION", "SB_ARRAY"
+};
+
 typedef struct SymbolEntry {
     char ident[LEXEME_LENGTH];
     enum EIdentType {
