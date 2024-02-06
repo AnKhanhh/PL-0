@@ -2,7 +2,7 @@
 //
 
 #include "list_semantic_check.h"
-
+#include "list_symbol_table.h"
 
 void SemanticAnalysis(NodeAST* root_AST, FILE* out) {
 
