@@ -3,18 +3,18 @@ PRG_DCL : ident
 
 < block >
 ├── [ CST_DCL ]
-│   ├── BIN_OP : EQU
+│   ├── BIN_OP : EQU				- semantic check here -
 │   │   ├── NAME : ident            // constant name
 │   │   └── LITERAL : number        // constant value
 │   └── BIN_OP : EQU
 │       └── ...
 ├── [ VAR_DCL ]
-│   ├── NAME : ident                // variable name
-│   ├── ARR_DCL
+│   ├── NAME : ident                - semantic check here -
+│   ├── ARR_DCL						- semantic check here -
 │   │   ├── NAME : ident            // array name
 │   │   └── LITERAL : number		// array size
 │   └── ...
-├── [ PROC_DCL : ident ]			// function name
+├── [ PROC_DCL : ident ]			- semantic check here -
 │   ├── [ PROC_ARG ]
 │   │   ├── NAME : ident			// parameter name
 │   │   ├── NAME : ident
