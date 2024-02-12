@@ -22,7 +22,7 @@ void LexicalAnalysis( FILE *in, FILE *out ) {
 			if ((t_name = IsKeyword( lexeme ))) {
 				fputs( GenerateToken( token, lexeme, t_name ), out );
 			} else {
-				fputs( GenerateToken( token, lexeme, IDENT ), out );
+				fputs(GenerateToken(token, lexeme, TK_IDENT ), out );
 			}
 //			integer check
 		} else if ( isdigit( c )) {
@@ -33,7 +33,7 @@ void LexicalAnalysis( FILE *in, FILE *out ) {
 			}
 			c = lexeme[i];
 			lexeme[i] = 0;
-			fputs( GenerateToken( token, lexeme, NUMBER ), out );
+			fputs(GenerateToken(token, lexeme, TK_NUMBER ), out );
 //			operator check
 		} else {
 			lexeme[0] = c;
@@ -49,7 +49,7 @@ void LexicalAnalysis( FILE *in, FILE *out ) {
 			} else {
 				c = lexeme[1];
 				lexeme[1] = 0;
-				fputs( GenerateToken( token, lexeme, INVALID_TK ), out );
+				fputs( GenerateToken( token, lexeme, 0 ), out );
 			}
 		}
 	}

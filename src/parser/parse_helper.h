@@ -28,9 +28,9 @@ typedef struct {
 	sb->token = strtol( strtok( line, " " ), NULL, 10 );
 //	token counter to pinpoint syntax error
 	(*tc)++;
-	if ( sb->token == IDENT ) {
+	if (sb->token == TK_IDENT ) {
 		strncpy( sb->tag.ident, strtok(NULL, " " ), LEXEME_LENGTH );
-	} else if ( sb->token == NUMBER ) {
+	} else if (sb->token == TK_NUMBER ) {
 		sb->tag.number = strtol( strtok(NULL, " " ), NULL, 10 );
 	}
 	return 1;

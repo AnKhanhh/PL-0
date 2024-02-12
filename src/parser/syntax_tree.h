@@ -10,19 +10,19 @@
 
 //	size of production list increment by this amount every time it hits limit
 #define PROD_INITIAL_CAPACITY    2
-
+//	types of AST node
 typedef enum ESymbolType {
-	INVALID_SB = 0, PRG_DCL, CST_DCL, VAR_DCL, ARR_DCL, PROC_DCL, CODE_BLK,
-	NAME, LITERAL, U_OP, BIN_OP, SUBSCRIPT, PROC_EVK, PROC_ARG, CONDITIONAL,
-	FOR_LOOP, WHILE_LOOP
+	ND_PRG_DCL = 1, ND_CST_DCL, ND_VAR_DCL, ND_ARR_DCL, ND_PROC_DCL, ND_CODE_BLK,
+	ND_NAME, ND_LITERAL, ND_UNARY_OP, ND_BINARY_OP, ND_SUBSCRIPT, ND_FUNC_CALL, ND_FUNC_ARG,
+	ND_CONDITIONAL, ND_FOR_LOOP, ND_WHILE_LOOP
 } ESymbolType;
 
 const char *SYMBOL[] = {
-		"INVALID_SB", "PRG_DCL", "CST_DCL", "VAR_DCL", "ARR_DCL", "PROC_DCL", "CODE_BLK",
-		"NAME", "LITERAL", "U_OP", "BIN_OP", "SUBSCRIPT", "PROC_EVK", "PROC_ARG", "CONDITIONAL",
-		"FOR_LOOP", "WHILE_LOOP"
+		"", "ND_PRG_DCL", "ND_CST_DCL", "ND_VAR_DCL", "ND_ARR_DCL", "ND_PROC_DCL", "ND_CODE_BLK",
+		"ND_NAME", "ND_LITERAL", "ND_UNARY_OP", "ND_BINARY_OP", "ND_SUBSCRIPT", "ND_FUNC_CALL", "ND_FUNC_ARG",
+		"ND_CONDITIONAL", "ND_FOR_LOOP", "ND_WHILE_LOOP"
 };
-//	associate value for number and indent symbol
+//	associate value for number and indent type
 typedef struct Annotation {
 	union {
 		char ident[LEXEME_LENGTH];
@@ -36,7 +36,7 @@ typedef struct Annotation {
 
 //	Symbol can be terminal or non-terminal
 typedef struct NodeAST {
-	ESymbolType symbol;
+	ESymbolType type;
 	Annotation *annotation;
 	//	struct NodeAST *parent;
 	struct NodeAST **children;
@@ -81,7 +81,7 @@ NodeAST *InsertNode(NodeAST *root, NodeAST *child) {
 
 NodeAST *CreateTreeNode(ESymbolType sb_type, int ann_type, void *ann_ptr) {
 	NodeAST *new_node = calloc(1, sizeof(NodeAST));
-	new_node->symbol = sb_type;
+	new_node->type = sb_type;
 	if (!ann_type) {
 		assert(ann_ptr == NULL);
 		return new_node;
@@ -110,7 +110,7 @@ void FreeSyntaxTree(NodeAST *root) {
 
 static void SubPrintTree(NodeAST *root, FILE *out, int depth) {
 	for (int i = 0; i < depth; ++i) { fputs("\t", out); }
-	fprintf(out, "%s", SYMBOL[root->symbol]);
+	fprintf(out, "%s", SYMBOL[root->type]);
 	if (root->annotation != NULL) {
 		int type = root->annotation->type;
 		if (type == ANN_IDENT) {
@@ -120,8 +120,8 @@ static void SubPrintTree(NodeAST *root, FILE *out, int depth) {
 		} else if (type == ANN_TOKEN) {
 			fprintf(out, " : %s", TOKENS[root->annotation->value.token]);
 		} else {
-			fprintf(stderr, "PARSER ERR: invalid node annotation in symbol %s, depth %d \n",
-					SYMBOL[root->symbol], depth);
+			fprintf(stderr, "PARSER ERR: invalid node annotation in type %s, depth %d \n",
+					SYMBOL[root->type], depth);
 		}
 	}
 	if (root->child_count == 0) {

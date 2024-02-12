@@ -5,7 +5,7 @@
 #include "/parser/syntax_tree.h"
 
 // search for the nearest table entry with a similar name using strcmp()
-// use scope_found to extract the pointer to the containing symbol table
+// use scope_found to extract the pointer to the containing type table
 static SymbolEntry *search_subroutine(SymbolTable *root, char *var_name, bool search_local_scope_only, SymbolTable **scope_found);
 
 SymbolEntry *SearchLocal(SymbolTable *root, char *var_name, SymbolTable **scope_found) {
@@ -15,12 +15,12 @@ SymbolEntry *SearchLocal(SymbolTable *root, char *var_name, SymbolTable **scope_
 SymbolEntry *SearchGlobal(SymbolTable *root, char *var_name, SymbolTable **scope_found) {
 	return search_subroutine(root, var_name, false, scope_found);
 }
-//	except for the program name, all variable, constant, function and array share the same namespace
+//	all variable, constant, function and array share the same namespace
 //	PL/0 is declarative, meaning it has a separate declaration section, simplifying declaration check
 //	returns false on redeclaration error
 bool OnDeclarationSemantic(NodeAST *node, SymbolTable *root);
 
-bool OnInvocationSemantic(NodeAST *node, SymbolTable *root);
+bool OnAssignmentSemantic(NodeAST *node, SymbolTable *root);
 
 bool OnEvaluationSemantic(NodeAST *node, SymbolTable *root);
 
@@ -44,23 +44,25 @@ bool OnDeclarationSemantic(NodeAST *node, SymbolTable *root) {
 	enum EIdentType type = 0;
 	SymbolTable *result_table = NULL;
 	SymbolEntry *result_entry = NULL;
-	switch (node->symbol) {
-		case NAME:
+	switch (node->type) {
+		case ND_NAME:
 			assert(node->children[0] == NULL);
 			ident = node->annotation->value.ident;
 			type = SB_INT;
 			break;
-		case ARR_DCL:
-			assert(node->children[0]->symbol == NAME && node->children[1]->symbol == LITERAL);
+		case ND_ARR_DCL:
+			assert(node->children[0]->type == ND_NAME && node->children[1]->type == ND_LITERAL);
 			ident = node->children[0]->annotation->value.ident;
 			type = SB_ARRAY;
 			break;
-		case BIN_OP:
+		case ND_BINARY_OP:
+			assert(node->annotation->value.token == TK_EQU);
+			assert(node->children[0]->type == ND_NAME && node->children[1]->type == ND_LITERAL);
 			ident = node->children[0]->annotation->value.ident;
 			type = SB_CONST_INT;
 			break;
-		case PROC_DCL:
-			assert(node->children[0]->symbol == PROC_ARG);
+		case ND_PROC_DCL:
+			assert(node->children[0]->type == ND_FUNC_ARG);
 			ident = node->annotation->value.ident;
 			type = SB_FUNCTION;
 			break;
@@ -89,5 +91,13 @@ bool OnDeclarationSemantic(NodeAST *node, SymbolTable *root) {
 	}
 	return true;
 }
+
+bool OnAssignmentSemantic(NodeAST *node, SymbolTable *root) {
+	assert(node->type == ND_BINARY_OP && node->annotation->value.token == TK_ASSIGN);
+	char *ident = NULL;
+	SymbolTable *result_table = NULL;
+	SymbolEntry *result_entry = NULL;
+}
+
 
 #endif //COMP_LIST_SEMANTIC_CHECK_H

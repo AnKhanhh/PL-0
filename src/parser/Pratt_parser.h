@@ -13,7 +13,7 @@ typedef enum {
 static NodeAST *parse_main( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence prev_precedence );
 // build a recursive call stack of prefix that end when encounter a variable
 static NodeAST *parse_sign( FILE *in, Symbol *sb, int *tc );
-// parse a single token into a symbol
+// parse a single token into a type
 static NodeAST *parse_var( FILE *in, Symbol *sb, int *tc );
 static NodeAST *parse_num( FILE *in, Symbol *sb, int *tc );
 // parse grouping parentheses
@@ -30,17 +30,17 @@ static NodeAST *parse_main( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence p
 	NodeAST *left_expression = NULL;
 //	all parse implicitly call NextSymbol()
 	switch( sb->token ) {
-		case PLUS:
-		case MINUS:
+		case TK_PLUS:
+		case TK_MINUS:
 			left_expression = parse_sign( in, sb, tc );
 			break;
-		case IDENT:
+		case TK_IDENT:
 			left_expression = parse_var( in, sb, tc );
 			break;
-		case NUMBER:
+		case TK_NUMBER:
 			left_expression = parse_num( in, sb, tc );
 			break;
-		case LPARENT:
+		case TK_LPARENT:
 			left_expression = parse_grouping( in, sb, tc );
 			break;
 		default:
@@ -48,7 +48,7 @@ static NodeAST *parse_main( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence p
 	}
 
 	while( prev_precedence < get_precedence( sb->token )) {
-		NodeAST *operator = CreateTreeNode( BIN_OP, ANN_TOKEN, &( sb->token ));
+		NodeAST *operator = CreateTreeNode(ND_BINARY_OP, ANN_TOKEN, &( sb->token ));
 		NextSymbol( in, sb, tc );
 		InsertNode( operator, left_expression );
 
@@ -60,7 +60,7 @@ static NodeAST *parse_main( FILE *in, Symbol *sb, int *tc, EOperatorPrecedence p
 }
 
 static NodeAST *parse_sign( FILE *in, Symbol *sb, int *tc ) {
-	NodeAST *prefix = CreateTreeNode( U_OP, ANN_TOKEN, &( sb->token ));
+	NodeAST *prefix = CreateTreeNode(ND_UNARY_OP, ANN_TOKEN, &( sb->token ));
 	NextSymbol( in, sb, tc );
 	NodeAST *right_expression = parse_main( in, sb, tc, PR_PREFIX );
 	InsertNode( prefix, right_expression );
@@ -68,13 +68,13 @@ static NodeAST *parse_sign( FILE *in, Symbol *sb, int *tc ) {
 }
 
 NodeAST *parse_var( FILE *in, Symbol *sb, int *tc ) {
-	NodeAST *var = CreateTreeNode( NAME, ANN_IDENT, sb->tag.ident );
+	NodeAST *var = CreateTreeNode(ND_NAME, ANN_IDENT, sb->tag.ident );
 	NextSymbol( in, sb, tc );
 	return var;
 }
 
 NodeAST *parse_num( FILE *in, Symbol *sb, int *tc ) {
-	NodeAST *num = CreateTreeNode( LITERAL, ANN_NUM, &( sb->tag.number ));
+	NodeAST *num = CreateTreeNode(ND_LITERAL, ANN_NUM, &( sb->tag.number ));
 	NextSymbol( in, sb, tc );
 	return num;
 }
@@ -82,7 +82,7 @@ NodeAST *parse_num( FILE *in, Symbol *sb, int *tc ) {
 static NodeAST *parse_grouping( FILE *in, Symbol *sb, int *tc ) {
 	NextSymbol( in, sb, tc );
 	NodeAST *group = parse_main( in, sb, tc, PR_DEFAULT );
-	if( accept_tk( sb, RPARENT )) {
+	if( accept_tk(sb, TK_RPARENT )) {
 		NextSymbol( in, sb, tc );
 		return group;
 	} else {
@@ -93,22 +93,22 @@ static NodeAST *parse_grouping( FILE *in, Symbol *sb, int *tc ) {
 
 static EOperatorPrecedence get_precedence( ETokenType token ) {
 	switch( token ) {
-		case EQU:
-		case NEQ:
+		case TK_EQU:
+		case TK_NEQ:
 			return PR_EQUALITY;
-		case LSS:
-		case GTR:
-		case LEQ:
-		case GEQ:
+		case TK_LSS:
+		case TK_GTR:
+		case TK_LEQ:
+		case TK_GEQ:
 			return PR_RELATIONAL;
-		case PLUS:
-		case MINUS:
+		case TK_PLUS:
+		case TK_MINUS:
 			return PR_ADDITIVE;
-		case TIMES:
-		case SLASH:
-		case PERCENT:
+		case TK_TIMES:
+		case TK_SLASH:
+		case TK_PERCENT:
 			return PR_MULTIPLICATIVE;
-		case RPARENT:
+		case TK_RPARENT:
 		default:
 			return PR_DEFAULT;
 	}

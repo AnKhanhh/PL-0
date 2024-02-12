@@ -7,6 +7,7 @@ const char *SB_IDENT_TYPE[] = {
 
 typedef struct SymbolEntry {
 	char ident[LEXEME_LENGTH];
+//	types of type table entry
 	enum EIdentType {
 		SB_INT = 1, SB_CONST_INT, SB_FUNCTION, SB_ARRAY
 	} type;
@@ -17,7 +18,7 @@ typedef struct SymbolEntry {
 			int arr_size;			//	for 2d array
 		} var;
 		union {
-			int arg_count;			// n first entries in symbol table is function argument
+			int arg_count;			// n first entries in type table is function argument
 			struct SymbolTable *ptr;
 		} func;
 	} data;

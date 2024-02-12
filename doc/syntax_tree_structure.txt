@@ -1,68 +1,68 @@
-PRG_DCL : ident
+ND_PRG_DCL : ident
 └── < block >
 
 < block >
-├── [ CST_DCL ]
-│   ├── BIN_OP : EQU				- semantic check here -
-│   │   ├── NAME : ident            // constant name
-│   │   └── LITERAL : number        // constant value
-│   └── BIN_OP : EQU
+├── [ ND_CST_DCL ]
+│   ├── ND_BINARY_OP : TK_EQU			- semantic dcl check -
+│   │   ├── ND_NAME : ident          	// constant name
+│   │   └── ND_LITERAL : number       	// constant value
+│   └── ND_BINARY_OP : TK_EQU
 │       └── ...
-├── [ VAR_DCL ]
-│   ├── NAME : ident                - semantic check here -
-│   ├── ARR_DCL						- semantic check here -
-│   │   ├── NAME : ident            // array name
-│   │   └── LITERAL : number		// array size
+├── [ ND_VAR_DCL ]
+│   ├── ND_NAME : ident               	- semantic dcl check -
+│   ├── ND_ARR_DCL						- semantic dcl check -
+│   │   ├── ND_NAME : ident           	// array name
+│   │   └── ND_LITERAL : number			// array size
 │   └── ...
-├── [ PROC_DCL : ident ]			- semantic check here -
-│   ├── [ PROC_ARG ]
-│   │   ├── NAME : ident			// parameter name
-│   │   ├── NAME : ident
+├── [ ND_PROC_DCL : ident ]				- semantic dcl check -
+│   ├── [ ND_FUNC_ARG ]
+│   │   ├── ND_NAME : ident				// parameter name
+│   │   ├── ND_NAME : ident
 │   │   └── ...
 │   └── < block >
-└── CODE_BLK
+└── ND_CODE_BLK
     ├── < statement > ;
     ├── ... ;
     └── < statement >
 
 < statement >
-└── BIN_OP : ASSIGN
-    ├── NAME : ident				// variable name
-    └── < expression >				// assignment value
+└── ND_BINARY_OP : TK_ASSIGN			- semantic asn check -
+    ├── ND_NAME : ident					// variable name
+    └── < expression >					// assignment value
 < statement >
-└── BIN_OP : ASSIGN
-    ├── SUBSCRIPT
-    │   ├── NAME : ident			// array name
-    │   └── < expression >			// array index ( < array size )
-    └── < expression >				// assignment value
+└── ND_BINARY_OP : TK_ASSIGN			- semantic asn check -
+    ├── ND_SUBSCRIPT
+    │   ├── ND_NAME : ident				// array name
+    │   └── < expression >				// array index ( < array size )
+    └── < expression >					// assignment value
 
 < statement >
-└── PROC_EVK : ident
+└── ND_FUNC_CALL : ident
     ├── < expression >				// function parameters
     ├── < expression >
     └── ...
 
 < statement >
-└── CODE_BLK
+└── ND_CODE_BLK
     ├── < statement > ;
     ├── ... ;
     └── < statement >
 
 < statement >
-└── CONDITIONAL
+└── ND_CONDITIONAL
     ├── < expression >				// if evaluate to non-zero
-    ├── < statement >				// then perform operation
-    └── [ < statement > ]			// else perform operation ( optional )
+    ├── < statement >				// then
+    └── [ < statement > ]			// else ( optional )
 
 < statement >
-└── WHILE_LOOP
+└── ND_WHILE_LOOP
     ├── < expression >				// while evaluate to non-zero
     └── < statement >				// perform operation
 
 < statement >
-└── FOR_LOOP
-    ├── NAME : ident				// for variable i, implicitly incremented by 1 each loop
-    ├── < expression >				// from value
-    ├── < expression >				// to value
+└── ND_FOR_LOOP						- semantic asn check -
+    ├── ND_NAME : ident				// variable is implicitly incremented by 1 each loop
+    ├── < expression >				// initial value
+    ├── < expression >				// less or equal value
     └── < statement >				// perform operation
 
