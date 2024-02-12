@@ -8,7 +8,7 @@
 #include <assert.h>
 #include "../lexer/lexer.h"
 
-//	size of production list increment by this amount every time it hits limit
+//	size of children increment by this amount
 #define PROD_INITIAL_CAPACITY    2
 //	types of AST node
 typedef enum ESymbolType {

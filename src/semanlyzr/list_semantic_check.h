@@ -31,7 +31,7 @@ static SymbolEntry *search_subroutine(SymbolTable *root, char *var_name, bool se
 	do {
 		for (int i = 0; i < root->entry_count; ++i) {
 			if (strncmp(root->entries[i].ident, var_name, LEXEME_LENGTH) != 0) { continue; }
-			*scope_found = root;
+			if (scope_found) { *scope_found = root; }
 			return &(root->entries[i]);
 		}
 //		recursively move to the scope above and search
@@ -54,6 +54,11 @@ bool OnDeclarationSemantic(NodeAST *node, SymbolTable *root) {
 			assert(node->children[0]->type == ND_NAME && node->children[1]->type == ND_LITERAL);
 			ident = node->children[0]->annotation->value.ident;
 			type = SB_ARRAY;
+			if (node->children[1]->annotation->value.number < 1) {
+				printf("Array initialized with non-positive size. \n"
+					   "\t scope: %s, identifier: %s \n",
+					   root->table_name, ident);
+			}
 			break;
 		case ND_BINARY_OP:
 			assert(node->annotation->value.token == TK_EQU);
@@ -68,8 +73,8 @@ bool OnDeclarationSemantic(NodeAST *node, SymbolTable *root) {
 			break;
 		default:
 			fprintf(stderr,
-					"ERROR: declaration semantic check evoked on invalid token. scope: %s",
-					root->table_name);
+					"compiler error: declaration semantic check on invalid token - scope: %s",
+				   root->table_name);
 			return false;
 	}
 //	on name collision
@@ -77,13 +82,12 @@ bool OnDeclarationSemantic(NodeAST *node, SymbolTable *root) {
 		assert(result_table != NULL);
 //		redeclaration in the same scope is not allowed
 		if (result_table == root) {
-			printf("ERROR: redeclaration of variable in the same scope. \n"
-				   "\t scope: %s, identifier: %s \n",
-				   root->table_name, ident);
+			printf("Redeclaration of variable in the same scope. \n"
+				   "\t scope: %s, identifier: %s \n", root->table_name, ident);
 			return false;
 //		variable shadowing is allowed
 		} else {
-			printf("WARNING: variable shadowing. \n"
+			printf("warning: variable shadowing. \n"
 				   "\t scope: %s, identifier: %s, type: %s - shadowing scope:%s, type: %s. \n",
 				   root->table_name, ident, SB_IDENT_TYPE[type], result_table->table_name, SB_IDENT_TYPE[result_entry->type]);
 		}
@@ -97,6 +101,33 @@ bool OnAssignmentSemantic(NodeAST *node, SymbolTable *root) {
 	char *ident = NULL;
 	SymbolTable *result_table = NULL;
 	SymbolEntry *result_entry = NULL;
+//	check identifier
+	if (node->children[0]->type == ND_NAME) {
+		ident = node->children[0]->annotation->value.ident;
+	} else if (node->children[0]->type == ND_SUBSCRIPT) {
+		ident = node->children[0]->children[0]->annotation->value.ident;
+	} else {
+		printf("Expected identifier. \n"
+			   "\t scope: %s. \n", root->table_name);
+		return false;
+	}
+//	check if identifier is declared
+	if (result_entry == SearchGlobal(root, ident, &result_table)) {
+		assert(result_table != NULL);
+//		check if type is assignable
+		if (result_entry->type == SB_INT || result_entry->type == SB_ARRAY) {
+			return true;
+		} else {
+			printf("Type is not assignable. \n"
+				   "\t scope: %s, identifier: %s, type: %s \n",
+				   root->table_name, ident, SB_IDENT_TYPE[result_entry->type]);
+		}
+	} else{
+		printf("Use of undeclared identifier. \n"
+			   "\t scope: %s, identifier: %s, type: %s \n",
+			   root->table_name, ident, SB_IDENT_TYPE[result_entry->type]);
+	}
+	return false;
 }
 
 
