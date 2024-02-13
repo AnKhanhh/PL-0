@@ -14,7 +14,7 @@ typedef struct {
 
 // throw syntax error with token location
  void ParserThrow( const char *s, int count ) {
-	fprintf(stderr, "SYNTAX ERR: %s at token %d\n", s, count );
+	fprintf(stderr, "syntax error: %s at token %d\n", s, count );
 }
 
 //	reads next token from stream into sb, return 0 on EOF or failure
