@@ -1,0 +1,75 @@
+ND_PRG_DCL : control_flow_test {
+	ND_VAR_DCL {
+		ND_NAME : x_1
+		ND_NAME : x_2
+		ND_NAME : x_3
+	}
+	ND_CODE_BLK {
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_NAME : x_1
+			ND_LITERAL : 3
+		}
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_NAME : x_2
+			ND_UNARY_OP : TK_MINUS {
+				ND_LITERAL : 10
+			}
+		}
+		ND_FOR_LOOP {
+			ND_NAME : x_3
+			ND_BINARY_OP : TK_EQU {
+				ND_NAME : x_1
+				ND_LITERAL : 3
+			}
+			ND_UNARY_OP : TK_MINUS {
+				ND_NAME : x_2
+			}
+			ND_BINARY_OP : TK_ASSIGN {
+				ND_NAME : x_3
+				ND_BINARY_OP : TK_PLUS {
+					ND_NAME : x_3
+					ND_LITERAL : 1
+				}
+			}
+		}
+		ND_CONDITIONAL {
+			ND_BINARY_OP : TK_LEQ {
+				ND_NAME : x_1
+				ND_NAME : x_2
+			}
+			ND_BINARY_OP : TK_ASSIGN {
+				ND_NAME : y_
+				ND_BINARY_OP : TK_PLUS {
+					ND_NAME : x_1
+					ND_NAME : x_2
+				}
+			}
+		}
+		ND_WHILE_LOOP {
+			ND_BINARY_OP : TK_LSS {
+				ND_NAME : x_1
+				ND_NAME : x_2
+			}
+			ND_CODE_BLK {
+				ND_BINARY_OP : TK_ASSIGN {
+					ND_NAME : x_1
+					ND_BINARY_OP : TK_PLUS {
+						ND_NAME : x_1
+						ND_LITERAL : 1
+					}
+				}
+				ND_BINARY_OP : TK_ASSIGN {
+					ND_NAME : y_
+					ND_BINARY_OP : TK_PLUS {
+						ND_NAME : y_
+						ND_LITERAL : 3
+					}
+				}
+			}
+		}
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_NAME : y_
+			ND_NAME : x_1
+		}
+	}
+}

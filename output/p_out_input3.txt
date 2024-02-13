@@ -1,0 +1,140 @@
+ND_PRG_DCL : Pratt_test {
+	ND_VAR_DCL {
+		ND_NAME : a
+		ND_NAME : b
+		ND_NAME : c
+		ND_NAME : result1
+		ND_NAME : result2
+		ND_NAME : result3
+	}
+	ND_CODE_BLK {
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_NAME : a
+			ND_LITERAL : 10
+		}
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_NAME : b
+			ND_UNARY_OP : TK_MINUS {
+				ND_LITERAL : 5
+			}
+		}
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_NAME : c
+			ND_LITERAL : 3
+		}
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_NAME : result1
+			ND_BINARY_OP : TK_PLUS {
+				ND_BINARY_OP : TK_TIMES {
+					ND_BINARY_OP : TK_PLUS {
+						ND_NAME : a
+						ND_NAME : b
+					}
+					ND_BINARY_OP : TK_SLASH {
+						ND_UNARY_OP : TK_MINUS {
+							ND_NAME : c
+						}
+						ND_BINARY_OP : TK_PERCENT {
+							ND_UNARY_OP : TK_MINUS {
+								ND_LITERAL : 2
+							}
+							ND_UNARY_OP : TK_MINUS {
+								ND_LITERAL : 4
+							}
+						}
+					}
+				}
+				ND_UNARY_OP : TK_MINUS {
+					ND_UNARY_OP : TK_MINUS {
+						ND_UNARY_OP : TK_MINUS {
+							ND_NAME : a
+						}
+					}
+				}
+			}
+		}
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_NAME : result2
+			ND_BINARY_OP : TK_PLUS {
+				ND_NAME : a
+				ND_BINARY_OP : TK_TIMES {
+					ND_BINARY_OP : TK_TIMES {
+						ND_UNARY_OP : TK_MINUS {
+							ND_NAME : b
+						}
+						ND_BINARY_OP : TK_MINUS {
+							ND_BINARY_OP : TK_SLASH {
+								ND_NAME : c
+								ND_UNARY_OP : TK_MINUS {
+									ND_LITERAL : 2
+								}
+							}
+							ND_UNARY_OP : TK_MINUS {
+								ND_LITERAL : 3
+							}
+						}
+					}
+					ND_BINARY_OP : TK_PLUS {
+						ND_UNARY_OP : TK_MINUS {
+							ND_NAME : a
+						}
+						ND_BINARY_OP : TK_MINUS {
+							ND_NAME : b
+							ND_NAME : c
+						}
+					}
+				}
+			}
+		}
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_NAME : result3
+			ND_BINARY_OP : TK_TIMES {
+				ND_UNARY_OP : TK_MINUS {
+					ND_BINARY_OP : TK_PLUS {
+						ND_UNARY_OP : TK_MINUS {
+							ND_NAME : a
+						}
+						ND_BINARY_OP : TK_TIMES {
+							ND_NAME : b
+							ND_BINARY_OP : TK_PERCENT {
+								ND_BINARY_OP : TK_SLASH {
+									ND_UNARY_OP : TK_MINUS {
+										ND_NAME : c
+									}
+									ND_UNARY_OP : TK_MINUS {
+										ND_LITERAL : 2
+									}
+								}
+								ND_UNARY_OP : TK_MINUS {
+									ND_UNARY_OP : TK_MINUS {
+										ND_LITERAL : 4
+									}
+								}
+							}
+						}
+					}
+				}
+				ND_BINARY_OP : TK_MINUS {
+					ND_BINARY_OP : TK_PLUS {
+						ND_UNARY_OP : TK_MINUS {
+							ND_NAME : a
+						}
+						ND_UNARY_OP : TK_MINUS {
+							ND_UNARY_OP : TK_MINUS {
+								ND_NAME : b
+							}
+						}
+					}
+					ND_BINARY_OP : TK_SLASH {
+						ND_NAME : c
+						ND_UNARY_OP : TK_MINUS {
+							ND_UNARY_OP : TK_MINUS {
+								ND_LITERAL : 2
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
