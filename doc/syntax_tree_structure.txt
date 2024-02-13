@@ -3,14 +3,14 @@ ND_PRG_DCL : ident
 
 < block >
 ├── [ ND_CST_DCL ]
-│   ├── ND_BINARY_OP : TK_EQU			- semantic dcl check -
+│   ├── ND_BINARY_OP : TK_EQU			- dcl check -
 │   │   ├── ND_NAME : ident          	// constant name
 │   │   └── ND_LITERAL : number       	// constant value
 │   └── ND_BINARY_OP : TK_EQU
 │       └── ...
 ├── [ ND_VAR_DCL ]
-│   ├── ND_NAME : ident               	- semantic dcl check -
-│   ├── ND_ARR_DCL						- semantic dcl check -
+│   ├── ND_NAME : ident               	- dcl check -
+│   ├── ND_ARR_DCL						- dcl check -
 │   │   ├── ND_NAME : ident           	// array name
 │   │   └── ND_LITERAL : number			// array size
 │   └── ...
@@ -26,11 +26,11 @@ ND_PRG_DCL : ident
     └── < statement >
 
 < statement >
-└── ND_BINARY_OP : TK_ASSIGN			- semantic asn check -
+└── ND_BINARY_OP : TK_ASSIGN			- asn check -
     ├── ND_NAME : ident					// variable name
     └── < expression >					// assignment value
 < statement >
-└── ND_BINARY_OP : TK_ASSIGN			- semantic asn check -
+└── ND_BINARY_OP : TK_ASSIGN			- asn check -
     ├── ND_SUBSCRIPT
     │   ├── ND_NAME : ident				// array name
     │   └── < expression >				// array index ( < array size )
@@ -38,7 +38,7 @@ ND_PRG_DCL : ident
 
 < statement >
 └── ND_FUNC_CALL : ident
-    ├── < expression >				// function parameters
+    ├── < expression >					// function parameters
     ├── < expression >
     └── ...
 
@@ -60,7 +60,7 @@ ND_PRG_DCL : ident
     └── < statement >				// perform operation
 
 < statement >
-└── ND_FOR_LOOP						- semantic asn check -
+└── ND_FOR_LOOP						- loop check -
     ├── ND_NAME : ident				// variable is implicitly incremented by 1 each loop
     ├── < expression >				// initial value
     ├── < expression >				// less or equal value

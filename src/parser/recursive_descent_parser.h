@@ -5,7 +5,7 @@
 //	so error message can be wrong for files with token number > INT_MAX
 
 #include "syntax_tree.h"
-#include "Pratt_parser.h"
+#include "expression_parser.h"
 
 // recursive descent LL(1) parser functions, arithmetic expression parsing is in Prat_parser.h
 void program( FILE *in, Symbol *sb, int *tc, NodeAST **root_ptr );
@@ -30,7 +30,7 @@ void program( FILE *in, Symbol *sb, int *tc, NodeAST **root_ptr ) {
 
 void block( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 	if( accept_tk( sb, CONST )) {
-		NodeAST *const_block = CreateTreeNode(ND_CST_DCL, ANN_NULL, NULL);
+		NodeAST *const_block = CreateTreeNode(ND_CST_DCL, 0, NULL);
 		InsertNode( root, const_block );
 		do {
 			NextSymbol( in, sb, tc );
@@ -54,7 +54,7 @@ void block( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 		} else { ParserThrow( "missing CONST block semicolon", *tc ); }
 	}
 	if( accept_tk( sb, VAR )) {
-		NodeAST *var_blk = CreateTreeNode(ND_VAR_DCL, ANN_NULL, NULL);
+		NodeAST *var_blk = CreateTreeNode(ND_VAR_DCL, 0, NULL);
 		InsertNode( root, var_blk );
 		do {
 			NextSymbol( in, sb, tc );
@@ -62,12 +62,12 @@ void block( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 				NodeAST *name = CreateTreeNode(ND_NAME, ANN_IDENT, sb->tag.ident );
 				NextSymbol( in, sb, tc );
 				if( accept_tk(sb, TK_LBRACK )) {
-					NodeAST *arr_dcl = CreateTreeNode(ND_ARR_DCL, ANN_NULL, NULL);
+					NodeAST *arr_dcl = CreateTreeNode(ND_ARR_DCL, 0, NULL);
 					InsertNode( var_blk, arr_dcl );
 					NextSymbol( in, sb, tc );
 					if( accept_tk(sb, TK_NUMBER )) {
 						InsertNode( arr_dcl, name );
-						InsertNode( arr_dcl, CreateTreeNode(ND_ARR_DCL, ND_LITERAL, &( sb->tag.number )));
+						InsertNode( arr_dcl, CreateTreeNode(ND_LITERAL, ANN_NUM, &( sb->tag.number )));
 						NextSymbol( in, sb, tc );
 						if( accept_tk(sb, TK_RBRACK )) {
 							NextSymbol( in, sb, tc );
@@ -89,7 +89,7 @@ void block( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 			InsertNode( root, proc_blk );
 			NextSymbol( in, sb, tc );
 			if( accept_tk(sb, TK_LPARENT )) {
-				NodeAST *proc_arg = CreateTreeNode(ND_FUNC_ARG, ANN_NULL, NULL);
+				NodeAST *proc_arg = CreateTreeNode(ND_FUNC_ARG, 0, NULL);
 				InsertNode( proc_blk, proc_arg );
 				do {
 					NextSymbol( in, sb, tc );
@@ -113,7 +113,7 @@ void block( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 		} else { ParserThrow( "procedure name expected", *tc ); }
 	}
 	if( accept_tk( sb, BEGIN )) {
-		NodeAST *main_blk = CreateTreeNode(ND_CODE_BLK, ANN_NULL, NULL);
+		NodeAST *main_blk = CreateTreeNode(ND_CODE_BLK, 0, NULL);
 		InsertNode( root, main_blk );
 		do {
 			NextSymbol( in, sb, tc );
@@ -130,12 +130,12 @@ void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 		NodeAST *name = CreateTreeNode(ND_NAME, ANN_IDENT, sb->tag.ident );
 		NodeAST *left_side = NULL;
 		NextSymbol( in, sb, tc );
-		if( accept_tk(sb, TK_RBRACK )) {
-			left_side = CreateTreeNode(ND_SUBSCRIPT, ANN_NULL, NULL);
+		if( accept_tk(sb, TK_LBRACK )) {
+			left_side = CreateTreeNode(ND_SUBSCRIPT, 0, NULL);
 			InsertNode( left_side, name );
 			NextSymbol( in, sb, tc );
 			InsertNode( left_side, expression( in, sb, tc ));
-			if( accept_tk(sb, TK_LBRACK )) {
+			if( accept_tk(sb, TK_RBRACK )) {
 				NextSymbol( in, sb, tc );
 			} else { ParserThrow( "right bracket expected", *tc ); }
 		} else { left_side = name; }
@@ -163,7 +163,7 @@ void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 			}
 		}
 	} else if( accept_tk( sb, BEGIN )) {
-		NodeAST *code_blk = CreateTreeNode(ND_CODE_BLK, ANN_NULL, NULL);
+		NodeAST *code_blk = CreateTreeNode(ND_CODE_BLK, 0, NULL);
 		InsertNode( root, code_blk );
 		do {
 			NextSymbol( in, sb, tc );
@@ -174,7 +174,7 @@ void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 		} else { ParserThrow( "keyword END expected at the end of code block", *tc ); }
 	} else if( accept_tk( sb, IF )) {
 		NextSymbol( in, sb, tc );
-		NodeAST *conditional = CreateTreeNode(ND_CONDITIONAL, ANN_NULL, NULL);
+		NodeAST *conditional = CreateTreeNode(ND_CONDITIONAL, 0, NULL);
 		InsertNode( root, conditional );
 		NodeAST *cond_exp = expression( in, sb, tc );
 		InsertNode( conditional, cond_exp );
@@ -188,7 +188,7 @@ void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 		}
 	} else if( accept_tk( sb, WHILE )) {
 		NextSymbol( in, sb, tc );
-		NodeAST *while_loop = CreateTreeNode(ND_WHILE_LOOP, ANN_NULL, NULL);
+		NodeAST *while_loop = CreateTreeNode(ND_WHILE_LOOP, 0, NULL);
 		InsertNode( root, while_loop );
 		InsertNode( while_loop, expression( in, sb, tc ));
 		if( accept_tk( sb, DO )) {
@@ -197,7 +197,7 @@ void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root ) {
 		} else { ParserThrow( " keyword DO expected after WILLE", *tc ); }
 	} else if( accept_tk( sb, FOR )) {
 		NextSymbol( in, sb, tc );
-		NodeAST *for_loop = CreateTreeNode(ND_FOR_LOOP, ANN_NULL, NULL);
+		NodeAST *for_loop = CreateTreeNode(ND_FOR_LOOP, 0, NULL);
 		InsertNode( root, for_loop );
 		if( accept_tk(sb, TK_IDENT )) {
 			InsertNode( for_loop, CreateTreeNode(ND_NAME, ANN_IDENT, sb->tag.ident ));

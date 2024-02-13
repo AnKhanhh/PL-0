@@ -1,6 +1,6 @@
 program input_1;
     const z = 15;
-    var x, y;
+    var x, y[4];
 
     procedure test(var x; var y);
         begin
@@ -11,11 +11,11 @@ program input_1;
 
     begin
 	x := 2 * 2;
-	y := x - 1;
+	y[1] := x - 1;
 
-	call test(x,y);
+	call test(x,y[1]);
 
 	x := x / 2;
-	y := (z + 1) / (8 * 2)
+	y[4] := (z + 1) / (8 * 2);
     end
 .

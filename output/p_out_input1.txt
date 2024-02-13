@@ -7,7 +7,10 @@ ND_PRG_DCL : input_1 {
 	}
 	ND_VAR_DCL {
 		ND_NAME : x
-		ND_NAME : y
+		ND_ARR_DCL {
+			ND_NAME : y
+			ND_LITERAL : 4
+		}
 	}
 	ND_PROC_DCL : test {
 		ND_FUNC_ARG {
@@ -37,7 +40,10 @@ ND_PRG_DCL : input_1 {
 			}
 		}
 		ND_BINARY_OP : TK_ASSIGN {
-			ND_NAME : y
+			ND_SUBSCRIPT {
+				ND_NAME : y
+				ND_LITERAL : 1
+			}
 			ND_BINARY_OP : TK_MINUS {
 				ND_NAME : x
 				ND_LITERAL : 1
@@ -55,7 +61,10 @@ ND_PRG_DCL : input_1 {
 			}
 		}
 		ND_BINARY_OP : TK_ASSIGN {
-			ND_NAME : y
+			ND_SUBSCRIPT {
+				ND_NAME : y
+				ND_LITERAL : 4
+			}
 			ND_BINARY_OP : TK_SLASH {
 				ND_BINARY_OP : TK_PLUS {
 					ND_NAME : z

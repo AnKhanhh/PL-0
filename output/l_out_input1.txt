@@ -10,6 +10,9 @@
    1 x          //TK_IDENT
   18 ,          //TK_COMMA
    1 y          //TK_IDENT
+  15 [          //TK_LBRACK
+   2 4          //TK_NUMBER
+  16 ]          //TK_RBRACK
   19 ;          //TK_SEMICOLON
   30 procedure  //PROCEDURE
    1 test       //TK_IDENT
@@ -41,6 +44,9 @@
    2 2          //TK_NUMBER
   19 ;          //TK_SEMICOLON
    1 y          //TK_IDENT
+  15 [          //TK_LBRACK
+   2 1          //TK_NUMBER
+  16 ]          //TK_RBRACK
   20 :=         //TK_ASSIGN
    1 x          //TK_IDENT
    4 -          //TK_MINUS
@@ -52,6 +58,9 @@
    1 x          //TK_IDENT
   18 ,          //TK_COMMA
    1 y          //TK_IDENT
+  15 [          //TK_LBRACK
+   2 1          //TK_NUMBER
+  16 ]          //TK_RBRACK
   14 )          //TK_RPARENT
   19 ;          //TK_SEMICOLON
    1 x          //TK_IDENT
@@ -61,6 +70,9 @@
    2 2          //TK_NUMBER
   19 ;          //TK_SEMICOLON
    1 y          //TK_IDENT
+  15 [          //TK_LBRACK
+   2 4          //TK_NUMBER
+  16 ]          //TK_RBRACK
   20 :=         //TK_ASSIGN
   13 (          //TK_LPARENT
    1 z          //TK_IDENT
@@ -73,5 +85,6 @@
    5 *          //TK_TIMES
    2 2          //TK_NUMBER
   14 )          //TK_RPARENT
+  19 ;          //TK_SEMICOLON
   27 end        //END
   17 .          //TK_PERIOD
