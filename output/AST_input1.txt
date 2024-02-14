@@ -42,7 +42,10 @@ ND_PRG_DCL : input_1 {
 		ND_BINARY_OP : TK_ASSIGN {
 			ND_SUBSCRIPT {
 				ND_NAME : y
-				ND_LITERAL : 1
+				ND_BINARY_OP : TK_MINUS {
+					ND_NAME : z
+					ND_LITERAL : 10
+				}
 			}
 			ND_BINARY_OP : TK_MINUS {
 				ND_NAME : x

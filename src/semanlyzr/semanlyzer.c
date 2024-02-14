@@ -1,5 +1,6 @@
-//  PL/0 only allow nested code block inside function definition, which greatly simplifies scoping
-//	for now, all array is 2d and size cannot be expression
+//  nested code block is only allowed inside function definition, which simplifies scoping
+//	since functions don't have return statement, closure or inline function call is not supported
+//	all array is 2d
 #include <stdio.h>
 #include "list_semantic_check.h"
 #include "list_symbol_table.h"

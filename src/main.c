@@ -10,8 +10,8 @@ int main(int argc, char *argv[]) {
 	char in_path[128], l_out_path[128], p_out_path[128];
 //	using unsanitized string is unsafe, but i'm lazy
 	snprintf(in_path, sizeof(in_path), "%s/input/%s", argv[1], argv[2]);
-	snprintf(l_out_path, sizeof(l_out_path), "%s/output/l_out_%s", argv[1], argv[2]);
-	snprintf(p_out_path, sizeof(p_out_path), "%s/output/p_out_%s", argv[1], argv[2]);
+	snprintf(l_out_path, sizeof(l_out_path), "%s/output/token_stream_%s", argv[1], argv[2]);
+	snprintf(p_out_path, sizeof(p_out_path), "%s/output/AST_%s", argv[1], argv[2]);
 
 	FILE *f_in, *f_lexer, *f_parser;
 	if ((f_in = fopen(in_path, "r")) == NULL) { perror("input file"); }

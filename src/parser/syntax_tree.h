@@ -29,7 +29,7 @@ typedef struct Annotation {
 		long number;
 		ETokenType token;
 	} value;
-	enum {
+	enum EAnnotationType {
 		ANN_IDENT = 1, ANN_NUM, ANN_TOKEN
 	} type;
 } Annotation;
@@ -38,7 +38,7 @@ typedef struct Annotation {
 typedef struct NodeAST {
 	ESymbolType type;
 	Annotation *annotation;
-	//	struct NodeAST *parent;
+	struct NodeAST *parent;
 	struct NodeAST **children;
 	int child_count;
 } NodeAST;
@@ -46,7 +46,7 @@ typedef struct NodeAST {
 //	insert new node to production list, return pointer to topmost node or null if insertion failed
 NodeAST *InsertNode(NodeAST *root, NodeAST *child);
 // create a node
-NodeAST *CreateTreeNode(ESymbolType sb_type, int ann_type, void *ann_ptr);
+NodeAST *CreateTreeNode(ESymbolType sb_type, enum EAnnotationType ann_type, void *ann_ptr);
 // recursive post-order traversal free()
 void FreeSyntaxTree(NodeAST *root);
 // print AST to file
@@ -57,12 +57,12 @@ NodeAST *InsertNode(NodeAST *root, NodeAST *child) {
 	else if (root->child_count == 0) {
 		root->child_count = PROD_INITIAL_CAPACITY;
 		if ((root->children = calloc(PROD_INITIAL_CAPACITY, sizeof(NodeAST *))) == NULL) {
-			fprintf(stderr, "PARSER ERR: calloc() failure for %zu bytes\n", PROD_INITIAL_CAPACITY * sizeof(NodeAST *));
+			fprintf(stderr, "compiler error: calloc() failure for %zu bytes\n", PROD_INITIAL_CAPACITY * sizeof(NodeAST *));
 		}
 		root->children[0] = child;
 		return root;
 	} else {
-//		child_node->parent = root;
+		child->parent = root;
 		int end_index = root->child_count - 1;
 		int i;
 		for (i = end_index; i >= 0; --i) { if (root->children[i] != NULL) { break; }}
@@ -79,7 +79,7 @@ NodeAST *InsertNode(NodeAST *root, NodeAST *child) {
 	return NULL;
 }
 
-NodeAST *CreateTreeNode(ESymbolType sb_type, int ann_type, void *ann_ptr) {
+NodeAST *CreateTreeNode(ESymbolType sb_type, enum EAnnotationType ann_type, void *ann_ptr) {
 	NodeAST *new_node = calloc(1, sizeof(NodeAST));
 	new_node->type = sb_type;
 	if (!ann_type) {
@@ -120,7 +120,7 @@ static void SubPrintTree(NodeAST *root, FILE *out, int depth) {
 		} else if (type == ANN_TOKEN) {
 			fprintf(out, " : %s", TOKENS[root->annotation->value.token]);
 		} else {
-			fprintf(stderr, "PARSER ERR: invalid node annotation in type %s, depth %d \n",
+			fprintf(stderr, "compiler error: invalid node annotation in type %s, depth %d \n",
 					SYMBOL[root->type], depth);
 		}
 	}

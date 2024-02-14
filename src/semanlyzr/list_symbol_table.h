@@ -1,6 +1,9 @@
 #ifndef COMP_LIST_SYMBOL_TABLE_H
 #define COMP_LIST_SYMBOL_TABLE_H
 
+#include <assert.h>
+#include "../lexer/lexer.h"
+
 const char *SB_IDENT_TYPE[] = {
 		"","SB_INT", "SB_CONST_INT", "SB_FUNCTION", "SB_ARRAY"
 };
@@ -58,7 +61,7 @@ SymbolTable *InsertEntry(SymbolTable *parent, SymbolEntry entry) {
 
 void FreeSymbolTables(SymbolTable *root) {
 	if (root->entries != NULL) {
-		assert(root->entry_count > 0);
+		assert(root->entry_count != 0);
 		for (int i = 0; i < root->entry_count; ++i) {
 			if (root->entries[i].type == SB_FUNCTION) {
 				FreeSymbolTables(root->entries[i].data.func.ptr);

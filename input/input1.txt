@@ -11,7 +11,7 @@ program input_1;
 
     begin
 	x := 2 * 2;
-	y[1] := x - 1;
+	y[z-10] := x - 1;
 
 	call test(x,y[1]);
 

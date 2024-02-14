@@ -45,7 +45,9 @@
   19 ;          //TK_SEMICOLON
    1 y          //TK_IDENT
   15 [          //TK_LBRACK
-   2 1          //TK_NUMBER
+   1 z          //TK_IDENT
+   4 -          //TK_MINUS
+   2 10         //TK_NUMBER
   16 ]          //TK_RBRACK
   20 :=         //TK_ASSIGN
    1 x          //TK_IDENT
