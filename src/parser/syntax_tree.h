@@ -88,7 +88,7 @@ NodeAST *CreateTreeNode(ESymbolType sb_type, enum EAnnotationType ann_type, void
 	}
 	new_node->annotation = calloc(1, sizeof(Annotation));
 	if (ann_type == ANN_IDENT) {
-		strncpy(new_node->annotation->value.ident, ann_ptr, LEXEME_LENGTH);
+		snprintf(new_node->annotation->value.ident, LEXEME_LENGTH, "%s", (char *) ann_ptr);
 	} else if (ann_type == ANN_NUM) {
 		new_node->annotation->value.number = *(long *) ann_ptr;
 	} else if (ann_type == ANN_TOKEN) {

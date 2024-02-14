@@ -1,16 +1,13 @@
 #ifndef COMP_RECURSIVE_DESCENT_PARSER_H
 #define COMP_RECURSIVE_DESCENT_PARSER_H
 
-//	an int counter is used to track token that produces syntax error,
-//	so error message can be wrong for files with token number > INT_MAX
-
 #include "syntax_tree.h"
 #include "expression_parser.h"
 
-// recursive descent LL(1) parser functions, arithmetic expression parsing is in Prat_parser.h
+// recursive descent LL(1) parser
 void program( FILE *in, Symbol *sb, int *tc, NodeAST **root_ptr );
-void block( FILE *in, Symbol *sb, int *tc, NodeAST *root );
-void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root );
+static void block( FILE *in, Symbol *sb, int *tc, NodeAST *root );
+static void statement( FILE *in, Symbol *sb, int *tc, NodeAST *root );
 
 void program( FILE *in, Symbol *sb, int *tc, NodeAST **root_ptr ) {
 	NextSymbol( in, sb, tc );

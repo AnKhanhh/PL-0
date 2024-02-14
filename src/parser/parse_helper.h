@@ -10,28 +10,27 @@ typedef struct {
 } Symbol;    // terminal or non-terminal
 
 // compare wrapper
-#define accept_tk( sb, tk_cmp ) ((sb)->token == (tk_cmp))
+#define accept_tk(sb, tk_cmp) ((sb)->token == (tk_cmp))
 
 // throw syntax error with token location
- void ParserThrow( const char *s, int count ) {
-	fprintf(stderr, "syntax error: %s at token %d\n", s, count );
+void ParserThrow(const char *s, int count) {
+	fprintf(stderr, "syntax error: %s at token %d\n", s, count);
 }
 
 //	reads next token from stream into sb, return 0 on EOF or failure
- int NextSymbol( FILE *in, Symbol *sb, int *tc ) {
+int NextSymbol(FILE *in, Symbol *sb, int *tc) {
 	char line[1024];
-	if ( fgets( line, sizeof line, in ) == NULL) {
-		puts( "end of token list reached!" );
+	if (fgets(line, sizeof line, in) == NULL) {
+		puts("end of token list reached!");
 		return 0;
 	}
-	memset( sb, 0, sizeof( Symbol ));
-	sb->token = strtol( strtok( line, " " ), NULL, 10 );
-//	token counter to pinpoint syntax error
+	memset(sb, 0, sizeof(Symbol));
+	sb->token = strtol(strtok(line, " "), NULL, 10);
 	(*tc)++;
-	if (sb->token == TK_IDENT ) {
-		strncpy( sb->tag.ident, strtok(NULL, " " ), LEXEME_LENGTH );
-	} else if (sb->token == TK_NUMBER ) {
-		sb->tag.number = strtol( strtok(NULL, " " ), NULL, 10 );
+	if (sb->token == TK_IDENT) {
+		snprintf(sb->tag.ident, LEXEME_LENGTH, "%s", strtok(NULL, " "));
+	} else if (sb->token == TK_NUMBER) {
+		sb->tag.number = strtol(strtok(NULL, " "), NULL, 10);
 	}
 	return 1;
 }
