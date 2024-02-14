@@ -5,7 +5,7 @@
 #include "../lexer/lexer.h"
 
 const char *SB_IDENT_TYPE[] = {
-		"","SB_INT", "SB_CONST_INT", "SB_FUNCTION", "SB_ARRAY"
+		"", "SB_INT", "SB_CONST_INT", "SB_FUNCTION", "SB_ARRAY"
 };
 
 typedef struct SymbolEntry {
@@ -15,48 +15,57 @@ typedef struct SymbolEntry {
 		SB_INT = 1, SB_CONST_INT, SB_FUNCTION, SB_ARRAY
 	} type;
 	union {
-		union {
-			int is_initialized;		//	for integer variable
-			int value;				//	for integer constant
-			int arr_size;			//	for 2d array
-		} var;
-		union {
-			int arg_count;			// n first entries in type table is function argument
+		bool var_initialized;
+		long const_value;
+		long arr_size;                    //all arrays are 2d
+		struct {
+			int arg_count;            // n first entries in function table is parameters
 			struct SymbolTable *ptr;
 		} func;
 	} data;
 } SymbolEntry;
 
 typedef struct SymbolTable {
-	char table_name[LEXEME_LENGTH];
+	char name[LEXEME_LENGTH];
 	struct SymbolTable *parent;
-	int entry_count;
+	unsigned int entry_count;
 	struct SymbolEntry *entries;
 } SymbolTable;
 
-//  allocate a new table, return its pointer
-SymbolTable *NewSymbolTable(SymbolTable *parent_ptr, char *name);
+//  allocate a new table, return pointer
+SymbolTable *NewSymbolTable(SymbolTable *parent_table, char *table_name);
 
-//  insert an entry into parent table, parent must exist
-SymbolTable *InsertEntry(SymbolTable *parent, SymbolEntry entry);
+//  insert an empty entry into symbol table
+SymbolTable *InsertEntry(SymbolTable *table, SymbolEntry entry);
 
 //  DFS recursive free()
 void FreeSymbolTables(SymbolTable *root);
 
-SymbolTable *NewSymbolTable(SymbolTable *parent_ptr, char *name) {
+void PrintSymbolTable(SymbolTable *table, FILE *out);
+
+SymbolTable *NewSymbolTable(SymbolTable *parent_table, char *table_name) {
 	SymbolTable *new_table = calloc(1, sizeof(SymbolTable));
-	if (parent_ptr) { new_table->parent = parent_ptr; }
+	if (new_table == NULL) {
+		perror("allocation for symbol table failed");
+		exit(EXIT_FAILURE);
+	}
+
+	if (parent_table) { new_table->parent = parent_table; }
+	snprintf(new_table->name, LEXEME_LENGTH, "%s", table_name);
 	return new_table;
 }
 
-SymbolTable *InsertEntry(SymbolTable *parent, SymbolEntry entry) {
-	assert(parent != NULL);
-	if (parent->entry_count == 0) {
-		parent->entries = malloc(sizeof(SymbolEntry));
-		assert(parent->entries != NULL);
+SymbolTable *InsertEntry(SymbolTable *table, SymbolEntry entry) {
+	assert(table != NULL);
+//	temporary pointer to prevent leak in case of failure
+	SymbolEntry *temp = realloc(table->entries, sizeof(*table->entries) * (table->entry_count + 1));
+	if (temp == NULL) {
+		perror("allocation for symbol table entry failed");
+		exit(EXIT_FAILURE);
 	}
-	parent->entries[parent->entry_count++] = entry;
-	return parent;
+	table->entries = temp;
+	table->entries[table->entry_count++] = entry;
+	return table;
 }
 
 void FreeSymbolTables(SymbolTable *root) {
@@ -70,6 +79,56 @@ void FreeSymbolTables(SymbolTable *root) {
 		free(root->entries);
 	}
 	free(root);
+}
+
+void PrintSymbolTable(SymbolTable *table, FILE *out) {
+//	50 underscores
+	static const char line[] = "__________________________________________________";
+	char buffer[512];
+	int size = sizeof buffer;
+//	print table header
+	snprintf(buffer, size, "%s\n"
+						   "parent ptr: %llX \n"
+						   "ptr: %llX - identifier: %s \n"
+						   "%s\n",
+			 line, (long long) table->parent, (long long) table, table->name, line);
+	fputs(buffer, out);
+//	print table entries
+	for (int i = 0; i < table->entry_count; ++i) {
+		SymbolEntry entry = table->entries[i];
+		switch (entry.type) {
+			case SB_FUNCTION:
+				snprintf(buffer, size,
+						 "%-16s %-32s | ptr: %llX \n",
+						 SB_IDENT_TYPE[SB_FUNCTION], entry.ident, (long long) entry.data.func.ptr);
+				break;
+			case SB_ARRAY:
+				snprintf(buffer, size,
+						 "%-16s %-32s | size: %ld \n",
+						 SB_IDENT_TYPE[SB_ARRAY], entry.ident, entry.data.arr_size);
+				break;
+			case SB_INT:
+				snprintf(buffer, size,
+						 "%-16s %-32s | ptr: %d \n",
+						 SB_IDENT_TYPE[SB_INT], entry.ident, entry.data.var_initialized);
+				break;
+			case SB_CONST_INT:
+				snprintf(buffer, size,
+						 "%-16s %-32s | ptr: %ld \n",
+						 SB_IDENT_TYPE[SB_FUNCTION], entry.ident, entry.data.const_value);
+				break;
+		}
+		fputs(buffer, out);
+	}
+//	print table footer
+	snprintf(buffer, size, "%s\n\n", line);
+	fputs(buffer, out);
+
+//	print other tables, DFS traversal
+	for (int i = 0; i < table->entry_count; ++i) {
+		SymbolEntry entry = table->entries[i];
+		if (entry.type == SB_FUNCTION) { PrintSymbolTable(entry.data.func.ptr, out); }
+	}
 }
 
 #endif //COMP_LIST_SYMBOL_TABLE_H

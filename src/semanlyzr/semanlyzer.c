@@ -6,9 +6,7 @@
 //	PL/0 is declarative, meaning it has a separate declaration section, simplifying declaration check
 
 #include <stdio.h>
-#include "list_semantic_check.h"
-#include "list_symbol_table.h"
-#include "../parser/syntax_tree.h"
+#include "semanlyzer.h"
 
 void SemanticAnalysis(NodeAST* root, FILE* out) {
 

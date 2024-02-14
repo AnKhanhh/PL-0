@@ -4,7 +4,7 @@
 #include "list_symbol_table.h"
 #include "../parser/syntax_tree.h"
 
-// search for the nearest table entry with a similar name using strcmp()
+// search for the nearest table entry using strcmp()
 // use scope_found to extract the pointer to the containing type table
 static SymbolEntry *search_helper(SymbolTable *root, char *var_name, bool search_local_scope_only, SymbolTable **scope_found);
 
@@ -18,10 +18,13 @@ SymbolEntry *SearchGlobalScope(SymbolTable *root, char *var_name, SymbolTable **
 
 //	declaration check, return false on redeclaration in the same scope
 bool DeclarationCheck(NodeAST *node, SymbolTable *root);
+
 //	check existence, type and mutability of assigned variable
 bool AssignmentCheck(NodeAST *node, SymbolTable *root);
+
 //	check when a variable is accessed
 bool EvaluationCheck(NodeAST *node, SymbolTable *root);
+
 //	check on function invocation
 bool FunctionCallCheck(NodeAST *node, SymbolTable *root);
 
@@ -56,7 +59,7 @@ bool DeclarationCheck(NodeAST *node, SymbolTable *root) {
 			if (node->children[1]->annotation->value.number < 1) {
 				printf("Array initialized with non-positive size. \n"
 					   "\t scope: %s, identifier: %s \n",
-					   root->table_name, ident);
+					   root->name, ident);
 			}
 			break;
 		case ND_BINARY_OP:
@@ -73,7 +76,7 @@ bool DeclarationCheck(NodeAST *node, SymbolTable *root) {
 		default:
 			fprintf(stderr,
 					"compiler error: declaration semantic check on invalid token - scope: %s",
-					root->table_name);
+					root->name);
 			return false;
 	}
 //	on name collision
@@ -82,13 +85,13 @@ bool DeclarationCheck(NodeAST *node, SymbolTable *root) {
 //		redeclaration in the same scope is not allowed
 		if (result_table == root) {
 			printf("Redeclaration of variable in the same scope. \n"
-				   "\t scope: %s, identifier: %s \n", root->table_name, ident);
+				   "\t scope: %s, identifier: %s \n", root->name, ident);
 			return false;
 //		variable shadowing is allowed
 		} else {
 			printf("Warning: variable shadowing. \n"
 				   "\t scope: %s, identifier: %s, type: %s - shadowing scope:%s, type: %s. \n",
-				   root->table_name, ident, SB_IDENT_TYPE[type], result_table->table_name, SB_IDENT_TYPE[result_entry->type]);
+				   root->name, ident, SB_IDENT_TYPE[type], result_table->name, SB_IDENT_TYPE[result_entry->type]);
 		}
 
 	}
@@ -107,7 +110,7 @@ bool AssignmentCheck(NodeAST *node, SymbolTable *root) {
 		ident = node->children[0]->children[0]->annotation->value.ident;
 	} else {
 		printf("Expected identifier. \n"
-			   "\t scope: %s. \n", root->table_name);
+			   "\t scope: %s. \n", root->name);
 		return false;
 	}
 //	check if identifier is declared
@@ -119,12 +122,12 @@ bool AssignmentCheck(NodeAST *node, SymbolTable *root) {
 		} else {
 			printf("Type is not assignable. \n"
 				   "\t scope: %s, identifier: %s, type: %s \n",
-				   root->table_name, ident, SB_IDENT_TYPE[result_entry->type]);
+				   root->name, ident, SB_IDENT_TYPE[result_entry->type]);
 		}
 	} else {
 		printf("Use of undeclared identifier. \n"
 			   "\t scope: %s, identifier: %s, type: %s \n",
-			   root->table_name, ident, SB_IDENT_TYPE[result_entry->type]);
+			   root->name, ident, SB_IDENT_TYPE[result_entry->type]);
 	}
 	return false;
 }
@@ -138,15 +141,15 @@ bool EvaluationCheck(NodeAST *node, SymbolTable *root) {
 		assert(result_table != NULL);
 		switch (result_entry->type) {
 			case SB_INT:
-				if (!result_entry->data.var.is_initialized) {
+				if (!result_entry->data.var_initialized) {
 					printf("warning: uninitialized variable. \n"
-						   "\t scope: %s, identifier: %s \n", root->table_name, ident);
+						   "\t scope: %s, identifier: %s \n", root->name, ident);
 				}
 //			all array must be accessed with subscripting operator
 			case SB_ARRAY:
 				if (node->parent->type != ND_SUBSCRIPT) {
 					printf("Incompatible conversion of array pointer to integer. \n"
-						   "\t scope: %s, identifier: %s \n", root->table_name, ident);
+						   "\t scope: %s, identifier: %s \n", root->name, ident);
 				}
 				break;
 			case SB_CONST_INT:
@@ -154,15 +157,15 @@ bool EvaluationCheck(NodeAST *node, SymbolTable *root) {
 //			no pointer support, so using pointer as integer will result in error
 			case SB_FUNCTION:
 				printf("Incompatible conversion of function pointer to integer. \n"
-					   "\t scope: %s, identifier: %s \n", root->table_name, ident);
+					   "\t scope: %s, identifier: %s \n", root->name, ident);
 				break;
 			default:
 				printf("Expected expression. \n"
-					   "\t scope: %s, identifier: %s \n", root->table_name, ident);
+					   "\t scope: %s, identifier: %s \n", root->name, ident);
 		}
 	} else {
 		printf("Use of undeclared identifier. \n"
-			   "\t scope: %s, identifier: %s \n", root->table_name, ident);
+			   "\t scope: %s, identifier: %s \n", root->name, ident);
 	}
 	return false;
 }
@@ -175,11 +178,11 @@ bool FunctionCallCheck(NodeAST *node, SymbolTable *root) {
 	if (!(result_entry = SearchGlobalScope(root, ident, &result_table))
 		|| result_entry->type != SB_FUNCTION) {
 		printf("Call to undeclared function. \n"
-			   "\t scope: %s, identifier: %s \n", root->table_name, ident);
+			   "\t scope: %s, identifier: %s \n", root->name, ident);
 	} else if (node->child_count != result_entry->data.func.arg_count) {
 		printf("Function have %d parameters, called with %d arguments. \n"
 			   "\t scope: %s, identifier: %s \n",
-			   result_entry->data.func.arg_count, node->child_count, root->table_name, ident);
+			   result_entry->data.func.arg_count, node->child_count, root->name, ident);
 	} else { return true; }
 	return false;
 }
