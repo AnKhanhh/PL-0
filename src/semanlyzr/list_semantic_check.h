@@ -8,25 +8,22 @@
 // use scope_found to extract the pointer to the containing type table
 static SymbolEntry *search_helper(SymbolTable *root, char *var_name, bool search_local_scope_only, SymbolTable **scope_found);
 
-SymbolEntry *SearchLocalScope(SymbolTable *root, char *var_name, SymbolTable **scope_found) {
-	return search_helper(root, var_name, true, scope_found);
-}
+//SymbolEntry *SearchLocalScope(SymbolTable *root, char *var_name, SymbolTable **scope_found) {
+//	return search_helper(root, var_name, true, scope_found);
+//}
 
 SymbolEntry *SearchGlobalScope(SymbolTable *root, char *var_name, SymbolTable **scope_found) {
 	return search_helper(root, var_name, false, scope_found);
 }
-//	all variable, constant, function and array share the same namespace
-//	PL/0 is declarative, meaning it has a separate declaration section, simplifying declaration check
-//	returns false on semantic error
+
+//	declaration check, return false on redeclaration in the same scope
 bool DeclarationCheck(NodeAST *node, SymbolTable *root);
-
+//	check existence, type and mutability of assigned variable
 bool AssignmentCheck(NodeAST *node, SymbolTable *root);
-
+//	check when a variable is accessed
 bool EvaluationCheck(NodeAST *node, SymbolTable *root);
-
+//	check on function invocation
 bool FunctionCallCheck(NodeAST *node, SymbolTable *root);
-
-bool LoopCheck(NodeAST *node, SymbolTable *root);
 
 static SymbolEntry *search_helper(SymbolTable *root, char *var_name, bool search_local_scope_only, SymbolTable **scope_found) {
 	assert(root != NULL);
@@ -145,8 +142,9 @@ bool EvaluationCheck(NodeAST *node, SymbolTable *root) {
 					printf("warning: uninitialized variable. \n"
 						   "\t scope: %s, identifier: %s \n", root->table_name, ident);
 				}
+//			all array must be accessed with subscripting operator
 			case SB_ARRAY:
-				if(node->parent->type != ND_SUBSCRIPT){
+				if (node->parent->type != ND_SUBSCRIPT) {
 					printf("Incompatible conversion of array pointer to integer. \n"
 						   "\t scope: %s, identifier: %s \n", root->table_name, ident);
 				}
@@ -169,5 +167,21 @@ bool EvaluationCheck(NodeAST *node, SymbolTable *root) {
 	return false;
 }
 
+bool FunctionCallCheck(NodeAST *node, SymbolTable *root) {
+	assert(node->type == ND_FUNC_CALL);
+	char *ident = node->annotation->value.ident;
+	SymbolTable *result_table = NULL;
+	SymbolEntry *result_entry = NULL;
+	if (!(result_entry = SearchGlobalScope(root, ident, &result_table))
+		|| result_entry->type != SB_FUNCTION) {
+		printf("Call to undeclared function. \n"
+			   "\t scope: %s, identifier: %s \n", root->table_name, ident);
+	} else if (node->child_count != result_entry->data.func.arg_count) {
+		printf("Function have %d parameters, called with %d arguments. \n"
+			   "\t scope: %s, identifier: %s \n",
+			   result_entry->data.func.arg_count, node->child_count, root->table_name, ident);
+	} else { return true; }
+	return false;
+}
 
 #endif //COMP_LIST_SEMANTIC_CHECK_H

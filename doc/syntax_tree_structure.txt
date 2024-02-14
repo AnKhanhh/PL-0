@@ -28,18 +28,18 @@ ND_PRG_DCL : ident
 < statement >
 └── ND_BINARY_OP : TK_ASSIGN			- assignment check -
     ├── ND_NAME : ident					// variable name
-    └── < expression >					// assignment value
+    └── ND_EXPRESSION					// assignment value
 < statement >
 └── ND_BINARY_OP : TK_ASSIGN			- assignment check -
     ├── ND_SUBSCRIPT
     │   ├── ND_NAME : ident				// array name
-    │   └── < expression >				// array index ( < array size )
-    └── < expression >					// assignment value
+    │   └── ND_EXPRESSION				// array index ( < array size )
+    └── ND_EXPRESSION					// assignment value
 
 < statement >
 └── ND_FUNC_CALL : ident
-    ├── < expression >					// function parameters
-    ├── < expression >
+    ├── ND_EXPRESSION					// function parameters
+    ├── ND_EXPRESSION
     └── ...
 
 < statement >
@@ -50,19 +50,20 @@ ND_PRG_DCL : ident
 
 < statement >
 └── ND_CONDITIONAL
-    ├── < expression >				// if evaluate to non-zero
+    ├── ND_EXPRESSION				// if evaluate to non-zero
     ├── < statement >				// then
     └── [ < statement > ]			// else ( optional )
 
 < statement >
 └── ND_WHILE_LOOP
-    ├── < expression >				// while evaluate to non-zero
+    ├── ND_EXPRESSION				// while evaluate to non-zero
     └── < statement >				// perform operation
 
 < statement >
 └── ND_FOR_LOOP						- loop check -
     ├── ND_NAME : ident				// variable is implicitly incremented by 1 each loop
-    ├── < expression >				// initial value
-    ├── < expression >				// less or equal value
+    ├── ND_EXPRESSION				// initial value
+    ├── ND_EXPRESSION				// less or equal value
     └── < statement >				// perform operation
 
+ND_EXPRESSION is not parsed by recursive_descent_parser.h, but by expression_parser.h

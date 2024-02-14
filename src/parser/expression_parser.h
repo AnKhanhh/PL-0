@@ -25,7 +25,9 @@ static EOperatorPrecedence get_precedence(ETokenType token);
 
 // expression parser to be called by main parser
 NodeAST *expression(FILE *in, Symbol *sb, int *tc) {
-	return parse_main(in, sb, tc, PR_DEFAULT);
+	NodeAST * expression = CreateTreeNode(ND_EXPRESSION, 0, NULL);
+	InsertNode(expression,parse_main(in, sb, tc, PR_DEFAULT));
+	return expression;
 }
 
 static NodeAST *parse_main(FILE *in, Symbol *sb, int *tc, EOperatorPrecedence prev_precedence) {

@@ -20,13 +20,17 @@ ND_PRG_DCL : input_1 {
 		ND_CODE_BLK {
 			ND_BINARY_OP : TK_ASSIGN {
 				ND_NAME : x
-				ND_NAME : z
+				ND_EXPRESSION {
+					ND_NAME : z
+				}
 			}
 			ND_BINARY_OP : TK_ASSIGN {
 				ND_NAME : y
-				ND_BINARY_OP : TK_PLUS {
-					ND_NAME : x
-					ND_LITERAL : 1
+				ND_EXPRESSION {
+					ND_BINARY_OP : TK_PLUS {
+						ND_NAME : x
+						ND_LITERAL : 1
+					}
 				}
 			}
 		}
@@ -34,48 +38,64 @@ ND_PRG_DCL : input_1 {
 	ND_CODE_BLK {
 		ND_BINARY_OP : TK_ASSIGN {
 			ND_NAME : x
-			ND_BINARY_OP : TK_TIMES {
-				ND_LITERAL : 2
-				ND_LITERAL : 2
+			ND_EXPRESSION {
+				ND_BINARY_OP : TK_TIMES {
+					ND_LITERAL : 2
+					ND_LITERAL : 2
+				}
 			}
 		}
 		ND_BINARY_OP : TK_ASSIGN {
 			ND_SUBSCRIPT {
 				ND_NAME : y
-				ND_BINARY_OP : TK_MINUS {
-					ND_NAME : z
-					ND_LITERAL : 10
+				ND_EXPRESSION {
+					ND_BINARY_OP : TK_MINUS {
+						ND_NAME : z
+						ND_LITERAL : 10
+					}
 				}
 			}
-			ND_BINARY_OP : TK_MINUS {
-				ND_NAME : x
-				ND_LITERAL : 1
+			ND_EXPRESSION {
+				ND_BINARY_OP : TK_MINUS {
+					ND_NAME : x
+					ND_LITERAL : 1
+				}
 			}
 		}
 		ND_FUNC_CALL : test {
-			ND_NAME : x
-			ND_NAME : y
+			ND_EXPRESSION {
+				ND_NAME : x
+			}
+			ND_EXPRESSION {
+				ND_NAME : y
+			}
 		}
 		ND_BINARY_OP : TK_ASSIGN {
 			ND_NAME : x
-			ND_BINARY_OP : TK_SLASH {
-				ND_NAME : x
-				ND_LITERAL : 2
+			ND_EXPRESSION {
+				ND_BINARY_OP : TK_SLASH {
+					ND_NAME : x
+					ND_LITERAL : 2
+				}
 			}
 		}
 		ND_BINARY_OP : TK_ASSIGN {
 			ND_SUBSCRIPT {
 				ND_NAME : y
-				ND_LITERAL : 4
-			}
-			ND_BINARY_OP : TK_SLASH {
-				ND_BINARY_OP : TK_PLUS {
-					ND_NAME : z
-					ND_LITERAL : 1
+				ND_EXPRESSION {
+					ND_LITERAL : 4
 				}
-				ND_BINARY_OP : TK_TIMES {
-					ND_LITERAL : 8
-					ND_LITERAL : 2
+			}
+			ND_EXPRESSION {
+				ND_BINARY_OP : TK_SLASH {
+					ND_BINARY_OP : TK_PLUS {
+						ND_NAME : z
+						ND_LITERAL : 1
+					}
+					ND_BINARY_OP : TK_TIMES {
+						ND_LITERAL : 8
+						ND_LITERAL : 2
+					}
 				}
 			}
 		}
