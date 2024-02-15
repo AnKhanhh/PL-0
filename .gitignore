@@ -2,7 +2,7 @@
 /cmake-build-debug/
 /cmake-build-default/
 /cmake-build-debug-alt/
-CMakeLists.txt
+/cmake-build-release/
 /.idea
 
 *.c
