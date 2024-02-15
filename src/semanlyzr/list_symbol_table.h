@@ -123,7 +123,6 @@ void PrintSymbolTable(SymbolTable *table, FILE *out) {
 //	print table footer
 	snprintf(buffer, size, "%s\n\n", line);
 	fputs(buffer, out);
-
 //	print other tables, DFS traversal
 	for (int i = 0; i < table->entry_count; ++i) {
 		SymbolEntry entry = table->entries[i];
