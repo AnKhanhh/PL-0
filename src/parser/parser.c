@@ -3,10 +3,10 @@
 
 #include "recursive_descent_parser.h"
 
-//	error message is tracked with a token counter, with max value <= MAX_INT
+//	error message is tracked with a token counter, with max data <= MAX_INT
 //	I don't intend to implement a line/column tracker in the near future
 
-void SyntaxAnalysis( FILE *in, FILE *out, NodeAST **root_ptr ) {
+void SyntaxAnalysis(FILE *in, FILE *out, SyntaxTreeNode **root_ptr ) {
 	fseek( in, 0, SEEK_SET );
 
 	int token_counter = 0;

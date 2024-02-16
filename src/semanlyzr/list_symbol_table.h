@@ -17,9 +17,9 @@ typedef struct SymbolEntry {
 	union {
 		bool var_initialized;
 		long const_value;
-		long arr_size;                    //all arrays are 2d
+		long arr_size;
 		struct {
-			int arg_count;            // n first entries in function table is parameters
+			int param_count;            // n first entries in function table is parameters
 			struct SymbolTable *ptr;
 		} func;
 	} data;
@@ -35,12 +35,13 @@ typedef struct SymbolTable {
 //  allocate a new table, return pointer
 SymbolTable *NewSymbolTable(SymbolTable *parent_table, char *table_name);
 
-//  insert an empty entry into symbol table
-SymbolTable *InsertEntry(SymbolTable *table, SymbolEntry entry);
+//  insert an entry into symbol table
+SymbolTable *InsertEntry(SymbolTable *table, SymbolEntry entry, char *ident);
 
-//  DFS recursive free()
+//  DFS free()
 void FreeSymbolTables(SymbolTable *root);
 
+//	DFS print
 void PrintSymbolTable(SymbolTable *table, FILE *out);
 
 SymbolTable *NewSymbolTable(SymbolTable *parent_table, char *table_name) {
@@ -55,16 +56,18 @@ SymbolTable *NewSymbolTable(SymbolTable *parent_table, char *table_name) {
 	return new_table;
 }
 
-SymbolTable *InsertEntry(SymbolTable *table, SymbolEntry entry) {
+SymbolTable *InsertEntry(SymbolTable *table, SymbolEntry entry, char *ident) {
 	assert(table != NULL);
 //	temporary pointer to prevent leak in case of failure
-	SymbolEntry *temp = realloc(table->entries, sizeof(*table->entries) * (table->entry_count + 1));
+	table->entry_count++;
+	SymbolEntry *temp = realloc(table->entries, sizeof(*table->entries) * (table->entry_count));
 	if (temp == NULL) {
 		perror("allocation for symbol table entry failed");
 		exit(EXIT_FAILURE);
 	}
 	table->entries = temp;
-	table->entries[table->entry_count++] = entry;
+	table->entries[table->entry_count - 1] = entry;
+	snprintf(table->entries[table->entry_count - 1].ident, LEXEME_LENGTH, "%s", ident);
 	return table;
 }
 
@@ -123,7 +126,7 @@ void PrintSymbolTable(SymbolTable *table, FILE *out) {
 //	print table footer
 	snprintf(buffer, size, "%s\n\n", line);
 	fputs(buffer, out);
-//	print other tables, DFS traversal
+//	print other tables
 	for (int i = 0; i < table->entry_count; ++i) {
 		SymbolEntry entry = table->entries[i];
 		if (entry.type == SB_FUNCTION) { PrintSymbolTable(entry.data.func.ptr, out); }

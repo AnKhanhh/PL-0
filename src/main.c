@@ -19,10 +19,11 @@ int main(int argc, char *argv[]) {
 	else if ((f_parser = fopen(p_out_path, "w")) == NULL) { perror("parser file"); }
 	else {
 		LexicalAnalysis(f_in, f_lexer);
-		NodeAST *root = NULL;
+		SyntaxTreeNode *root = NULL;
 		SyntaxAnalysis(f_lexer, f_parser, &root);
 
 		FreeSyntaxTree(root);
+//		FreeSymbolTables()
 		fclose(f_in);
 		fclose(f_lexer);
 		fclose(f_parser);

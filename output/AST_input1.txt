@@ -1,35 +1,35 @@
 ND_PRG_DCL : input_1 {
 	ND_CST_DCL {
 		ND_BINARY_OP : TK_EQU {
-			ND_NAME : z
-			ND_LITERAL : 15
+			ND_IDENT : z
+			ND_INTEGER : 15
 		}
 	}
 	ND_VAR_DCL {
-		ND_NAME : x
+		ND_IDENT : x
 		ND_ARR_DCL {
-			ND_NAME : y
-			ND_LITERAL : 4
+			ND_IDENT : y
+			ND_INTEGER : 4
 		}
 	}
 	ND_PROC_DCL : test {
-		ND_FUNC_ARG {
-			ND_NAME : x
-			ND_NAME : y
+		ND_PARAM {
+			ND_IDENT : x
+			ND_IDENT : y
 		}
 		ND_CODE_BLK {
 			ND_BINARY_OP : TK_ASSIGN {
-				ND_NAME : x
+				ND_IDENT : x
 				ND_EXPRESSION {
-					ND_NAME : z
+					ND_IDENT : z
 				}
 			}
 			ND_BINARY_OP : TK_ASSIGN {
-				ND_NAME : y
+				ND_IDENT : y
 				ND_EXPRESSION {
 					ND_BINARY_OP : TK_PLUS {
-						ND_NAME : x
-						ND_LITERAL : 1
+						ND_IDENT : x
+						ND_INTEGER : 1
 					}
 				}
 			}
@@ -37,64 +37,64 @@ ND_PRG_DCL : input_1 {
 	}
 	ND_CODE_BLK {
 		ND_BINARY_OP : TK_ASSIGN {
-			ND_NAME : x
+			ND_IDENT : x
 			ND_EXPRESSION {
 				ND_BINARY_OP : TK_TIMES {
-					ND_LITERAL : 2
-					ND_LITERAL : 2
+					ND_INTEGER : 2
+					ND_INTEGER : 2
 				}
 			}
 		}
 		ND_BINARY_OP : TK_ASSIGN {
 			ND_SUBSCRIPT {
-				ND_NAME : y
+				ND_IDENT : y
 				ND_EXPRESSION {
 					ND_BINARY_OP : TK_MINUS {
-						ND_NAME : z
-						ND_LITERAL : 10
+						ND_IDENT : z
+						ND_INTEGER : 10
 					}
 				}
 			}
 			ND_EXPRESSION {
 				ND_BINARY_OP : TK_MINUS {
-					ND_NAME : x
-					ND_LITERAL : 1
+					ND_IDENT : x
+					ND_INTEGER : 1
 				}
 			}
 		}
 		ND_FUNC_CALL : test {
 			ND_EXPRESSION {
-				ND_NAME : x
+				ND_IDENT : x
 			}
 			ND_EXPRESSION {
-				ND_NAME : y
+				ND_IDENT : y
 			}
 		}
 		ND_BINARY_OP : TK_ASSIGN {
-			ND_NAME : x
+			ND_IDENT : x
 			ND_EXPRESSION {
 				ND_BINARY_OP : TK_SLASH {
-					ND_NAME : x
-					ND_LITERAL : 2
+					ND_IDENT : x
+					ND_INTEGER : 2
 				}
 			}
 		}
 		ND_BINARY_OP : TK_ASSIGN {
 			ND_SUBSCRIPT {
-				ND_NAME : y
+				ND_IDENT : y
 				ND_EXPRESSION {
-					ND_LITERAL : 4
+					ND_INTEGER : 4
 				}
 			}
 			ND_EXPRESSION {
 				ND_BINARY_OP : TK_SLASH {
 					ND_BINARY_OP : TK_PLUS {
-						ND_NAME : z
-						ND_LITERAL : 1
+						ND_IDENT : z
+						ND_INTEGER : 1
 					}
 					ND_BINARY_OP : TK_TIMES {
-						ND_LITERAL : 8
-						ND_LITERAL : 2
+						ND_INTEGER : 8
+						ND_INTEGER : 2
 					}
 				}
 			}

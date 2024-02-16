@@ -4,20 +4,20 @@ ND_PRG_DCL : ident
 < block >
 ├── [ ND_CST_DCL ]
 │   ├── ND_BINARY_OP : TK_EQU			- declaration check -
-│   │   ├── ND_NAME : ident          	// constant name
-│   │   └── ND_LITERAL : number       	// constant value
+│   │   ├── ND_IDENT : ident          	// constant name
+│   │   └── ND_INTEGER : number       	// constant data
 │   └── ND_BINARY_OP : TK_EQU
 │       └── ...
 ├── [ ND_VAR_DCL ]
-│   ├── ND_NAME : ident               	- declaration check -
+│   ├── ND_IDENT : ident               	- declaration check -
 │   ├── ND_ARR_DCL						- declaration check -
-│   │   ├── ND_NAME : ident           	// array name
-│   │   └── ND_LITERAL : number			// array size
+│   │   ├── ND_IDENT : ident           	// array name
+│   │   └── ND_INTEGER : number			// array size
 │   └── ...
-├── [ ND_PROC_DCL : ident ]				- semantic declaration check -
-│   ├── [ ND_FUNC_ARG ]
-│   │   ├── ND_NAME : ident				// parameter name
-│   │   ├── ND_NAME : ident
+├── { ND_PROC_DCL : ident }				- semantic declaration check -
+│   ├── [ ND_PARAM ]
+│   │   ├── ND_IDENT : ident			// parameter name
+│   │   ├── ND_IDENT : ident
 │   │   └── ...
 │   └── < block >
 └── ND_CODE_BLK
@@ -27,14 +27,15 @@ ND_PRG_DCL : ident
 
 < statement >
 └── ND_BINARY_OP : TK_ASSIGN			- assignment check -
-    ├── ND_NAME : ident					// variable name
-    └── ND_EXPRESSION					// assignment value
+    ├── ND_IDENT : ident				// variable name
+    └── ND_EXPRESSION					// assignment data
+
 < statement >
 └── ND_BINARY_OP : TK_ASSIGN			- assignment check -
     ├── ND_SUBSCRIPT
-    │   ├── ND_NAME : ident				// array name
+    │   ├── ND_IDENT : ident			// array name
     │   └── ND_EXPRESSION				// array index ( < array size )
-    └── ND_EXPRESSION					// assignment value
+    └── ND_EXPRESSION					// assignment data
 
 < statement >
 └── ND_FUNC_CALL : ident
@@ -50,20 +51,20 @@ ND_PRG_DCL : ident
 
 < statement >
 └── ND_CONDITIONAL
-    ├── ND_EXPRESSION				// if evaluate to non-zero
-    ├── < statement >				// then
-    └── [ < statement > ]			// else ( optional )
+    ├── ND_EXPRESSION					// if evaluate to non-zero
+    ├── < statement >					// then
+    └── [ < statement > ]				// else ( optional )
 
 < statement >
 └── ND_WHILE_LOOP
-    ├── ND_EXPRESSION				// while evaluate to non-zero
-    └── < statement >				// perform operation
+    ├── ND_EXPRESSION					// while evaluate to non-zero
+    └── < statement >					// perform operation
 
 < statement >
 └── ND_FOR_LOOP						- loop check -
-    ├── ND_NAME : ident				// variable is implicitly incremented by 1 each loop
-    ├── ND_EXPRESSION				// initial value
-    ├── ND_EXPRESSION				// less or equal value
-    └── < statement >				// perform operation
+    ├── ND_IDENT : ident				// variable is implicitly incremented by 1 each loop
+    ├── ND_EXPRESSION					// initial data
+    ├── ND_EXPRESSION					// less or equal data
+    └── < statement >					// perform operation
 
-ND_EXPRESSION is not parsed by recursive_descent_parser.h, but by expression_parser.h
+ND_EXPRESSION is not generated in recursive_descent_parser.h, but in expression_parser.h

@@ -1,5 +1,3 @@
-//  TODO: InsertNode pass child by value
-
 #ifndef COMP_TREE_GEN_H
 #define COMP_TREE_GEN_H
 
@@ -10,54 +8,54 @@
 
 //	size of children increment by this amount
 #define PROD_INITIAL_CAPACITY    2
-//	types of AST node
+
 typedef enum ESymbolType {
 	ND_PRG_DCL = 1, ND_CST_DCL, ND_VAR_DCL, ND_ARR_DCL, ND_PROC_DCL, ND_CODE_BLK,
-	ND_NAME, ND_LITERAL, ND_UNARY_OP, ND_BINARY_OP, ND_SUBSCRIPT, ND_FUNC_CALL, ND_FUNC_ARG,
+	ND_IDENT, ND_INTEGER, ND_UNARY_OP, ND_BINARY_OP, ND_SUBSCRIPT, ND_FUNC_CALL, ND_PARAM,
 	ND_CONDITIONAL, ND_FOR_LOOP, ND_WHILE_LOOP, ND_EXPRESSION
-} ESymbolType;
+} ESyntaxNodeType;
 
-const char *SYMBOL[] = {
+const char *NODE[] = {
 		"", "ND_PRG_DCL", "ND_CST_DCL", "ND_VAR_DCL", "ND_ARR_DCL", "ND_PROC_DCL", "ND_CODE_BLK",
-		"ND_NAME", "ND_LITERAL", "ND_UNARY_OP", "ND_BINARY_OP", "ND_SUBSCRIPT", "ND_FUNC_CALL", "ND_FUNC_ARG",
+		"ND_IDENT", "ND_INTEGER", "ND_UNARY_OP", "ND_BINARY_OP", "ND_SUBSCRIPT", "ND_FUNC_CALL", "ND_PARAM",
 		"ND_CONDITIONAL", "ND_FOR_LOOP", "ND_WHILE_LOOP", "ND_EXPRESSION"
 };
-//	associate value for number and indent type
-typedef struct Annotation {
+//	associate data for number and indent type
+typedef struct TreeAnnotation {
 	union {
 		char ident[LEXEME_LENGTH];
 		long number;
 		ETokenType token;
-	} value;
+	} data;
 	enum EAnnotationType {
 		ANN_IDENT = 1, ANN_NUM, ANN_TOKEN
 	} type;
-} Annotation;
+} TreeAnnotation;
 
 //	Symbol can be terminal or non-terminal
-typedef struct NodeAST {
-	ESymbolType type;
-	Annotation *annotation;
-	struct NodeAST *parent;
-	struct NodeAST **children;
+typedef struct SyntaxTreeNode {
+	ESyntaxNodeType type;
+	TreeAnnotation *annotation;
+	struct SyntaxTreeNode *parent;
+	struct SyntaxTreeNode **children;
 	int child_count;
-} NodeAST;
+} SyntaxTreeNode;
 
 //	insert new node to production list, return pointer to topmost node or null if insertion failed
-NodeAST *InsertNode(NodeAST *root, NodeAST *child);
+SyntaxTreeNode *InsertNode(SyntaxTreeNode *root, SyntaxTreeNode *child);
 // create a node
-NodeAST *CreateTreeNode(ESymbolType sb_type, enum EAnnotationType ann_type, void *ann_ptr);
+SyntaxTreeNode *CreateNode(ESyntaxNodeType sb_type, enum EAnnotationType ann_type, void *ann_ptr);
 // recursive post-order traversal free()
-void FreeSyntaxTree(NodeAST *root);
+void FreeSyntaxTree(SyntaxTreeNode *root);
 // print AST to file
-void PrintSyntaxTree(NodeAST *root, FILE *out);
+void PrintSyntaxTree(SyntaxTreeNode *root, FILE *out);
 
-NodeAST *InsertNode(NodeAST *root, NodeAST *child) {
+SyntaxTreeNode *InsertNode(SyntaxTreeNode *root, SyntaxTreeNode *child) {
 	if (root == NULL || child == NULL) { return child; }
 	else if (root->child_count == 0) {
 		root->child_count = PROD_INITIAL_CAPACITY;
-		if ((root->children = calloc(PROD_INITIAL_CAPACITY, sizeof(NodeAST *))) == NULL) {
-			fprintf(stderr, "compiler error: calloc() failure for %zu bytes\n", PROD_INITIAL_CAPACITY * sizeof(NodeAST *));
+		if ((root->children = calloc(PROD_INITIAL_CAPACITY, sizeof(SyntaxTreeNode *))) == NULL) {
+			fprintf(stderr, "compiler error: calloc() failure for %zu bytes\n", PROD_INITIAL_CAPACITY * sizeof(SyntaxTreeNode *));
 		}
 		root->children[0] = child;
 		return root;
@@ -70,7 +68,7 @@ NodeAST *InsertNode(NodeAST *root, NodeAST *child) {
 			root->children[i + 1] = child;
 		} else {
 			root->child_count += PROD_INITIAL_CAPACITY;
-			root->children = realloc(root->children, root->child_count * sizeof(NodeAST *));
+			root->children = realloc(root->children, root->child_count * sizeof(SyntaxTreeNode *));
 			root->children[end_index + 1] = child;
 			for (int j = end_index + 2; j < root->child_count; ++j) { root->children[j] = NULL; }
 			return root;
@@ -79,26 +77,26 @@ NodeAST *InsertNode(NodeAST *root, NodeAST *child) {
 	return NULL;
 }
 
-NodeAST *CreateTreeNode(ESymbolType sb_type, enum EAnnotationType ann_type, void *ann_ptr) {
-	NodeAST *new_node = calloc(1, sizeof(NodeAST));
+SyntaxTreeNode *CreateNode(ESyntaxNodeType sb_type, enum EAnnotationType ann_type, void *ann_ptr) {
+	SyntaxTreeNode *new_node = calloc(1, sizeof(SyntaxTreeNode));
 	new_node->type = sb_type;
 	if (!ann_type) {
 		assert(ann_ptr == NULL);
 		return new_node;
 	}
-	new_node->annotation = calloc(1, sizeof(Annotation));
+	new_node->annotation = calloc(1, sizeof(TreeAnnotation));
 	if (ann_type == ANN_IDENT) {
-		snprintf(new_node->annotation->value.ident, LEXEME_LENGTH, "%s", (char *) ann_ptr);
+		snprintf(new_node->annotation->data.ident, LEXEME_LENGTH, "%s", (char *) ann_ptr);
 	} else if (ann_type == ANN_NUM) {
-		new_node->annotation->value.number = *(long *) ann_ptr;
+		new_node->annotation->data.number = *(long *) ann_ptr;
 	} else if (ann_type == ANN_TOKEN) {
-		new_node->annotation->value.token = *(ETokenType *) ann_ptr;
+		new_node->annotation->data.token = *(ETokenType *) ann_ptr;
 	}
 	new_node->annotation->type = ann_type;
 	return new_node;
 }
 
-void FreeSyntaxTree(NodeAST *root) {
+void FreeSyntaxTree(SyntaxTreeNode *root) {
 	for (int i = 0; i < root->child_count; ++i) {
 		if (root->children[i] == NULL) { break; }
 		FreeSyntaxTree(root->children[i]);
@@ -108,20 +106,20 @@ void FreeSyntaxTree(NodeAST *root) {
 	free(root);
 }
 
-static void SubPrintTree(NodeAST *root, FILE *out, int depth) {
+static void SubPrintTree(SyntaxTreeNode *root, FILE *out, int depth) {
 	for (int i = 0; i < depth; ++i) { fputs("\t", out); }
-	fprintf(out, "%s", SYMBOL[root->type]);
+	fprintf(out, "%s", NODE[root->type]);
 	if (root->annotation != NULL) {
 		int type = root->annotation->type;
 		if (type == ANN_IDENT) {
-			fprintf(out, " : %s", root->annotation->value.ident);
+			fprintf(out, " : %s", root->annotation->data.ident);
 		} else if (type == ANN_NUM) {
-			fprintf(out, " : %ld", root->annotation->value.number);
+			fprintf(out, " : %ld", root->annotation->data.number);
 		} else if (type == ANN_TOKEN) {
-			fprintf(out, " : %s", TOKENS[root->annotation->value.token]);
+			fprintf(out, " : %s", TOKENS[root->annotation->data.token]);
 		} else {
 			fprintf(stderr, "compiler error: invalid node annotation in type %s, depth %d \n",
-					SYMBOL[root->type], depth);
+					NODE[root->type], depth);
 		}
 	}
 	if (root->child_count == 0) {
@@ -131,7 +129,7 @@ static void SubPrintTree(NodeAST *root, FILE *out, int depth) {
 		assert(root->children != NULL);
 		fputs(" {\n", out);
 		for (int i = 0; i < root->child_count; ++i) {
-			NodeAST *product_ptr = root->children[i];
+			SyntaxTreeNode *product_ptr = root->children[i];
 			if (product_ptr == NULL) { break; }
 			SubPrintTree(product_ptr, out, depth + 1);
 		}
@@ -140,7 +138,7 @@ static void SubPrintTree(NodeAST *root, FILE *out, int depth) {
 	}
 }
 
-void PrintSyntaxTree(NodeAST *root, FILE *out) {
+void PrintSyntaxTree(SyntaxTreeNode *root, FILE *out) {
 	SubPrintTree(root, out, 0);
 }
 

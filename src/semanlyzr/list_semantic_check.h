@@ -16,17 +16,17 @@ SymbolEntry *SearchGlobalScope(SymbolTable *root, char *var_name, SymbolTable **
 	return search_helper(root, var_name, false, scope_found);
 }
 
-//	declaration check, return false on redeclaration in the same scope
-bool DeclarationCheck(NodeAST *node, SymbolTable *root);
+//	check declaration
+bool DeclarationCheck(SyntaxTreeNode *node, SymbolTable *root);
 
-//	check existence, type and mutability of assigned variable
-bool AssignmentCheck(NodeAST *node, SymbolTable *root);
+//	check assignment operation
+bool AssignmentCheck(SyntaxTreeNode *node, SymbolTable *root);
 
-//	check when a variable is accessed
-bool EvaluationCheck(NodeAST *node, SymbolTable *root);
+//	check variable evaluation
+bool EvaluationCheck(SyntaxTreeNode *node, SymbolTable *root);
 
 //	check on function invocation
-bool FunctionCallCheck(NodeAST *node, SymbolTable *root);
+bool FunctionCallCheck(SyntaxTreeNode *node, SymbolTable *root);
 
 static SymbolEntry *search_helper(SymbolTable *root, char *var_name, bool search_local_scope_only, SymbolTable **scope_found) {
 	assert(root != NULL);
@@ -41,36 +41,40 @@ static SymbolEntry *search_helper(SymbolTable *root, char *var_name, bool search
 	return NULL;
 }
 
-bool DeclarationCheck(NodeAST *node, SymbolTable *root) {
+bool DeclarationCheck(SyntaxTreeNode *node, SymbolTable *root) {
 	char *ident = NULL;
 	enum EIdentType type = 0;
 	SymbolTable *result_table = NULL;
 	SymbolEntry *result_entry = NULL;
 	switch (node->type) {
-		case ND_NAME:
+//		on declaration of variable integer
+		case ND_IDENT:
 			assert(node->children[0] == NULL);
-			ident = node->annotation->value.ident;
+			ident = node->annotation->data.ident;
 			type = SB_INT;
 			break;
+//		one-dimensional integer array
 		case ND_ARR_DCL:
-			assert(node->children[0]->type == ND_NAME && node->children[1]->type == ND_LITERAL);
-			ident = node->children[0]->annotation->value.ident;
+			assert(node->children[0]->type == ND_IDENT && node->children[1]->type == ND_INTEGER);
+			ident = node->children[0]->annotation->data.ident;
 			type = SB_ARRAY;
-			if (node->children[1]->annotation->value.number < 1) {
+			if (node->children[1]->annotation->data.number < 1) {
 				printf("Array initialized with non-positive size. \n"
 					   "\t scope: %s, identifier: %s \n",
 					   root->name, ident);
 			}
 			break;
+//		constant
 		case ND_BINARY_OP:
-			assert(node->annotation->value.token == TK_EQU);
-			assert(node->children[0]->type == ND_NAME && node->children[1]->type == ND_LITERAL);
-			ident = node->children[0]->annotation->value.ident;
+			assert(node->annotation->data.token == TK_EQU);
+			assert(node->children[0]->type == ND_IDENT && node->children[1]->type == ND_INTEGER);
+			ident = node->children[0]->annotation->data.ident;
 			type = SB_CONST_INT;
 			break;
+//		function
 		case ND_PROC_DCL:
-			assert(node->children[0]->type == ND_FUNC_ARG);
-			ident = node->annotation->value.ident;
+			assert(node->children[0]->type == ND_PARAM);
+			ident = node->annotation->data.ident;
 			type = SB_FUNCTION;
 			break;
 		default:
@@ -98,16 +102,16 @@ bool DeclarationCheck(NodeAST *node, SymbolTable *root) {
 	return true;
 }
 
-bool AssignmentCheck(NodeAST *node, SymbolTable *root) {
-	assert(node->type == ND_BINARY_OP && node->annotation->value.token == TK_ASSIGN);
+bool AssignmentCheck(SyntaxTreeNode *node, SymbolTable *root) {
+	assert(node->type == ND_BINARY_OP && node->annotation->data.token == TK_ASSIGN);
 	char *ident = NULL;
 	SymbolTable *result_table = NULL;
 	SymbolEntry *result_entry = NULL;
 //	check identifier
-	if (node->children[0]->type == ND_NAME) {
-		ident = node->children[0]->annotation->value.ident;
+	if (node->children[0]->type == ND_IDENT) {
+		ident = node->children[0]->annotation->data.ident;
 	} else if (node->children[0]->type == ND_SUBSCRIPT) {
-		ident = node->children[0]->children[0]->annotation->value.ident;
+		ident = node->children[0]->children[0]->annotation->data.ident;
 	} else {
 		printf("Expected identifier. \n"
 			   "\t scope: %s. \n", root->name);
@@ -132,9 +136,9 @@ bool AssignmentCheck(NodeAST *node, SymbolTable *root) {
 	return false;
 }
 
-bool EvaluationCheck(NodeAST *node, SymbolTable *root) {
-	assert(node->type == ND_NAME && node->child_count == 0);
-	char *ident = node->annotation->value.ident;
+bool EvaluationCheck(SyntaxTreeNode *node, SymbolTable *root) {
+	assert(node->type == ND_IDENT && node->child_count == 0);
+	char *ident = node->annotation->data.ident;
 	SymbolTable *result_table = NULL;
 	SymbolEntry *result_entry = NULL;
 	if (result_entry == SearchGlobalScope(root, ident, &result_table)) {
@@ -170,19 +174,19 @@ bool EvaluationCheck(NodeAST *node, SymbolTable *root) {
 	return false;
 }
 
-bool FunctionCallCheck(NodeAST *node, SymbolTable *root) {
+bool FunctionCallCheck(SyntaxTreeNode *node, SymbolTable *root) {
 	assert(node->type == ND_FUNC_CALL);
-	char *ident = node->annotation->value.ident;
+	char *ident = node->annotation->data.ident;
 	SymbolTable *result_table = NULL;
 	SymbolEntry *result_entry = NULL;
 	if (!(result_entry = SearchGlobalScope(root, ident, &result_table))
 		|| result_entry->type != SB_FUNCTION) {
 		printf("Call to undeclared function. \n"
 			   "\t scope: %s, identifier: %s \n", root->name, ident);
-	} else if (node->child_count != result_entry->data.func.arg_count) {
+	} else if (node->child_count != result_entry->data.func.param_count) {
 		printf("Function have %d parameters, called with %d arguments. \n"
 			   "\t scope: %s, identifier: %s \n",
-			   result_entry->data.func.arg_count, node->child_count, root->name, ident);
+			   result_entry->data.func.param_count, node->child_count, root->name, ident);
 	} else { return true; }
 	return false;
 }

@@ -13,4 +13,5 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(compilers PRIVATE -O3)
 endif()
 
+# not published to git
 add_executable(test test.c)
