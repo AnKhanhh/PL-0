@@ -1,0 +1,152 @@
+ND_PRG_DCL : Pratt_test {
+	ND_VAR_DCL {
+		ND_IDENT : a
+		ND_IDENT : b
+		ND_IDENT : c
+		ND_IDENT : result1
+		ND_IDENT : result2
+		ND_IDENT : result3
+	}
+	ND_CODE_BLK {
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_IDENT : a
+			ND_EXPRESSION {
+				ND_INTEGER : 10
+			}
+		}
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_IDENT : b
+			ND_EXPRESSION {
+				ND_UNARY_OP : TK_MINUS {
+					ND_INTEGER : 5
+				}
+			}
+		}
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_IDENT : c
+			ND_EXPRESSION {
+				ND_INTEGER : 3
+			}
+		}
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_IDENT : result1
+			ND_EXPRESSION {
+				ND_BINARY_OP : TK_PLUS {
+					ND_BINARY_OP : TK_TIMES {
+						ND_BINARY_OP : TK_PLUS {
+							ND_IDENT : a
+							ND_IDENT : b
+						}
+						ND_BINARY_OP : TK_SLASH {
+							ND_UNARY_OP : TK_MINUS {
+								ND_IDENT : c
+							}
+							ND_BINARY_OP : TK_PERCENT {
+								ND_UNARY_OP : TK_MINUS {
+									ND_INTEGER : 2
+								}
+								ND_UNARY_OP : TK_MINUS {
+									ND_INTEGER : 4
+								}
+							}
+						}
+					}
+					ND_UNARY_OP : TK_MINUS {
+						ND_UNARY_OP : TK_MINUS {
+							ND_UNARY_OP : TK_MINUS {
+								ND_IDENT : a
+							}
+						}
+					}
+				}
+			}
+		}
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_IDENT : result2
+			ND_EXPRESSION {
+				ND_BINARY_OP : TK_PLUS {
+					ND_IDENT : a
+					ND_BINARY_OP : TK_TIMES {
+						ND_BINARY_OP : TK_TIMES {
+							ND_UNARY_OP : TK_MINUS {
+								ND_IDENT : b
+							}
+							ND_BINARY_OP : TK_MINUS {
+								ND_BINARY_OP : TK_SLASH {
+									ND_IDENT : c
+									ND_UNARY_OP : TK_MINUS {
+										ND_INTEGER : 2
+									}
+								}
+								ND_UNARY_OP : TK_MINUS {
+									ND_INTEGER : 3
+								}
+							}
+						}
+						ND_BINARY_OP : TK_PLUS {
+							ND_UNARY_OP : TK_MINUS {
+								ND_IDENT : a
+							}
+							ND_BINARY_OP : TK_MINUS {
+								ND_IDENT : b
+								ND_IDENT : c
+							}
+						}
+					}
+				}
+			}
+		}
+		ND_BINARY_OP : TK_ASSIGN {
+			ND_IDENT : result3
+			ND_EXPRESSION {
+				ND_BINARY_OP : TK_TIMES {
+					ND_UNARY_OP : TK_MINUS {
+						ND_BINARY_OP : TK_PLUS {
+							ND_UNARY_OP : TK_MINUS {
+								ND_IDENT : a
+							}
+							ND_BINARY_OP : TK_TIMES {
+								ND_IDENT : b
+								ND_BINARY_OP : TK_PERCENT {
+									ND_BINARY_OP : TK_SLASH {
+										ND_UNARY_OP : TK_MINUS {
+											ND_IDENT : c
+										}
+										ND_UNARY_OP : TK_MINUS {
+											ND_INTEGER : 2
+										}
+									}
+									ND_UNARY_OP : TK_MINUS {
+										ND_UNARY_OP : TK_MINUS {
+											ND_INTEGER : 4
+										}
+									}
+								}
+							}
+						}
+					}
+					ND_BINARY_OP : TK_MINUS {
+						ND_BINARY_OP : TK_PLUS {
+							ND_UNARY_OP : TK_MINUS {
+								ND_IDENT : a
+							}
+							ND_UNARY_OP : TK_MINUS {
+								ND_UNARY_OP : TK_MINUS {
+									ND_IDENT : b
+								}
+							}
+						}
+						ND_BINARY_OP : TK_SLASH {
+							ND_IDENT : c
+							ND_UNARY_OP : TK_MINUS {
+								ND_UNARY_OP : TK_MINUS {
+									ND_INTEGER : 2
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
