@@ -1,7 +1,6 @@
 #ifndef COMPILERS_SEMANLYZER_H
 #define COMPILERS_SEMANLYZER_H
 
-#include <fvec.h>
 #include "list_symbol_table.h"
 #include "list_semantic_check.h"
 

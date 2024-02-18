@@ -124,18 +124,18 @@ void block(FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root ) {
 
 void statement(FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root ) {
 	if( accept_tk(sb, TK_IDENT )) {
-		SyntaxTreeNode *name = CreateNode(ND_IDENT, ANN_IDENT, sb->tag.ident);
+		SyntaxTreeNode *ident = CreateNode(ND_IDENT, ANN_IDENT, sb->tag.ident);
 		SyntaxTreeNode *left_side = NULL;
 		NextSymbol( in, sb, tc );
 		if( accept_tk(sb, TK_LBRACK )) {
 			left_side = CreateNode(ND_SUBSCRIPT, 0, NULL);
-			InsertNode( left_side, name );
+			InsertNode(left_side, ident );
 			NextSymbol( in, sb, tc );
 			InsertNode( left_side, expression( in, sb, tc ));
 			if( accept_tk(sb, TK_RBRACK )) {
 				NextSymbol( in, sb, tc );
 			} else { ParserThrow( "right bracket expected", *tc ); }
-		} else { left_side = name; }
+		} else { left_side = ident; }
 		if( accept_tk(sb, TK_ASSIGN )) {
 			SyntaxTreeNode *assignment = CreateNode(ND_BINARY_OP, ANN_TOKEN, &(sb->token));
 			NextSymbol( in, sb, tc );

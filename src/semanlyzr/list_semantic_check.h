@@ -28,6 +28,8 @@ bool EvaluationCheck(SyntaxTreeNode *node, SymbolTable *root);
 //	check on function invocation
 bool FunctionCallCheck(SyntaxTreeNode *node, SymbolTable *root);
 
+bool ConditionalCheck(SyntaxTreeNode *node, SymbolTable *root);
+
 static SymbolEntry *search_helper(SymbolTable *root, char *var_name, bool search_local_scope_only, SymbolTable **scope_found) {
 	assert(root != NULL);
 	do {

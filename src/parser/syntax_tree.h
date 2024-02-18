@@ -7,15 +7,15 @@
 #include "../lexer/lexer.h"
 
 //	size of children increment by this amount
-#define PROD_INITIAL_CAPACITY    2
+#define NODE_INITIAL_CAP    2
 
 typedef enum ESymbolType {
 	ND_PRG_DCL = 1, ND_CST_DCL, ND_VAR_DCL, ND_ARR_DCL, ND_PROC_DCL, ND_CODE_BLK,
 	ND_IDENT, ND_INTEGER, ND_UNARY_OP, ND_BINARY_OP, ND_SUBSCRIPT, ND_FUNC_CALL, ND_PARAM,
 	ND_CONDITIONAL, ND_FOR_LOOP, ND_WHILE_LOOP, ND_EXPRESSION
-} ESyntaxNodeType;
+} ETreeNodeType;
 
-const char *NODE[] = {
+const char *TREE_NODE_NAME[] = {
 		"", "ND_PRG_DCL", "ND_CST_DCL", "ND_VAR_DCL", "ND_ARR_DCL", "ND_PROC_DCL", "ND_CODE_BLK",
 		"ND_IDENT", "ND_INTEGER", "ND_UNARY_OP", "ND_BINARY_OP", "ND_SUBSCRIPT", "ND_FUNC_CALL", "ND_PARAM",
 		"ND_CONDITIONAL", "ND_FOR_LOOP", "ND_WHILE_LOOP", "ND_EXPRESSION"
@@ -34,7 +34,7 @@ typedef struct TreeAnnotation {
 
 //	Symbol can be terminal or non-terminal
 typedef struct SyntaxTreeNode {
-	ESyntaxNodeType type;
+	ETreeNodeType type;
 	TreeAnnotation *annotation;
 	struct SyntaxTreeNode *parent;
 	struct SyntaxTreeNode **children;
@@ -44,7 +44,7 @@ typedef struct SyntaxTreeNode {
 //	insert new node to production list, return pointer to topmost node or null if insertion failed
 SyntaxTreeNode *InsertNode(SyntaxTreeNode *root, SyntaxTreeNode *child);
 // create a node
-SyntaxTreeNode *CreateNode(ESyntaxNodeType sb_type, enum EAnnotationType ann_type, void *ann_ptr);
+SyntaxTreeNode *CreateNode(ETreeNodeType sb_type, enum EAnnotationType ann_type, void *ann_ptr);
 // recursive post-order traversal free()
 void FreeSyntaxTree(SyntaxTreeNode *root);
 // print AST to file
@@ -53,9 +53,9 @@ void PrintSyntaxTree(SyntaxTreeNode *root, FILE *out);
 SyntaxTreeNode *InsertNode(SyntaxTreeNode *root, SyntaxTreeNode *child) {
 	if (root == NULL || child == NULL) { return child; }
 	else if (root->child_count == 0) {
-		root->child_count = PROD_INITIAL_CAPACITY;
-		if ((root->children = calloc(PROD_INITIAL_CAPACITY, sizeof(SyntaxTreeNode *))) == NULL) {
-			fprintf(stderr, "compiler error: calloc() failure for %zu bytes\n", PROD_INITIAL_CAPACITY * sizeof(SyntaxTreeNode *));
+		root->child_count = NODE_INITIAL_CAP;
+		if ((root->children = calloc(NODE_INITIAL_CAP, sizeof(SyntaxTreeNode *))) == NULL) {
+			fprintf(stderr, "compiler error: calloc() failure for %zu bytes\n", NODE_INITIAL_CAP * sizeof(SyntaxTreeNode *));
 		}
 		root->children[0] = child;
 		return root;
@@ -67,7 +67,7 @@ SyntaxTreeNode *InsertNode(SyntaxTreeNode *root, SyntaxTreeNode *child) {
 		if (i < end_index) {
 			root->children[i + 1] = child;
 		} else {
-			root->child_count += PROD_INITIAL_CAPACITY;
+			root->child_count += NODE_INITIAL_CAP;
 			root->children = realloc(root->children, root->child_count * sizeof(SyntaxTreeNode *));
 			root->children[end_index + 1] = child;
 			for (int j = end_index + 2; j < root->child_count; ++j) { root->children[j] = NULL; }
@@ -77,7 +77,7 @@ SyntaxTreeNode *InsertNode(SyntaxTreeNode *root, SyntaxTreeNode *child) {
 	return NULL;
 }
 
-SyntaxTreeNode *CreateNode(ESyntaxNodeType sb_type, enum EAnnotationType ann_type, void *ann_ptr) {
+SyntaxTreeNode *CreateNode(ETreeNodeType sb_type, enum EAnnotationType ann_type, void *ann_ptr) {
 	SyntaxTreeNode *new_node = calloc(1, sizeof(SyntaxTreeNode));
 	new_node->type = sb_type;
 	if (!ann_type) {
@@ -108,7 +108,7 @@ void FreeSyntaxTree(SyntaxTreeNode *root) {
 
 static void SubPrintTree(SyntaxTreeNode *root, FILE *out, int depth) {
 	for (int i = 0; i < depth; ++i) { fputs("\t", out); }
-	fprintf(out, "%s", NODE[root->type]);
+	fprintf(out, "%s", TREE_NODE_NAME[root->type]);
 	if (root->annotation != NULL) {
 		int type = root->annotation->type;
 		if (type == ANN_IDENT) {
@@ -119,7 +119,7 @@ static void SubPrintTree(SyntaxTreeNode *root, FILE *out, int depth) {
 			fprintf(out, " : %s", TOKENS[root->annotation->data.token]);
 		} else {
 			fprintf(stderr, "compiler error: invalid node annotation in type %s, depth %d \n",
-					NODE[root->type], depth);
+					TREE_NODE_NAME[root->type], depth);
 		}
 	}
 	if (root->child_count == 0) {

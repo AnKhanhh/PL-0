@@ -16,10 +16,13 @@ static SyntaxTreeNode *parse_main(FILE *in, Symbol *sb, int *tc, EOperatorPreced
 static SyntaxTreeNode *parse_sign(FILE *in, Symbol *sb, int *tc);
 static SyntaxTreeNode *parse_var(FILE *in, Symbol *sb, int *tc);
 static SyntaxTreeNode *parse_num(FILE *in, Symbol *sb, int *tc);
+
 // parse grouping parentheses
 static SyntaxTreeNode *parse_grouping(FILE *in, Symbol *sb, int *tc);
+
 // parse expression inside subscript
 static SyntaxTreeNode *parse_subscript(FILE *in, Symbol *sb, int *tc);
+
 // get precedence of an infix operator, prefix and grouping precedence is handled in parse_main
 static EOperatorPrecedence get_precedence(ETokenType token);
 
