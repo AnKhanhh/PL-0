@@ -12,7 +12,7 @@ int main( int argc, char *argv[] ) {
 	snprintf( in_path, sizeof( in_path ), "%s/input/%s", argv[1], argv[2] );
 	snprintf( l_out_path, sizeof( l_out_path ), "%s/output/token_stream_%s", argv[1], argv[2] );
 	snprintf( p_out_path, sizeof( p_out_path ), "%s/output/syntax_tree_%s", argv[1], argv[2] );
-	snprintf( s_out_path, sizeof( short ), "%s/output/symbol_table_%s", argv[1], argv[2] );
+	snprintf( s_out_path, sizeof( s_out_path ), "%s/output/symbol_table_%s", argv[1], argv[2] );
 
 	FILE *f_in, *f_lexer, *f_parser, *f_semanlyzer;
 	if( argc != 3 ) {}

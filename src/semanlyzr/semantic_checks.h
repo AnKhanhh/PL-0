@@ -12,7 +12,7 @@ static SymbolEntry *search_helper( SymbolTable *table, char *var_name, bool sear
 //	return search_helper(root, var_name, true, scope_found);
 //}
 
-SymbolEntry *SearchGlobalScope( SymbolTable *root, char *var_name, SymbolTable **scope_found ) {
+SymbolEntry *SearchGlobalScope( SymbolTable *root, char *var_name, SymbolTable **scope_found ){
 	return search_helper( root, var_name, false, scope_found );
 }
 
@@ -29,26 +29,26 @@ bool EvaluationCheck( SyntaxTreeNode *node, SymbolTable *root );
 //	check on function invocation
 bool FunctionCallCheck( SyntaxTreeNode *node, SymbolTable *root );
 
-static SymbolEntry *search_helper( SymbolTable *table, char *var_name, bool search_local_scope_only, SymbolTable **scope_found ) {
+static SymbolEntry *search_helper( SymbolTable *table, char *var_name, bool search_local_scope_only, SymbolTable **scope_found ){
 	assert( table != NULL );
-	do {
-		for( unsigned int i = 0; i < table->entry_count; ++i ) {
-			if( strncmp( table->entries[i].ident, var_name, LEXEME_LENGTH ) == 0 ) {
-				if( scope_found ) { *scope_found = table; }
-				return &(table->entries[i]);
+	do{
+		for( unsigned int i = 0; i < table->entry_count; ++i ){
+			if( strncmp( table->entries[i].ident, var_name, LEXEME_LENGTH ) == 0 ){
+				if( scope_found ){ *scope_found = table; }
+				return &( table->entries[i] );
 			}
 		}
 //		recursively move to the scope above and search
-	} while( !search_local_scope_only && (table = table->parent) != NULL);
+	} while( !search_local_scope_only && ( table = table->parent ) != NULL);
 	return NULL;
 }
 
-bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root ) {
+bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root ){
 	char *ident = NULL;
 	enum EIdentType type;
 	SymbolTable *result_table = NULL;
 	SymbolEntry *result_entry = NULL;
-	switch( node->type ) {
+	switch( node->type ){
 //		on declaration of variable integer
 		case ND_IDENT:
 			assert( node->child_count == 0 );
@@ -60,7 +60,7 @@ bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root ) {
 			assert( node->children[0]->type == ND_IDENT && node->children[1]->type == ND_INTEGER );
 			ident = node->children[0]->annotation->data.ident;
 			type = SB_ARRAY;
-			if( node->children[1]->annotation->data.number < 1 ) {
+			if( node->children[1]->annotation->data.number < 1 ){
 				printf( "Array initialized with non-positive size. \n"
 						"\t scope: %s, identifier: %s \n",
 						root->name, ident );
@@ -86,15 +86,15 @@ bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root ) {
 			return false;
 	}
 //	on name collision
-	if((result_entry = SearchGlobalScope( root, ident, &result_table )) != NULL) {
+	if(( result_entry = SearchGlobalScope( root, ident, &result_table )) != NULL){
 		assert( result_table != NULL );
 //		redeclaration in the same scope is not allowed
-		if( result_table == root ) {
+		if( result_table == root ){
 			printf( "Redeclaration of variable in the same scope. \n"
 					"\t scope: %s, identifier: %s \n", root->name, ident );
 			return false;
 //		variable shadowing is allowed
-		} else {
+		} else{
 			printf( "Warning: variable shadowing. \n"
 					"\t scope: %s, identifier: %s, type: %s - shadowing scope:%s, type: %s. \n",
 					root->name, ident, SB_IDENT_TYPE[type], result_table->name, SB_IDENT_TYPE[result_entry->type] );
@@ -104,33 +104,39 @@ bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root ) {
 	return true;
 }
 
-bool AssignmentCheck( SyntaxTreeNode *node, SymbolTable *root ) {
+bool AssignmentCheck( SyntaxTreeNode *node, SymbolTable *root ){
 	assert( node->type == ND_BINARY_OP && node->annotation->data.token == TK_ASSIGN );
 	char *ident = NULL;
-	SymbolTable *result_table = NULL;
-	SymbolEntry *result_entry = NULL;
-//	check identifier
-	if( node->children[0]->type == ND_IDENT ) {
+
+//	make sure an identifier is being assigned
+	if( node->children[0]->type == ND_IDENT ){
 		ident = node->children[0]->annotation->data.ident;
-	} else if( node->children[0]->type == ND_SUBSCRIPT ) {
+	} else if( node->children[0]->type == ND_SUBSCRIPT ){
 		ident = node->children[0]->children[0]->annotation->data.ident;
-	} else {
+	} else{
 		printf( "Expected identifier. \n"
 				"\t scope: %s. \n", root->name );
 		return false;
 	}
-//	check if identifier is declared
-	if( result_entry == SearchGlobalScope( root, ident, &result_table )) {
+
+	SymbolTable *result_table = NULL;
+	SymbolEntry *result_entry = SearchGlobalScope( root, ident, &result_table );
+//	check declaration
+	if( result_entry != NULL){
 		assert( result_table != NULL );
-//		check if type is assignable
-		if( result_entry->type == SB_INT || result_entry->type == SB_ARRAY ) {
-			return true;
-		} else {
-			printf( "Type is not assignable. \n"
-					"\t scope: %s, identifier: %s, type: %s \n",
-					root->name, ident, SB_IDENT_TYPE[result_entry->type] );
+//		check type is assignable
+		switch( result_entry->type ){
+//			variable is initialized
+			case SB_INT:
+				result_entry->data.var_initialized = true;
+			case SB_ARRAY:
+				return true;
+			default:
+				printf( "Type is not assignable. \n"
+						"\t scope: %s, identifier: %s, type: %s \n",
+						root->name, ident, SB_IDENT_TYPE[result_entry->type] );
 		}
-	} else {
+	} else{
 		printf( "Use of undeclared identifier. \n"
 				"\t scope: %s, identifier: %s \n",
 				root->name, ident );
@@ -138,40 +144,41 @@ bool AssignmentCheck( SyntaxTreeNode *node, SymbolTable *root ) {
 	return false;
 }
 
-bool LoopAssignmentCheck( SyntaxTreeNode *node, SymbolTable *root ) {
+bool LoopAssignmentCheck( SyntaxTreeNode *node, SymbolTable *root ){
 	assert( node->type == ND_FOR_LOOP && node->children[0]->type == ND_IDENT );
 	char *ident = node->children[0]->annotation->data.ident;
 	SymbolTable *result_table = NULL;
 	SymbolEntry *result_entry = SearchGlobalScope( root, ident, &result_table );
-	if( !result_entry ) {
+//	check if iterator is a declared integer
+	if( result_entry == NULL){
 		printf( "Use of undeclared identifier. \n"
 				"\t scope: %s, identifier: %s \n",
 				root->name, ident );
-	} else if( result_entry->type != SB_INT ) {
+	} else if( result_entry->type != SB_INT ){
 		printf( "Type is not assignable. \n"
 				"\t scope: %s, identifier: %s, type: %s \n",
 				root->name, ident, SB_IDENT_TYPE[result_entry->type] );
-	} else { return true; }
+	} else{ return true; }
 	return false;
 }
 
-bool EvaluationCheck( SyntaxTreeNode *node, SymbolTable *root ) {
+bool EvaluationCheck( SyntaxTreeNode *node, SymbolTable *root ){
 	assert( node->type == ND_IDENT && node->child_count == 0 );
 	char *ident = node->annotation->data.ident;
 	SymbolTable *result_table = NULL;
-	SymbolEntry *result_entry = NULL;
-	if( result_entry == SearchGlobalScope( root, ident, &result_table )) {
+	SymbolEntry *result_entry = SearchGlobalScope( root, ident, &result_table );
+	if( result_entry ){
 		assert( result_table != NULL );
-		switch( result_entry->type ) {
+		switch( result_entry->type ){
 			case SB_INT:
-				if( !result_entry->data.var_initialized ) {
+				if( !result_entry->data.var_initialized ){
 					printf( "warning: uninitialized variable. \n"
 							"\t scope: %s, identifier: %s \n", root->name, ident );
 				}
 				break;
 //			all array must be accessed with subscripting operator
 			case SB_ARRAY:
-				if( node->parent->type != ND_SUBSCRIPT ) {
+				if( node->parent->type != ND_SUBSCRIPT ){
 					printf( "Incompatible conversion of array pointer to integer. \n"
 							"\t scope: %s, identifier: %s \n", root->name, ident );
 				}
@@ -187,27 +194,27 @@ bool EvaluationCheck( SyntaxTreeNode *node, SymbolTable *root ) {
 				printf( "Expected expression. \n"
 						"\t scope: %s, identifier: %s \n", root->name, ident );
 		}
-	} else {
+	} else{
 		printf( "Use of undeclared identifier. \n"
 				"\t scope: %s, identifier: %s \n", root->name, ident );
 	}
 	return false;
 }
 
-bool FunctionCallCheck( SyntaxTreeNode *node, SymbolTable *root ) {
+bool FunctionCallCheck( SyntaxTreeNode *node, SymbolTable *root ){
 	assert( node->type == ND_FUNC_CALL );
 	char *ident = node->annotation->data.ident;
 	SymbolTable *result_table = NULL;
 	SymbolEntry *result_entry = NULL;
-	if( !(result_entry = SearchGlobalScope( root, ident, &result_table ))
-		|| result_entry->type != SB_FUNCTION ) {
+	if( !( result_entry = SearchGlobalScope( root, ident, &result_table ))
+		|| result_entry->type != SB_FUNCTION ){
 		printf( "Call to undeclared function. \n"
 				"\t scope: %s, identifier: %s \n", root->name, ident );
-	} else if( node->child_count != result_entry->data.func.param_count ) {
+	} else if( node->child_count != result_entry->data.func.param_count ){
 		printf( "Function have %d parameters, called with %d arguments. \n"
 				"\t scope: %s, identifier: %s \n",
 				result_entry->data.func.param_count, node->child_count, root->name, ident );
-	} else { return true; }
+	} else{ return true; }
 	return false;
 }
 

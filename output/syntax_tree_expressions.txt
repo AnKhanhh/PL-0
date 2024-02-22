@@ -1,11 +1,11 @@
-ND_PRG_DCL : Pratt_test {
+ND_PRG_DCL : expression_test {
 	ND_VAR_DCL {
 		ND_IDENT : a
 		ND_IDENT : b
 		ND_IDENT : c
-		ND_IDENT : result1
-		ND_IDENT : result2
-		ND_IDENT : result3
+		ND_IDENT : x
+		ND_IDENT : y
+		ND_IDENT : z
 	}
 	ND_CODE_BLK {
 		ND_BINARY_OP : TK_ASSIGN {
@@ -29,7 +29,7 @@ ND_PRG_DCL : Pratt_test {
 			}
 		}
 		ND_BINARY_OP : TK_ASSIGN {
-			ND_IDENT : result1
+			ND_IDENT : x
 			ND_EXPRESSION {
 				ND_BINARY_OP : TK_PLUS {
 					ND_BINARY_OP : TK_TIMES {
@@ -62,7 +62,7 @@ ND_PRG_DCL : Pratt_test {
 			}
 		}
 		ND_BINARY_OP : TK_ASSIGN {
-			ND_IDENT : result2
+			ND_IDENT : y
 			ND_EXPRESSION {
 				ND_BINARY_OP : TK_PLUS {
 					ND_IDENT : a
@@ -97,7 +97,7 @@ ND_PRG_DCL : Pratt_test {
 			}
 		}
 		ND_BINARY_OP : TK_ASSIGN {
-			ND_IDENT : result3
+			ND_IDENT : z
 			ND_EXPRESSION {
 				ND_BINARY_OP : TK_TIMES {
 					ND_UNARY_OP : TK_MINUS {

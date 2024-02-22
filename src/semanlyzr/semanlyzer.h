@@ -74,7 +74,7 @@ void block_semantic( SyntaxTreeNode *node, SymbolTable *table, bool main_block )
 		SyntaxTreeNode *func_node = child_arr[i];
 		if( DeclarationCheck( func_node, table )) {
 			SymbolEntry entry = {.type = SB_FUNCTION};
-			entry.data.func.ptr = NewSymbolTable( table, func_node->annotation->data.ident );
+			entry.data.func.scope_ptr = NewSymbolTable( table, func_node->annotation->data.ident );
 //			check number of parameter
 			if( func_node->children[0]->type == ND_PARAM ) {
 				entry.data.func.param_count = func_node->children[0]->child_count;
@@ -83,7 +83,7 @@ void block_semantic( SyntaxTreeNode *node, SymbolTable *table, bool main_block )
 //			depends on whether function has parameter, definition will be the first or second child node
 			block_semantic(
 					func_node->children[entry.data.func.param_count + 1],
-					entry.data.func.ptr, false );
+					entry.data.func.scope_ptr, false );
 		}
 		i++;
 	}
@@ -144,8 +144,8 @@ static void recursive_expression_semantic( SyntaxTreeNode *node, SymbolTable *ta
 	if( node == NULL) { return; }
 	if( node->type == ND_IDENT ) {
 		EvaluationCheck( node, table );
-		if( !node->child_count ) {
-			fprintf(stderr, "compiler error: expression tree generated with identifier having children. \n" );
+		if( node->child_count != 0 ) {
+			perror( "compiler error: expression tree generated with identifier having children. \n" );
 		}
 	} else {
 		for( int i = 0; i < node->child_count; ++i ) {

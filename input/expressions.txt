@@ -1,14 +1,14 @@
-program Pratt_test;
+program expression_test;
 
-	var a, b, c, result1, result2, result3;
+	var a, b, c, x, y, z;
 
 	begin
 		a := 10;
 		b := -5;
 		c := 3;
 
-		result1 := ((a + b) * -c / -2 % -4) + ---a;
-		result2 := a + (-b * c / -2 - -3) * (-a + (b - c));
-		result3 := -(-a + b * (-c / -2) % -(-4)) * (-a + -(-b) - c / -(-2));
+		x := ((a + b) * -c / -2 % -4) + ---a;
+		y := a + (-b * c / -2 - -3) * (-a + (b - c));
+		z := -(-a + b * (-c / -2) % -(-4)) * (-a + -(-b) - c / -(-2));
 	end
 .

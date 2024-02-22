@@ -1,5 +1,5 @@
   31 program    //PROGRAM
-   1 Pratt_test //TK_IDENT
+   1 expression_test //TK_IDENT
   19 ;          //TK_SEMICOLON
   34 var        //VAR
    1 a          //TK_IDENT
@@ -8,11 +8,11 @@
   18 ,          //TK_COMMA
    1 c          //TK_IDENT
   18 ,          //TK_COMMA
-   1 result1    //TK_IDENT
+   1 x          //TK_IDENT
   18 ,          //TK_COMMA
-   1 result2    //TK_IDENT
+   1 y          //TK_IDENT
   18 ,          //TK_COMMA
-   1 result3    //TK_IDENT
+   1 z          //TK_IDENT
   19 ;          //TK_SEMICOLON
   22 begin      //BEGIN
    1 a          //TK_IDENT
@@ -28,7 +28,7 @@
   20 :=         //TK_ASSIGN
    2 3          //TK_NUMBER
   19 ;          //TK_SEMICOLON
-   1 result1    //TK_IDENT
+   1 x          //TK_IDENT
   20 :=         //TK_ASSIGN
   13 (          //TK_LPARENT
   13 (          //TK_LPARENT
@@ -52,7 +52,7 @@
    4 -          //TK_MINUS
    1 a          //TK_IDENT
   19 ;          //TK_SEMICOLON
-   1 result2    //TK_IDENT
+   1 y          //TK_IDENT
   20 :=         //TK_ASSIGN
    1 a          //TK_IDENT
    3 +          //TK_PLUS
@@ -80,7 +80,7 @@
   14 )          //TK_RPARENT
   14 )          //TK_RPARENT
   19 ;          //TK_SEMICOLON
-   1 result3    //TK_IDENT
+   1 z          //TK_IDENT
   20 :=         //TK_ASSIGN
    4 -          //TK_MINUS
   13 (          //TK_LPARENT
