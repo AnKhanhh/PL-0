@@ -10,8 +10,7 @@
 #include <stdio.h>
 #include "semanlyzer.h"
 
-void SemanticAnalysis(SyntaxTreeNode *root_node, FILE *out) {
-	SymbolTable *root_table = NULL;
-	program_semantic(root_node, &root_table);
-	PrintSymbolTable(root_table, out);
+void SemanticAnalysis( FILE *out, SyntaxTreeNode *root_node, SymbolTable **root_table ) {
+	program_semantic( root_node, root_table );
+	PrintSymbolTable( *root_table, out );
 }

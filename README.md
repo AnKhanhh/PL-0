@@ -1,14 +1,13 @@
 **A PL/0 compiler implementation**
 1. **About**
-- This project is intended to be a completely handwritten compiler (i.e. no flex,bison,llvm etc). Since this is my first compiler, I choose PL/0 for its simplicity.
-- For this project, I want to prioritize readability over performance
+- This project is intended to be a completely handwritten compiler (i.e. no flex,bison or llvm ). Since this is my first compiler, I choose PL/0 for its simplicity.
+- For this project, I want to make readability the first priority 
 
 2. **Project Structure:**
 - A lexer
 - A Pratt (TDOP) parser for parsing arithmetic expression and a recursive descent parser for parsing program
 - A semantic analyzer, to check for type and scope.
-- My priority is to have a minimally functional compiler, so I don't intend to write a dedicated optimizer.
-- Future Plan: an IR generator and a x86-64 ISA code generator.
+- My plan is to have a minimally functional compiler, so without a dedicated optimizer.
 
 3. **Project Structure:**:
 - for source code, look inside /src/

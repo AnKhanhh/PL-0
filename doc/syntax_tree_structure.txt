@@ -61,10 +61,10 @@ ND_PRG_DCL : ident
     └── < statement >					// perform operation
 
 < statement >
-└── ND_FOR_LOOP						- loop check -
-    ├── ND_IDENT : ident				// variable is implicitly incremented by 1 each loop
-    ├── ND_EXPRESSION					// initial data
-    ├── ND_EXPRESSION					// less or equal data
+└── ND_FOR_LOOP							- loop check -
+    ├── ND_IDENT : ident				// variable is implicitly incremented by 1 each loop, need to be declared
+    ├── ND_EXPRESSION					// initial value
+    ├── ND_EXPRESSION					// less or equal than value
     └── < statement >					// perform operation
 
 ND_EXPRESSION is not generated in recursive_descent_parser.h, but in expression_parser.h

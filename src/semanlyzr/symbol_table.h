@@ -74,7 +74,7 @@ SymbolTable *InsertEntry(SymbolTable *table, SymbolEntry entry, char *ident) {
 void FreeSymbolTables(SymbolTable *root) {
 	if (root->entries != NULL) {
 		assert(root->entry_count != 0);
-		for (int i = 0; i < root->entry_count; ++i) {
+		for (unsigned int i = 0; i < root->entry_count; ++i) {
 			if (root->entries[i].type == SB_FUNCTION) {
 				FreeSymbolTables(root->entries[i].data.func.ptr);
 			}
@@ -97,7 +97,7 @@ void PrintSymbolTable(SymbolTable *table, FILE *out) {
 			 line, (long long) table->parent, (long long) table, table->name, line);
 	fputs(buffer, out);
 //	print table entries
-	for (int i = 0; i < table->entry_count; ++i) {
+	for (unsigned int i = 0; i < table->entry_count; ++i) {
 		SymbolEntry entry = table->entries[i];
 		switch (entry.type) {
 			case SB_FUNCTION:
@@ -127,7 +127,7 @@ void PrintSymbolTable(SymbolTable *table, FILE *out) {
 	snprintf(buffer, size, "%s\n\n", line);
 	fputs(buffer, out);
 //	print other tables
-	for (int i = 0; i < table->entry_count; ++i) {
+	for (unsigned int i = 0; i < table->entry_count; ++i) {
 		SymbolEntry entry = table->entries[i];
 		if (entry.type == SB_FUNCTION) { PrintSymbolTable(entry.data.func.ptr, out); }
 	}
