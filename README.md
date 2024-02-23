@@ -1,10 +1,10 @@
 ### PL/0 Handwritten Compiler
 
 #### Overview
-This project is a handwritten compiler for the [PL/0](https://en.wikipedia.org/wiki/PL/0) language. The aim is to create a complete compiler without relying on external tools such as flex, bison, or LLVM.
+I started this project as an attempt to learn about compiler design, with the goal of implementing a completely handwritten compiler for [PL/0](https://en.wikipedia.org/wiki/PL/0).
 
 #### Approach
-Since this is my first venture into compiler development, I've chosen the simple PL/0 language so that I can focus on the foundational concepts of compiler construction. For the same reason, I've decided to leave the topic of optimization for future attempts.
+Since this is my first venture into compiler development, I've chosen PL/0 for its simplicity, so that I can focus on the foundational concepts of compiler construction. For the same reason, I've decided to not implement any code optimization module.
 
 #### Navigation
 - **Documentation**: Miscellaneous notes are located in the `/doc/` directory. Given the frequent code refactoring, these notes will be reorganized upon project completion.
