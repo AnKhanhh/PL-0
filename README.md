@@ -1,10 +1,12 @@
-#### 1. Overview
-This project is a handwritten compiler for the [PL/0](https://en.wikipedia.org/wiki/PL/0) language. The goal is to develop a complete compiler without relying on existing tools like flex, bison, or LLVM.
+### PL/0 Handwritten Compiler
 
-#### 2. Approach
-As this is my first foray into compiler development, I chose PL/0 for its simplicity. While optimization is a complex topic, I won't be implementing a dedicated optimizer at this stage.
+#### Overview
+This project is a handwritten compiler for the [PL/0](https://en.wikipedia.org/wiki/PL/0) language. The aim is to create a complete compiler without relying on external tools such as flex, bison, or LLVM.
 
-#### 3. Navigation
-- **Documentation**: Miscellaneous notes are stored in the `/doc/` directory. Since I frequently refactor my code, I'll reorganize these notes upon project completion.
-- **Source Code**: All source code resides in the `/src/` directory.
-- **Test Files**: Test files are stored in the `/input/` directory, while human-readable generated debug files are placed in `/output/`.
+#### Approach
+Since this is my first venture into compiler development, I've chosen the simple PL/0 language so that I can focus on the foundational concepts of compiler construction. For the same reason, I've decided to leave the topic of optimization for future attempts.
+
+#### Navigation
+- **Documentation**: Miscellaneous notes are located in the `/doc/` directory. Given the frequent code refactoring, these notes will be reorganized upon project completion.
+- **Source Code**: All source code is housed in the `/src/` directory.
+- **Test Files**: Test files reside in the `/input/` directory, with human-readable debug files stored in `/output/`.
