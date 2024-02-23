@@ -16,17 +16,19 @@ SymbolEntry *SearchGlobalScope( SymbolTable *root, char *var_name, SymbolTable *
 	return search_helper( root, var_name, false, scope_found );
 }
 
-//	check declaration
+//	declaration check
 bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root );
 
-//	check assignment operation
+//	assignment check on variable assignment
 bool AssignmentCheck( SyntaxTreeNode *node, SymbolTable *root );
+
+//	assignment check on for loop iterator
 bool LoopAssignmentCheck( SyntaxTreeNode *node, SymbolTable *root );
 
-//	check variable evaluation
+//	variable evaluation check
 bool EvaluationCheck( SyntaxTreeNode *node, SymbolTable *root );
 
-//	check on function invocation
+//	function invocation check
 bool FunctionCallCheck( SyntaxTreeNode *node, SymbolTable *root );
 
 static SymbolEntry *search_helper( SymbolTable *table, char *var_name, bool search_local_scope_only, SymbolTable **scope_found ){
