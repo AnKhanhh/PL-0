@@ -14,7 +14,7 @@ ND_PRG_DCL : ident
 │   │   ├── ND_IDENT : ident           	// array name
 │   │   └── ND_INTEGER : number			// array size
 │   └── ...
-├── { ND_PROC_DCL : ident }				- semantic declaration check -
+├── { ND_FUNC_DCL : ident }				- semantic declaration check -
 │   ├── [ ND_PARAM ]
 │   │   ├── ND_IDENT : ident			// parameter name
 │   │   ├── ND_IDENT : ident

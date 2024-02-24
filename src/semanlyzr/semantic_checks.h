@@ -40,7 +40,8 @@ static SymbolEntry *search_helper( SymbolTable *table, char *var_name, bool sear
 				return &( table->entries[i] );
 			}
 		}
-//		recursively move to the scope above and search
+//	recursively search outer scope
+//	since nested function is not allowed, technically there are 2 kinds of scope: global scope and function scope
 	} while( !search_local_scope_only && ( table = table->parent ) != NULL);
 	return NULL;
 }
@@ -51,7 +52,7 @@ bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root ){
 	SymbolTable *result_table = NULL;
 	SymbolEntry *result_entry = NULL;
 	switch( node->type ){
-//		on declaration of variable integer
+//		variable integer or function parameter
 		case ND_IDENT:
 			assert( node->child_count == 0 );
 			ident = node->annotation->data.ident;
@@ -75,9 +76,8 @@ bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root ){
 			ident = node->children[0]->annotation->data.ident;
 			type = SB_CONST_INT;
 			break;
-//		function
-		case ND_PROC_DCL:
-			assert( node->children[0]->type == ND_PARAM );
+//		function name
+		case ND_FUNC_DCL:
 			ident = node->annotation->data.ident;
 			type = SB_FUNCTION;
 			break;
@@ -95,11 +95,10 @@ bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root ){
 			printf( "Redeclaration of variable in the same scope. \n"
 					"\t scope: %s, identifier: %s \n", root->name, ident );
 			return false;
-//		variable shadowing is allowed
+//		variable shadowing
 		} else{
 			printf( "Warning: variable shadowing. \n"
-					"\t scope: %s, identifier: %s, type: %s - shadowing scope:%s, type: %s. \n",
-					root->name, ident, SB_IDENT_TYPE[type], result_table->name, SB_IDENT_TYPE[result_entry->type] );
+					"\t scope: %s, identifier: %s. \n", root->name, ident );
 		}
 
 	}
@@ -123,10 +122,10 @@ bool AssignmentCheck( SyntaxTreeNode *node, SymbolTable *root ){
 
 	SymbolTable *result_table = NULL;
 	SymbolEntry *result_entry = SearchGlobalScope( root, ident, &result_table );
-//	check declaration
+//	if identifier is declared
 	if( result_entry != NULL){
 		assert( result_table != NULL );
-//		check type is assignable
+//		check assignable type
 		switch( result_entry->type ){
 //			variable is initialized
 			case SB_INT:
@@ -140,8 +139,7 @@ bool AssignmentCheck( SyntaxTreeNode *node, SymbolTable *root ){
 		}
 	} else{
 		printf( "Use of undeclared identifier. \n"
-				"\t scope: %s, identifier: %s \n",
-				root->name, ident );
+				"\t scope: %s, identifier: %s \n", root->name, ident );
 	}
 	return false;
 }

@@ -44,23 +44,23 @@ void FreeSymbolTables( SymbolTable *root );
 //	DFS print
 void PrintSymbolTable( SymbolTable *table, FILE *out );
 
-SymbolTable *NewSymbolTable( SymbolTable *parent_table, char *table_name ) {
+SymbolTable *NewSymbolTable( SymbolTable *parent_table, char *table_name ){
 	SymbolTable *new_table = calloc( 1, sizeof( SymbolTable ));
-	if( new_table == NULL) {
+	if( new_table == NULL){
 		perror( "allocation for symbol table failed" );
 		exit( EXIT_FAILURE );
 	}
 
-	if( parent_table ) { new_table->parent = parent_table; }
+	if( parent_table ){ new_table->parent = parent_table; }
 	snprintf( new_table->name, LEXEME_LENGTH, "%s", table_name );
 	return new_table;
 }
 
-SymbolTable *InsertEntry( SymbolTable *table, SymbolEntry entry, char *ident ) {
+SymbolTable *InsertEntry( SymbolTable *table, SymbolEntry entry, char *ident ){
 	assert( table != NULL );
 //	temporary pointer to prevent leak in case of failure
-	SymbolEntry *temp = realloc( table->entries, sizeof( *table->entries ) * (table->entry_count + 1));
-	if( temp == NULL) {
+	SymbolEntry *temp = realloc( table->entries, sizeof( *table->entries ) * ( table->entry_count + 1 ));
+	if( temp == NULL){
 		perror( "allocation for symbol table entry failed" );
 		exit( EXIT_FAILURE );
 	}
@@ -72,11 +72,11 @@ SymbolTable *InsertEntry( SymbolTable *table, SymbolEntry entry, char *ident ) {
 	return table;
 }
 
-void FreeSymbolTables( SymbolTable *root ) {
-	if( root->entries != NULL) {
+void FreeSymbolTables( SymbolTable *root ){
+	if( root->entries != NULL){
 		assert( root->entry_count != 0 );
-		for( unsigned int i = 0; i < root->entry_count; ++i ) {
-			if( root->entries[i].type == SB_FUNCTION ) {
+		for( unsigned int i = 0; i < root->entry_count; ++i ){
+			if( root->entries[i].type == SB_FUNCTION ){
 				FreeSymbolTables( root->entries[i].data.func.scope_ptr );
 			}
 		}
@@ -85,7 +85,7 @@ void FreeSymbolTables( SymbolTable *root ) {
 	free( root );
 }
 
-void PrintSymbolTable( SymbolTable *table, FILE *out ) {
+void PrintSymbolTable( SymbolTable *table, FILE *out ){
 //	50 underscores
 	static const char line[] = "__________________________________________________";
 	char buffer[512];
@@ -98,9 +98,9 @@ void PrintSymbolTable( SymbolTable *table, FILE *out ) {
 			  line, (long long) table->parent, (long long) table, table->name, line );
 	fputs( buffer, out );
 //	print table entries
-	for( unsigned int i = 0; i < table->entry_count; ++i ) {
+	for( unsigned int i = 0; i < table->entry_count; ++i ){
 		SymbolEntry entry = table->entries[i];
-		switch( entry.type ) {
+		switch( entry.type ){
 			case SB_FUNCTION:
 				snprintf( buffer, size,
 						  "%-16s %-32s | scope_ptr: %llX \n",
@@ -128,9 +128,9 @@ void PrintSymbolTable( SymbolTable *table, FILE *out ) {
 	snprintf( buffer, size, "%s\n\n", line );
 	fputs( buffer, out );
 //	print other tables
-	for( unsigned int i = 0; i < table->entry_count; ++i ) {
+	for( unsigned int i = 0; i < table->entry_count; ++i ){
 		SymbolEntry entry = table->entries[i];
-		if( entry.type == SB_FUNCTION ) { PrintSymbolTable( entry.data.func.scope_ptr, out ); }
+		if( entry.type == SB_FUNCTION ){ PrintSymbolTable( entry.data.func.scope_ptr, out ); }
 	}
 }
 
