@@ -48,7 +48,6 @@ static SymbolEntry *search_helper( SymbolTable *table, char *var_name, bool sear
 
 bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root ){
 	char *ident = NULL;
-	enum EIdentType type;
 	SymbolTable *result_table = NULL;
 	SymbolEntry *result_entry = NULL;
 	switch( node->type ){
@@ -56,13 +55,11 @@ bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root ){
 		case ND_IDENT:
 			assert( node->child_count == 0 );
 			ident = node->annotation->data.ident;
-			type = SB_INT;
 			break;
 //		one-dimensional integer array
 		case ND_ARR_DCL:
 			assert( node->children[0]->type == ND_IDENT && node->children[1]->type == ND_INTEGER );
 			ident = node->children[0]->annotation->data.ident;
-			type = SB_ARRAY;
 			if( node->children[1]->annotation->data.number < 1 ){
 				printf( "Array initialized with non-positive size. \n"
 						"\t scope: %s, identifier: %s \n",
@@ -74,12 +71,10 @@ bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root ){
 			assert( node->annotation->data.token == TK_EQU );
 			assert( node->children[0]->type == ND_IDENT && node->children[1]->type == ND_INTEGER );
 			ident = node->children[0]->annotation->data.ident;
-			type = SB_CONST_INT;
 			break;
 //		function name
 		case ND_FUNC_DCL:
 			ident = node->annotation->data.ident;
-			type = SB_FUNCTION;
 			break;
 		default:
 			fprintf(stderr,
@@ -88,7 +83,8 @@ bool DeclarationCheck( SyntaxTreeNode *node, SymbolTable *root ){
 			return false;
 	}
 //	on name collision
-	if(( result_entry = SearchGlobalScope( root, ident, &result_table )) != NULL){
+	result_entry = SearchGlobalScope( root, ident, &result_table );
+	if( result_entry != NULL){
 		assert( result_table != NULL );
 //		redeclaration in the same scope is not allowed
 		if( result_table == root ){
@@ -211,9 +207,9 @@ bool FunctionCallCheck( SyntaxTreeNode *node, SymbolTable *root ){
 		printf( "Call to undeclared function. \n"
 				"\t scope: %s, identifier: %s \n", root->name, ident );
 	} else if( node->child_count != result_entry->data.func.param_count ){
-		printf( "Function have %d parameters, called with %d arguments. \n"
+		printf( "Function invoked with %d arguments, %d expected. \n"
 				"\t scope: %s, identifier: %s \n",
-				result_entry->data.func.param_count, node->child_count, root->name, ident );
+				node->child_count, result_entry->data.func.param_count, root->name, ident );
 	} else{ return true; }
 	return false;
 }

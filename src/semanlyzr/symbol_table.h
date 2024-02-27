@@ -103,8 +103,8 @@ void PrintSymbolTable( SymbolTable *table, FILE *out ){
 		switch( entry.type ){
 			case SB_FUNCTION:
 				snprintf( buffer, size,
-						  "%-16s %-32s | scope_ptr: %llX \n",
-						  SB_IDENT_TYPE[SB_FUNCTION], entry.ident, (long long) entry.data.func.scope_ptr );
+						  "%-16s %-32s | parameters: %d, table pointer: %llX \n",
+						  SB_IDENT_TYPE[SB_FUNCTION], entry.ident, entry.data.func.param_count,(long long) entry.data.func.scope_ptr );
 				break;
 			case SB_ARRAY:
 				snprintf( buffer, size,
@@ -118,7 +118,7 @@ void PrintSymbolTable( SymbolTable *table, FILE *out ){
 				break;
 			case SB_CONST_INT:
 				snprintf( buffer, size,
-						  "%-16s %-32s | scope_ptr: %ld \n",
+						  "%-16s %-32s | value: %ld \n",
 						  SB_IDENT_TYPE[SB_FUNCTION], entry.ident, entry.data.const_value );
 				break;
 		}

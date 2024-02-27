@@ -1,0 +1,36 @@
+program functions;
+    const z = 15;
+    var x, y[8];
+
+    procedure foo(var x; var y);
+        begin
+		x := y;
+		y := x + 1
+        end
+    ;
+
+	procedure bar(a;b;c);
+		begin
+		a := 10;
+		b := 5;
+		c := 2;
+		x := a + b + c
+		end
+	;
+
+	procedure baz;
+		begin
+		x := z
+        end
+    ;
+
+    begin
+	x := 2 * 2;
+	y[z-10] := x - 1;
+
+	call foo( y[1], x );
+
+	x := x / 2;
+	y[3] := (z + 1) / (8 * 2);
+    end
+.

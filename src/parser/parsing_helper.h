@@ -13,7 +13,7 @@ typedef struct {
 #define accept_tk(sb, tk_cmp) ((sb)->token == (tk_cmp))
 
 // throw syntax error with token location
-void ParserThrow(const char *s, int count) {
+void SyntaxError( const char *s, int count) {
 	fprintf(stderr, "syntax error: %s at token %d\n", s, count);
 }
 

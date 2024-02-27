@@ -31,7 +31,9 @@ void program_semantic( SyntaxTreeNode *node, SymbolTable **table_ptr ){
 void block_semantic( SyntaxTreeNode *node, SymbolTable *table, bool main_block ){
 	int i = 0;
 	SyntaxTreeNode **child_arr = node->children;
-//	insert constant to table
+//	account for parsing function definition
+	if( child_arr[i]->type == ND_PARAM ){ i++; }
+//	constant declaration section
 	if( child_arr[i]->type == ND_CST_DCL ){
 		for( int j = 0; j < child_arr[i]->child_count; ++j ){
 			SyntaxTreeNode *const_node = child_arr[i]->children[j];
@@ -58,9 +60,7 @@ void block_semantic( SyntaxTreeNode *node, SymbolTable *table, bool main_block )
 							.data.var_initialized = false
 					};
 					InsertEntry( table, entry, var_node->annotation->data.ident );
-				}
-			} else{
-				if( var_node->type == ND_ARR_DCL ){
+				} else if( var_node->type == ND_ARR_DCL ){
 					SymbolEntry entry = {.type = SB_ARRAY};
 					entry.data.arr_size = var_node->children[1]->annotation->data.number;
 					InsertEntry( table, entry, var_node->children[0]->annotation->data.ident );
@@ -74,29 +74,29 @@ void block_semantic( SyntaxTreeNode *node, SymbolTable *table, bool main_block )
 	while( main_block && child_arr[i]->type == ND_FUNC_DCL ){
 		SyntaxTreeNode *func_node = child_arr[i];
 		if( DeclarationCheck( func_node, table )){
-			SymbolEntry entry = {.type = SB_FUNCTION};
-			entry.data.func.scope_ptr = NewSymbolTable( table, func_node->annotation->data.ident );
-//			function node initialized with param count = 0 by default
+			SymbolEntry func_entry = {.type = SB_FUNCTION};
+			SymbolTable *func_table = NewSymbolTable( table, func_node->annotation->data.ident );
+			func_entry.data.func.scope_ptr = func_table;
+//			function func_entry initialized with param count = 0 by default
 //			if function have parameters
 			if( func_node->children[0]->type == ND_PARAM ){
 				SyntaxTreeNode *param_node = func_node->children[0];
-				entry.data.func.param_count = param_node->child_count;
+
+				func_entry.data.func.param_count = param_node->child_count;
 				for( int j = 0; j < param_node->child_count; ++j ){
-					SymbolEntry param_entry = {.type}
-					InsertEntry(entry.data.func.scope_ptr,);
+					SymbolEntry param_entry = {.type = SB_INT};
+					if( DeclarationCheck( param_node->children[j], func_table )){
+						InsertEntry( func_table, param_entry, param_node->children[j]->annotation->data.ident );
+					}
 				}
 			}
-			InsertEntry( table, entry, func_node->annotation->data.ident );
+			InsertEntry( table, func_entry, func_node->annotation->data.ident );
 
-
-//			depends on whether function has parameter, will be the first or second child node
-			block_semantic(
-					func_node->children[entry.data.func.param_count + 1],
-					entry.data.func.scope_ptr, false );
+			block_semantic( func_node, func_entry.data.func.scope_ptr, false );
 		}
 		i++;
 	}
-//	this block only contains statements, no declaration allowed
+
 	assert( child_arr[i]->type == ND_CODE_BLK );
 	statement_semantic( child_arr[i], table );
 }

@@ -13,4 +13,5 @@
 void SemanticAnalysis( FILE *out, SyntaxTreeNode *root_node, SymbolTable **root_table ) {
 	program_semantic( root_node, root_table );
 	PrintSymbolTable( *root_table, out );
+	fflush(out);
 }

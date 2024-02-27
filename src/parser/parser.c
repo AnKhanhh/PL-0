@@ -4,7 +4,7 @@
 #include "recursive_descent_parser.h"
 
 //	error message is tracked with a token counter, with max data <= MAX_INT
-//	I don't intend to implement a line/column tracker in the near future
+//	substitute for a line/column tracker
 
 void SyntaxAnalysis(FILE *in, FILE *out, SyntaxTreeNode **root_ptr ) {
 	fseek( in, 0, SEEK_SET );
@@ -13,4 +13,5 @@ void SyntaxAnalysis(FILE *in, FILE *out, SyntaxTreeNode **root_ptr ) {
 	Symbol symbol = {0};
 	program( in, &symbol, &token_counter, root_ptr );
 	PrintSyntaxTree(*root_ptr,out);
+	fflush(out);
 }

@@ -1,0 +1,35 @@
+__________________________________________________
+parent scope_ptr: 0 
+scope_ptr: 259D7261E30 - identifier: functions 
+__________________________________________________
+SB_FUNCTION      z                                | value: 15 
+SB_INT           x                                | initialized: 1 
+SB_ARRAY         y                                | size: 8 
+SB_FUNCTION      foo                              | parameters: 2, table pointer: 259D7261E70 
+SB_FUNCTION      bar                              | parameters: 3, table pointer: 259D726BE90 
+SB_FUNCTION      baz                              | parameters: 0, table pointer: 259D726BED0 
+__________________________________________________
+
+__________________________________________________
+parent scope_ptr: 259D7261E30 
+scope_ptr: 259D7261E70 - identifier: foo 
+__________________________________________________
+SB_INT           x                                | initialized: 1 
+SB_INT           y                                | initialized: 1 
+__________________________________________________
+
+__________________________________________________
+parent scope_ptr: 259D7261E30 
+scope_ptr: 259D726BE90 - identifier: bar 
+__________________________________________________
+SB_INT           a                                | initialized: 1 
+SB_INT           b                                | initialized: 1 
+SB_INT           c                                | initialized: 1 
+__________________________________________________
+
+__________________________________________________
+parent scope_ptr: 259D7261E30 
+scope_ptr: 259D726BED0 - identifier: baz 
+__________________________________________________
+__________________________________________________
+

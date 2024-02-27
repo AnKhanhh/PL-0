@@ -22,10 +22,10 @@ void program( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode **root_ptr ){
 			if( accept_tk( sb, TK_SEMICOLON )){
 				NextSymbol( in, sb, tc );
 				block( in, sb, tc, *root_ptr, true );
-				if( accept_tk( sb, TK_PERIOD )){} else{ ParserThrow( "PROGRAM terminating token expected", *tc ); }
-			} else{ ParserThrow( "PROGRAM semicolon expected", *tc ); }
-		} else{ ParserThrow( "program name expected", *tc ); }
-	} else{ ParserThrow( "keyword PROGRAM expected", *tc ); }
+				if( accept_tk( sb, TK_PERIOD )){} else{ SyntaxError( "PROGRAM terminating token expected", *tc ); }
+			} else{ SyntaxError( "PROGRAM semicolon expected", *tc ); }
+		} else{ SyntaxError( "program name expected", *tc ); }
+	} else{ SyntaxError( "keyword PROGRAM expected", *tc ); }
 }
 
 void block( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root, bool main_block ){
@@ -46,13 +46,13 @@ void block( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root, bool main_block
 						InsertNode( equals, const_name );
 						InsertNode( equals, CreateNode( ND_INTEGER, ANN_NUM, &( sb->tag.number )));
 						NextSymbol( in, sb, tc );
-					} else{ ParserThrow( "CONST data expected", *tc ); }
-				} else{ ParserThrow( "equal operator expected", *tc ); }
-			} else{ ParserThrow( "CONST name expected", *tc ); }
+					} else{ SyntaxError( "CONST data expected", *tc ); }
+				} else{ SyntaxError( "equal operator expected", *tc ); }
+			} else{ SyntaxError( "CONST name expected", *tc ); }
 		} while(accept_tk( sb, TK_COMMA ));
 		if( accept_tk( sb, TK_SEMICOLON )){
 			NextSymbol( in, sb, tc );
-		} else{ ParserThrow( "missing CONST block semicolon", *tc ); }
+		} else{ SyntaxError( "missing CONST block semicolon", *tc ); }
 	}
 //	parse integers and integer arrays declaration
 	if( accept_tk( sb, VAR )){
@@ -73,12 +73,12 @@ void block( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root, bool main_block
 						NextSymbol( in, sb, tc );
 						if( accept_tk( sb, TK_RBRACK )){
 							NextSymbol( in, sb, tc );
-						} else{ ParserThrow( "right bracket expected", *tc ); }
-					} else{ ParserThrow( "array index expected", *tc ); }
+						} else{ SyntaxError( "right bracket expected", *tc ); }
+					} else{ SyntaxError( "array index expected", *tc ); }
 				} else{
 					InsertNode( var_blk, name );
 				}
-			} else{ ParserThrow( "invalid name", *tc ); }
+			} else{ SyntaxError( "invalid name", *tc ); }
 		} while(accept_tk( sb, TK_COMMA ));
 		if( accept_tk( sb, TK_SEMICOLON )){
 			NextSymbol( in, sb, tc );
@@ -100,20 +100,20 @@ void block( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root, bool main_block
 					if( accept_tk( sb, TK_IDENT )){
 						InsertNode( proc_arg, CreateNode( ND_IDENT, ANN_IDENT, sb->tag.ident ));
 						NextSymbol( in, sb, tc );
-					} else{ ParserThrow( "parameter name expected", *tc ); }
+					} else{ SyntaxError( "parameter name expected", *tc ); }
 				} while(accept_tk( sb, TK_SEMICOLON ));
 				if( accept_tk( sb, TK_RPARENT )){
 					NextSymbol( in, sb, tc );
-				} else{ ParserThrow( "right parentheses expected", *tc ); }
+				} else{ SyntaxError( "right parentheses expected", *tc ); }
 			}
 			if( accept_tk( sb, TK_SEMICOLON )){
 				NextSymbol( in, sb, tc );
 				block( in, sb, tc, proc_blk, false );
 				if( accept_tk( sb, TK_SEMICOLON )){
 					NextSymbol( in, sb, tc );
-				} else{ ParserThrow( "procedure termination semicolon expected", *tc ); }
-			} else{ ParserThrow( "procedure declaration semicolon expected", *tc ); }
-		} else{ ParserThrow( "procedure name expected", *tc ); }
+				} else{ SyntaxError( "procedure termination semicolon expected", *tc ); }
+			} else{ SyntaxError( "procedure declaration semicolon expected", *tc ); }
+		} else{ SyntaxError( "procedure name expected", *tc ); }
 	}
 	if( accept_tk( sb, BEGIN )){
 		SyntaxTreeNode *main_blk = CreateNode( ND_CODE_BLK, 0, NULL);
@@ -124,8 +124,8 @@ void block( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root, bool main_block
 		} while(accept_tk( sb, TK_SEMICOLON ));
 		if( accept_tk( sb, END )){
 			NextSymbol( in, sb, tc );
-		} else{ ParserThrow( "keyword END expected", *tc ); }
-	} else{ ParserThrow( "keyword BEGIN expected", *tc ); }
+		} else{ SyntaxError( "keyword END expected", *tc ); }
+	} else{ SyntaxError( "keyword BEGIN expected", *tc ); }
 }
 
 void statement( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root ){
@@ -140,7 +140,7 @@ void statement( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root ){
 			InsertNode( left_side, expression( in, sb, tc ));
 			if( accept_tk( sb, TK_RBRACK )){
 				NextSymbol( in, sb, tc );
-			} else{ ParserThrow( "right bracket expected", *tc ); }
+			} else{ SyntaxError( "right bracket expected", *tc ); }
 		} else{ left_side = ident; }
 		if( accept_tk( sb, TK_ASSIGN )){
 			SyntaxTreeNode *assignment = CreateNode( ND_BINARY_OP, ANN_TOKEN, &( sb->token ));
@@ -148,7 +148,7 @@ void statement( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root ){
 			InsertNode( root, assignment );
 			InsertNode( assignment, left_side );
 			InsertNode( assignment, expression( in, sb, tc ));
-		} else{ ParserThrow( "assignment operator expected", *tc ); }
+		} else{ SyntaxError( "assignment operator expected", *tc ); }
 	} else if( accept_tk( sb, CALL )){
 		NextSymbol( in, sb, tc );
 		if( accept_tk( sb, TK_IDENT )){
@@ -162,7 +162,7 @@ void statement( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root ){
 				} while(accept_tk( sb, TK_COMMA ));
 				if( accept_tk( sb, TK_RPARENT )){
 					NextSymbol( in, sb, tc );
-				} else{ ParserThrow( "right parentheses expected", *tc ); }
+				} else{ SyntaxError( "right parentheses expected", *tc ); }
 			}
 		}
 	} else if( accept_tk( sb, BEGIN )){
@@ -174,7 +174,7 @@ void statement( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root ){
 		} while(accept_tk( sb, TK_SEMICOLON ));
 		if( accept_tk( sb, END )){
 			NextSymbol( in, sb, tc );
-		} else{ ParserThrow( "keyword END expected at the end of code block", *tc ); }
+		} else{ SyntaxError( "keyword END expected at the end of code block", *tc ); }
 	} else if( accept_tk( sb, IF )){
 		NextSymbol( in, sb, tc );
 		SyntaxTreeNode *conditional = CreateNode( ND_CONDITIONAL, 0, NULL);
@@ -184,7 +184,7 @@ void statement( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root ){
 		if( accept_tk( sb, THEN )){
 			NextSymbol( in, sb, tc );
 			statement( in, sb, tc, conditional );
-		} else{ ParserThrow( "keyword THEN expected after IF", *tc ); }
+		} else{ SyntaxError( "keyword THEN expected after IF", *tc ); }
 		if( accept_tk( sb, ELSE )){
 			NextSymbol( in, sb, tc );
 			statement( in, sb, tc, conditional );
@@ -197,7 +197,7 @@ void statement( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root ){
 		if( accept_tk( sb, DO )){
 			NextSymbol( in, sb, tc );
 			statement( in, sb, tc, while_loop );
-		} else{ ParserThrow( " keyword DO expected after WILLE", *tc ); }
+		} else{ SyntaxError( " keyword DO expected after WILLE", *tc ); }
 	} else if( accept_tk( sb, FOR )){
 		NextSymbol( in, sb, tc );
 		SyntaxTreeNode *for_loop = CreateNode( ND_FOR_LOOP, 0, NULL);
@@ -214,10 +214,10 @@ void statement( FILE *in, Symbol *sb, int *tc, SyntaxTreeNode *root ){
 					if( accept_tk( sb, DO )){
 						NextSymbol( in, sb, tc );
 						statement( in, sb, tc, for_loop );
-					} else{ ParserThrow( "keyword DO expected after TO", *tc ); }
-				} else{ ParserThrow( "keyword TO expected after FROM", *tc ); }
-			} else{ ParserThrow( "assignment operator expected in FOR loop", *tc ); }
-		} else{ ParserThrow( "invalid iterator name", *tc ); }
+					} else{ SyntaxError( "keyword DO expected after TO", *tc ); }
+				} else{ SyntaxError( "keyword TO expected after FROM", *tc ); }
+			} else{ SyntaxError( "assignment operator expected in FOR loop", *tc ); }
+		} else{ SyntaxError( "invalid iterator name", *tc ); }
 	}
 }
 

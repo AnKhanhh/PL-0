@@ -55,10 +55,13 @@ static SyntaxTreeNode *parse_main(FILE *in, Symbol *sb, int *tc, EOperatorPreced
 	}
 //	binary operators handled here
 	while (prev_precedence < get_precedence(sb->token)) {
+//		subscripting is handled separately, need improvement
 		if (sb->token == TK_LBRACK) {
 			SyntaxTreeNode *operator = CreateNode(ND_SUBSCRIPT, 0, NULL);
 			InsertNode(operator, left_expression);
 			InsertNode(operator, parse_subscript(in, sb, tc));
+
+			left_expression = operator;
 		} else {
 			SyntaxTreeNode *operator = CreateNode(ND_BINARY_OP, ANN_TOKEN, &(sb->token));
 			NextSymbol(in, sb, tc);
@@ -100,7 +103,7 @@ static SyntaxTreeNode *parse_grouping(FILE *in, Symbol *sb, int *tc) {
 		NextSymbol(in, sb, tc);
 		return group;
 	} else {
-		ParserThrow("expected \')\' to match (", *tc);
+		SyntaxError( "expected \')\' to match (", *tc );
 		return NULL;
 	}
 }
@@ -112,7 +115,7 @@ static SyntaxTreeNode *parse_subscript(FILE *in, Symbol *sb, int *tc) {
 		NextSymbol(in, sb, tc);
 		return group;
 	} else {
-		ParserThrow("expected \']\' to match [", *tc);
+		SyntaxError( "expected \']\' to match [", *tc );
 		return NULL;
 	}
 }
