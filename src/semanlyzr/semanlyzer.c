@@ -5,7 +5,7 @@
 //	all variable, constant, function and array share the same namespace
 //	PL/0 is declarative, meaning it has a separate declaration section, simplifying declaration check
 
-//	right now recursion is syntactically valid
+//	since token line and column are not tracked, error messages are emitted with identifier name and scope
 
 #include <stdio.h>
 #include "semanlyzer.h"
