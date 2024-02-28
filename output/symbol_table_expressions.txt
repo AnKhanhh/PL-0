@@ -1,6 +1,6 @@
 __________________________________________________
-parent scope_ptr: 0 
-scope_ptr: 1BAFFF51E10 - identifier: expression_test 
+parent scope pointer: 0 
+scope pointer: 1DAC3441E10 - identifier: expression_test 
 __________________________________________________
 SB_INT           a                                | initialized: 1 
 SB_INT           b                                | initialized: 1 

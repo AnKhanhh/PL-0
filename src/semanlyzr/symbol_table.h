@@ -92,8 +92,8 @@ void PrintSymbolTable( SymbolTable *table, FILE *out ){
 	int size = sizeof buffer;
 //	print table header
 	snprintf( buffer, size, "%s\n"
-							"parent scope_ptr: %llX \n"
-							"scope_ptr: %llX - identifier: %s \n"
+							"parent scope pointer: %llX \n"
+							"scope pointer: %llX - identifier: %s \n"
 							"%s\n",
 			  line, (long long) table->parent, (long long) table, table->name, line );
 	fputs( buffer, out );
